@@ -1,0 +1,272 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 1. Users & Members
+model User {
+  id               String          @id @default(cuid())
+  email            String          @unique
+  name             String
+  passwordHash     String          @default("pbkdf2_hash_placeholder")
+  role             String          @default("PATRON") // PATRON, STAFF, ADMIN
+  barcode          String          @unique
+  phone            String?
+  address          String?         // Current Location / Address
+  nrcNumber        String?         // Myanmar National Registration Card (NRC)
+  nrcFrontUrl      String?         // NRC Front Photo (Data URL or Link)
+  nrcBackUrl       String?         // NRC Back Photo (Data URL or Link)
+  kycStatus        String          @default("VERIFIED") // PENDING, VERIFIED, REJECTED
+  categoryId       String?
+  category         PatronCategory? @relation(fields: [categoryId], references: [id])
+  isBlocked        Boolean         @default(false)
+  blockReason      String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  loans            Loan[]
+  fines            Fine[]
+  holds            Hold[]
+  readingHistory   ReadingLog[]
+  savedLists       SavedList[]
+  illRequests      ILLRequest[]
+
+  @@map("users")
+}
+
+model PatronCategory {
+  id               String   @id @default(cuid())
+  code             String   @unique // e.g. STUDENT, FACULTY, GENERAL
+  name             String   // e.g. Undergraduate Student
+  maxLoanCount     Int      @default(5)
+  loanPeriodDays   Int      @default(14)
+  fineRatePerDay   Float    @default(0.50) // $ per day overdue
+  gracePeriodDays  Int      @default(1)
+  users            User[]
+
+  @@map("patron_categories")
+}
+
+// 2. Bibliographic Records (Books) & Physical Items (Copies)
+model Book {
+  id               String      @id @default(cuid())
+  isbn             String      @unique
+  title            String
+  author           String
+  publisher        String?
+  publicationYear  Int?
+  genre            String?
+  subject          String?
+  description      String?
+  coverUrl         String?
+  edition          String?
+  language         String      @default("English")
+  maxRentDays      Int         @default(7) // Maximum rent duration (default 7 days)
+  originalPrice    Float?      // Original Book Price in MMK (Optional for lost book calculation)
+  marcMetadata     String?     // JSON string representing MARC21/Dublin Core
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  copies           BookCopy[]
+  eResources       EResource[]
+  holds            Hold[]
+  courseReserves   CourseReserveItem[]
+
+  @@map("books")
+}
+
+model BookCopy {
+  id               String     @id @default(cuid())
+  bookId           String
+  book             Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  barcode          String     @unique
+  callNumber       String
+  location         String     // e.g. "Main Floor - Shelf B-12"
+  status           String     @default("AVAILABLE") // AVAILABLE, ON_LOAN, RESERVED, MAINTENANCE, LOST
+  condition        String     @default("GOOD") // NEW, GOOD, FAIR, DAMAGED
+  price            Float?
+  acquiredDate     DateTime   @default(now())
+
+  loans            Loan[]
+
+  @@map("book_copies")
+}
+
+// 3. E-Resources (Digital Reader / Viewer)
+model EResource {
+  id               String   @id @default(cuid())
+  bookId           String?
+  book             Book?    @relation(fields: [bookId], references: [id])
+  title            String
+  author           String
+  format           String   @default("PDF") // PDF, EPUB
+  fileUrl          String
+  isOpenAccess     Boolean  @default(true)
+  licenseType      String?  // Open Access, Perpetual, Multi-User
+  downloadCount    Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  @@map("e_resources")
+}
+
+// 4. Circulation: Loans, Fines & Rules
+model Loan {
+  id               String     @id @default(cuid())
+  userId           String
+  user             User       @relation(fields: [userId], references: [id])
+  copyId           String
+  copy             BookCopy   @relation(fields: [copyId], references: [id])
+  issuedDate       DateTime   @default(now())
+  dueDate          DateTime
+  returnedDate     DateTime?
+  renewCount       Int        @default(0)
+  status           String     @default("ISSUED") // ISSUED, RETURNED, OVERDUE, LOST
+  issuedBy         String?    // Staff User ID
+
+  fines            Fine[]
+
+  @@map("loans")
+}
+
+model Fine {
+  id               String        @id @default(cuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  loanId           String?
+  loan             Loan?         @relation(fields: [loanId], references: [id])
+  amount           Float
+  paidAmount       Float         @default(0)
+  reason           String        // OVERDUE, LOST_BOOK, DAMAGE
+  status           String        @default("UNPAID") // UNPAID, PARTIALLY_PAID, PAID, WAIVED
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  payments         FinePayment[]
+
+  @@map("fines")
+}
+
+model FinePayment {
+  id               String   @id @default(cuid())
+  fineId           String
+  fine             Fine     @relation(fields: [fineId], references: [id])
+  amountPaid       Float
+  paymentMethod    String   // CASH, CARD, ONLINE
+  receiptNumber    String   @unique
+  processedBy      String   // Staff ID
+  createdAt        DateTime @default(now())
+
+  @@map("fine_payments")
+}
+
+model CirculationRule {
+  id               String   @id @default(cuid())
+  patronCategory   String   @default("ALL") // STUDENT, FACULTY, ALL
+  itemType         String   @default("BOOK")
+  maxLoans         Int      @default(5)
+  loanDurationDays Int      @default(14)
+  finePerDay       Float    @default(0.50)
+  maxFineAmount    Float    @default(50.0)
+  gracePeriodDays  Int      @default(1)
+
+  @@map("circulation_rules")
+}
+
+model Hold {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  bookId           String
+  book             Book     @relation(fields: [bookId], references: [id])
+  requestDate      DateTime @default(now())
+  status           String   @default("PENDING") // PENDING, APPROVED, FULFILLED, CANCELLED
+
+  @@map("holds")
+}
+
+// 5. Acquisitions & Vendors
+model Vendor {
+  id               String          @id @default(cuid())
+  name             String
+  code             String          @unique
+  contactEmail     String?
+  phone            String?
+  address          String?
+  accountNumber    String?
+  purchaseOrders   PurchaseOrder[]
+
+  @@map("vendors")
+}
+
+model PurchaseOrder {
+  id               String   @id @default(cuid())
+  orderNumber      String   @unique
+  vendorId         String
+  vendor           Vendor   @relation(fields: [vendorId], references: [id])
+  status           String   @default("DRAFT") // DRAFT, ORDERED, RECEIVED, CANCELLED
+  totalBudget      Float
+  createdAt        DateTime @default(now())
+
+  @@map("purchase_orders")
+}
+
+// 6. Serials, Course Reserves, ILL & Lists
+model SerialSubscription {
+  id               String   @id @default(cuid())
+  title            String
+  issn             String?
+  frequency        String   // MONTHLY, WEEKLY, QUARTERLY
+  publisher        String?
+  active           Boolean  @default(true)
+
+  @@map("serial_subscriptions")
+}
+
+model CourseReserveItem {
+  id               String   @id @default(cuid())
+  courseCode       String   // e.g. CS101
+  courseName       String
+  instructor       String
+  bookId           String
+  book             Book     @relation(fields: [bookId], references: [id])
+
+  @@map("course_reserve_items")
+}
+
+model ILLRequest {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  partnerLibrary   String
+  bookTitle        String
+  author           String
+  status           String   @default("PENDING") // PENDING, IN_TRANSIT, RECEIVED, COMPLETED, CANCELLED
+
+  @@map("ill_requests")
+}
+
+model SavedList {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  name             String
+  description      String?
+  bookIds          String   // JSON string array of book IDs
+
+  @@map("saved_lists")
+}
+
+model ReadingLog {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  bookTitle        String
+  author           String
+  readDate         DateTime @default(now())
+
+  @@map("reading_logs")
+}
