@@ -47,10 +47,10 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
           <div className="mt-6 flex flex-col gap-2">
             <Link
               href="/patron"
-              className="w-full py-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold shadow transition flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-xl bg-green-900 hover:bg-green-800 text-white text-xs font-bold shadow transition flex items-center justify-center gap-1.5"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Return to Patron Portal</span>
+              <span>Return to Member (renter) Portal</span>
             </Link>
             <Link
               href="/login"

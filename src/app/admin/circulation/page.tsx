@@ -198,7 +198,7 @@ export default function CirculationDeskPage() {
         <main className="max-w-4xl mx-auto px-4 py-8">
           <div className="mb-6">
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-              <Repeat className="w-6 h-6 text-blue-900" />
+              <Repeat className="w-6 h-6 text-green-900" />
               <span>{t.circulation.title}</span>
             </h1>
             <p className="text-xs text-slate-600 mt-1">
@@ -216,7 +216,7 @@ export default function CirculationDeskPage() {
               }}
               className={`flex-1 pb-2.5 pt-2 flex items-center justify-center gap-1.5 border-b-2 transition ${
                 activeTab === 'checkout'
-                  ? 'border-blue-900 text-blue-900 font-extrabold'
+                  ? 'border-green-900 text-green-900 font-extrabold'
                   : 'border-transparent text-slate-500 hover:text-slate-700'
               }`}
             >
@@ -392,7 +392,7 @@ export default function CirculationDeskPage() {
                           value={patronBarcode}
                           onChange={(e) => setPatronBarcode(e.target.value)}
                           required
-                          className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-800 focus:bg-white"
+                          className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-green-800 focus:bg-white"
                         />
                       </div>
                     </div>
@@ -409,7 +409,7 @@ export default function CirculationDeskPage() {
                           value={copyBarcodeOut}
                           onChange={(e) => setCopyBarcodeOut(e.target.value)}
                           required
-                          className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-800 focus:bg-white"
+                          className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-green-800 focus:bg-white"
                         />
                       </div>
                     </div>
@@ -418,7 +418,7 @@ export default function CirculationDeskPage() {
                   <button
                     type="submit"
                     disabled={checkoutLoading}
-                    className="w-full py-2.5 rounded-lg bg-blue-950 hover:bg-blue-900 text-white text-xs font-bold shadow flex items-center justify-center space-x-1.5 transition"
+                    className="w-full py-2.5 rounded-lg bg-green-950 hover:bg-green-900 text-white text-xs font-bold shadow flex items-center justify-center space-x-1.5 transition"
                   >
                     {checkoutLoading ? (
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -430,10 +430,10 @@ export default function CirculationDeskPage() {
                 </form>
               ) : (
                 /* Step 2: PREVIEW CARD BEFORE CONFIRMING CHECKOUT */
-                <div className="bg-slate-50 border border-blue-200 rounded-xl p-5 shadow-sm space-y-4">
+                <div className="bg-slate-50 border border-green-200 rounded-xl p-5 shadow-sm space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <div className="flex items-center space-x-2">
-                      <Eye className="w-5 h-5 text-blue-900" />
+                      <Eye className="w-5 h-5 text-green-900" />
                       <h3 className="font-extrabold text-slate-900 text-sm">
                         Check-Out Loan Confirmation Preview
                       </h3>
@@ -450,7 +450,7 @@ export default function CirculationDeskPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                     {/* Patron Box */}
                     <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
-                      <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-green-800 uppercase tracking-wider block">
                         Member Details
                       </span>
                       <p className="font-bold text-slate-900 text-sm">
@@ -469,7 +469,7 @@ export default function CirculationDeskPage() {
 
                     {/* Book & Copy Box */}
                     <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
-                      <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-green-800 uppercase tracking-wider block">
                         Book Copy Details
                       </span>
                       <p className="font-bold text-slate-900 text-sm">
@@ -486,14 +486,14 @@ export default function CirculationDeskPage() {
                   </div>
 
                   {/* Due Date & Rule Summary */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between text-xs">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center justify-between text-xs">
                     <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4 text-blue-900" />
+                      <Calendar className="w-4 h-4 text-green-900" />
                       <span className="font-semibold text-slate-800">
                         Calculated Due Date:
                       </span>
                     </div>
-                    <span className="font-mono font-bold text-blue-950 text-sm">
+                    <span className="font-mono font-bold text-green-950 text-sm">
                       {new Date(checkoutPreview.dueDate).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -514,7 +514,7 @@ export default function CirculationDeskPage() {
                     <button
                       onClick={handleConfirmCheckout}
                       disabled={checkoutLoading}
-                      className="px-5 py-2 rounded-lg bg-blue-950 hover:bg-blue-900 text-white text-xs font-bold shadow transition flex items-center gap-1.5"
+                      className="px-5 py-2 rounded-lg bg-green-950 hover:bg-green-900 text-white text-xs font-bold shadow transition flex items-center gap-1.5"
                     >
                       {checkoutLoading ? (
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />

@@ -231,7 +231,7 @@ export default function MemberManagementPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                <Users className="w-8 h-8 text-blue-900" />
+                <Users className="w-8 h-8 text-green-900" />
                 <span>{t.patronMgmt.title}</span>
               </h1>
               <p className="text-xs text-slate-600 mt-1">
@@ -241,7 +241,7 @@ export default function MemberManagementPage() {
 
             <button
               onClick={handleOpenAddModal}
-              className="flex items-center justify-center space-x-2 bg-blue-950 hover:bg-blue-900 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition"
+              className="flex items-center justify-center space-x-2 bg-green-950 hover:bg-green-900 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition"
             >
               <Plus className="w-4 h-4" />
               <span>{t.patronMgmt.addPatron}</span>
@@ -254,10 +254,10 @@ export default function MemberManagementPage() {
               <Search className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search Members by Actual Name, Phone, Email, Barcode, or NRC..."
+                placeholder="Search Members (renters) by Actual Name, Phone, Email, Barcode, or NRC..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
               />
             </div>
           </div>
@@ -269,7 +269,7 @@ export default function MemberManagementPage() {
                 <thead className="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-3">{t.patronMgmt.barcode}</th>
-                    <th className="px-6 py-3">Member & Contact Info</th>
+                    <th className="px-6 py-3">Member (renter) & Contact Info</th>
                     <th className="px-6 py-3">Current Location</th>
                     <th className="px-6 py-3">{t.patronMgmt.roleType}</th>
                     <th className="px-6 py-3">{t.patronMgmt.status}</th>
@@ -280,14 +280,14 @@ export default function MemberManagementPage() {
                   {loading ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
-                        <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-blue-900" />
-                        <span>Loading members...</span>
+                        <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-green-900" />
+                        <span>Loading members (renters)...</span>
                       </td>
                     </tr>
                   ) : members.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
-                        No member records found.
+                        No member (renter) records found.
                       </td>
                     </tr>
                   ) : (
@@ -295,7 +295,7 @@ export default function MemberManagementPage() {
                       <tr key={member.id} className="hover:bg-slate-50 transition">
                         <td className="px-6 py-4 font-mono font-bold text-xs text-slate-900">
                           <div className="flex items-center gap-1.5">
-                            <Barcode className="w-4 h-4 text-blue-900" />
+                            <Barcode className="w-4 h-4 text-green-900" />
                             <span>{member.barcode}</span>
                           </div>
                         </td>
@@ -317,11 +317,11 @@ export default function MemberManagementPage() {
                             {member.nrcNumber && (
                               <button
                                 onClick={() => setKycPreviewMember(member)}
-                                className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded bg-blue-50 text-blue-900 font-mono text-[10px] font-bold border border-blue-200 hover:bg-blue-100 transition"
+                                className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded bg-green-50 text-green-900 font-mono text-[10px] font-bold border border-green-200 hover:bg-green-100 transition"
                               >
-                                <IdCard className="w-3 h-3 text-blue-700" />
+                                <IdCard className="w-3 h-3 text-green-700" />
                                 <span>NRC: {member.nrcNumber}</span>
-                                <Eye className="w-3 h-3 text-blue-600 ml-0.5" />
+                                <Eye className="w-3 h-3 text-green-600 ml-0.5" />
                               </button>
                             )}
                           </div>
@@ -345,10 +345,10 @@ export default function MemberManagementPage() {
                                 ? 'bg-amber-100 text-amber-900 border border-amber-200'
                                 : member.role === 'STAFF'
                                 ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
-                                : 'bg-blue-100 text-blue-900 border border-blue-200'
+                                : 'bg-green-100 text-green-900 border border-green-200'
                             }`}
                           >
-                            {member.role === 'PATRON' ? 'MEMBER' : member.role}
+                            {member.role === 'PATRON' ? 'MEMBER (RENTER)' : member.role}
                           </span>
                         </td>
 
@@ -368,15 +368,15 @@ export default function MemberManagementPage() {
                           <div className="flex items-center justify-end space-x-2">
                             <button
                               onClick={() => handleOpenEditModal(member)}
-                              className="p-1.5 text-slate-600 hover:text-blue-900 hover:bg-slate-100 rounded-lg transition"
-                              title="Edit Member & KYC"
+                              className="p-1.5 text-slate-600 hover:text-green-900 hover:bg-slate-100 rounded-lg transition"
+                              title="Edit Member (renter) & KYC"
                             >
                               <Edit2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteMember(member.id, member.name)}
                               className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition"
-                              title="Delete Member"
+                              title="Delete Member (renter)"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -396,8 +396,8 @@ export default function MemberManagementPage() {
               <div className="bg-white border border-slate-200 rounded-2xl max-w-xl w-full p-6 shadow-2xl my-8 text-xs">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                   <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-blue-900" />
-                    <span>{editingMember ? 'Edit Member & KYC' : t.patronMgmt.addPatron}</span>
+                    <ShieldCheck className="w-4 h-4 text-green-900" />
+                    <span>{editingMember ? 'Edit Member (renter) & KYC' : t.patronMgmt.addPatron}</span>
                   </h2>
                   <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
                 </div>
@@ -432,7 +432,7 @@ export default function MemberManagementPage() {
                         value={nameInput}
                         onChange={(e) => setNameInput(e.target.value)}
                         required
-                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                       />
                     </div>
 
@@ -448,7 +448,7 @@ export default function MemberManagementPage() {
                         value={phoneInput}
                         onChange={(e) => setPhoneInput(e.target.value)}
                         required
-                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800 font-mono"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 font-mono"
                       />
                     </div>
                   </div>
@@ -462,7 +462,7 @@ export default function MemberManagementPage() {
                         value={emailInput}
                         onChange={(e) => setEmailInput(e.target.value)}
                         required
-                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800 font-mono"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 font-mono"
                       />
                     </div>
 
@@ -473,15 +473,15 @@ export default function MemberManagementPage() {
                         placeholder="Auto: PAT-XXXXX"
                         value={barcodeInput}
                         onChange={(e) => setBarcodeInput(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800 font-mono"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 font-mono"
                       />
                     </div>
                   </div>
 
                   {/* KYC Section: NRC & Current Location */}
-                  <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3.5 space-y-3">
-                    <h3 className="font-bold text-blue-950 flex items-center gap-1.5 text-xs">
-                      <IdCard className="w-4 h-4 text-blue-800" />
+                  <div className="bg-green-50/70 border border-green-200 rounded-xl p-3.5 space-y-3">
+                    <h3 className="font-bold text-green-950 flex items-center gap-1.5 text-xs">
+                      <IdCard className="w-4 h-4 text-green-800" />
                       <span>Myanmar KYC & Identification Verification</span>
                     </h3>
 
@@ -495,7 +495,7 @@ export default function MemberManagementPage() {
                           placeholder="e.g. 12/DAGAMA(N)123456"
                           value={nrcNumberInput}
                           onChange={(e) => setNrcNumberInput(e.target.value)}
-                          className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-800"
+                          className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-green-800"
                         />
                       </div>
 
@@ -508,7 +508,7 @@ export default function MemberManagementPage() {
                           placeholder="Current residential address in Myanmar"
                           value={currentLocationInput}
                           onChange={(e) => setCurrentLocationInput(e.target.value)}
-                          className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                          className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                         />
                       </div>
                     </div>
@@ -528,7 +528,7 @@ export default function MemberManagementPage() {
                             <span className="text-[10px] mt-1">No Front Photo</span>
                           </div>
                         )}
-                        <label className="cursor-pointer w-full py-1.5 px-2 rounded bg-blue-900 hover:bg-blue-800 text-white text-[11px] font-bold text-center block transition">
+                        <label className="cursor-pointer w-full py-1.5 px-2 rounded bg-green-900 hover:bg-green-800 text-white text-[11px] font-bold text-center block transition">
                           Upload Front Photo
                           <input
                             type="file"
@@ -552,7 +552,7 @@ export default function MemberManagementPage() {
                             <span className="text-[10px] mt-1">No Back Photo</span>
                           </div>
                         )}
-                        <label className="cursor-pointer w-full py-1.5 px-2 rounded bg-blue-900 hover:bg-blue-800 text-white text-[11px] font-bold text-center block transition">
+                        <label className="cursor-pointer w-full py-1.5 px-2 rounded bg-green-900 hover:bg-green-800 text-white text-[11px] font-bold text-center block transition">
                           Upload Back Photo
                           <input
                             type="file"
@@ -572,9 +572,9 @@ export default function MemberManagementPage() {
                       <select
                         value={roleInput}
                         onChange={(e) => setRoleInput(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                       >
-                        <option value="PATRON">PATRON (Student / Member)</option>
+                        <option value="PATRON">PATRON (Student / Member (renter))</option>
                         <option value="STAFF">STAFF (Librarian)</option>
                         <option value="ADMIN">ADMIN (System Administrator)</option>
                       </select>
@@ -585,7 +585,7 @@ export default function MemberManagementPage() {
                       <select
                         value={statusInput}
                         onChange={(e) => setStatusInput(e.target.value as any)}
-                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                       >
                         <option value="ACTIVE">Active (Permitted)</option>
                         <option value="SUSPENDED">Suspended (Blocked)</option>
@@ -604,9 +604,9 @@ export default function MemberManagementPage() {
                     <button
                       type="submit"
                       disabled={formSubmitting}
-                      className="px-5 py-2 rounded-lg bg-blue-950 hover:bg-blue-900 text-white font-bold shadow-sm"
+                      className="px-5 py-2 rounded-lg bg-green-950 hover:bg-green-900 text-white font-bold shadow-sm"
                     >
-                      {formSubmitting ? 'Saving...' : 'Save Member Record'}
+                      {formSubmitting ? 'Saving...' : 'Save Member (renter) Record'}
                     </button>
                   </div>
                 </form>
@@ -637,7 +637,7 @@ export default function MemberManagementPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 font-sans">NRC Number:</span>
-                    <span className="font-bold text-blue-900">{kycPreviewMember.nrcNumber || 'N/A'}</span>
+                    <span className="font-bold text-green-900">{kycPreviewMember.nrcNumber || 'N/A'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 font-sans">Current Location:</span>

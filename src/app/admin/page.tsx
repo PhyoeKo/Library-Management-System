@@ -28,7 +28,7 @@ export default function AdminDashboardPage() {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center space-x-3">
-              <Shield className="w-8 h-8 text-blue-900" />
+              <Shield className="w-8 h-8 text-green-900" />
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                   {t.admin.title}
@@ -44,9 +44,9 @@ export default function AdminDashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
             <Link
               href="/admin/catalog"
-              className="bg-white border border-slate-200 hover:border-blue-900 p-6 rounded-xl shadow-sm hover:shadow-md transition group"
+              className="bg-white border border-slate-200 hover:border-green-900 p-6 rounded-xl shadow-sm hover:shadow-md transition group"
             >
-              <div className="w-12 h-12 rounded-lg bg-blue-50 text-blue-900 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+              <div className="w-12 h-12 rounded-lg bg-green-50 text-green-900 flex items-center justify-center mb-4 group-hover:scale-105 transition">
                 <BookOpen className="w-6 h-6" />
               </div>
               <h3 className="font-extrabold text-slate-900 text-base">{t.admin.catalogingItems}</h3>
@@ -83,7 +83,7 @@ export default function AdminDashboardPage() {
                 <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">
                   {t.admin.titlesCount}
                 </span>
-                <BookOpen className="w-5 h-5 text-blue-900" />
+                <BookOpen className="w-5 h-5 text-green-900" />
               </div>
               <div className="text-3xl font-black text-slate-900">3 Records</div>
               <p className="text-xs text-emerald-700 mt-2 flex items-center gap-1 font-bold">
@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
           {/* System Activity Log */}
           <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
             <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-900" />
+              <Clock className="w-5 h-5 text-green-900" />
               <span>{t.admin.recentLogs}</span>
             </h3>
 

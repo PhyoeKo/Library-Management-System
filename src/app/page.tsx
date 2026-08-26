@@ -129,7 +129,7 @@ export default function OPACPage() {
       {/* Header & Search Banner */}
       <section className="bg-white border-b border-slate-200 py-10 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-900 text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-900 text-xs font-bold mb-3">
             <Globe className="w-3.5 h-3.5" />
             <span>Public Open-Access E-Books & Physical Catalog</span>
           </div>
@@ -151,7 +151,7 @@ export default function OPACPage() {
                 placeholder={t.opac.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:bg-white"
               />
             </div>
 
@@ -159,7 +159,7 @@ export default function OPACPage() {
             <select
               value={selectedGenre}
               onChange={(e) => setSelectedGenre(e.target.value)}
-              className="bg-slate-50 border border-slate-300 text-slate-700 rounded-lg px-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+              className="bg-slate-50 border border-slate-300 text-slate-700 rounded-lg px-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:bg-white"
             >
               <option value="">{t.opac.allCategories}</option>
               <option value="Computer Science">Computer Science</option>
@@ -170,7 +170,7 @@ export default function OPACPage() {
             <select
               value={selectedFormat}
               onChange={(e) => setSelectedFormat(e.target.value)}
-              className="bg-slate-50 border border-slate-300 text-slate-700 font-medium rounded-lg px-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+              className="bg-slate-50 border border-slate-300 text-slate-700 font-medium rounded-lg px-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:bg-white"
             >
               <option value="">{t.opac.allFormats}</option>
               <option value="physical">📖 {t.opac.physicalOnly}</option>
@@ -217,7 +217,7 @@ export default function OPACPage() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[10px] text-blue-700 font-bold uppercase tracking-wider block">
+                          <span className="text-[10px] text-green-700 font-bold uppercase tracking-wider block">
                             {book.genre || 'General'}
                           </span>
                           {hasEResource && (
@@ -294,7 +294,7 @@ export default function OPACPage() {
                               fileUrl: eResource.fileUrl,
                             })
                           }
-                          className="w-full flex items-center justify-center space-x-1.5 py-2.5 px-4 rounded-lg bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold shadow-sm transition"
+                          className="w-full flex items-center justify-center space-x-1.5 py-2.5 px-4 rounded-lg bg-green-900 hover:bg-green-800 text-white text-xs font-bold shadow-sm transition"
                         >
                           <FileText className="w-4 h-4" />
                           <span>{t.opac.readPdf} (Instant Read)</span>
@@ -318,7 +318,7 @@ export default function OPACPage() {
                         <button
                           onClick={() => handlePlaceHold(book)}
                           disabled={reservingBookId === book.id}
-                          className="w-full flex items-center justify-center space-x-1 py-2.5 px-4 rounded-lg bg-blue-950 hover:bg-blue-900 text-white text-xs font-bold shadow-sm transition"
+                          className="w-full flex items-center justify-center space-x-1 py-2.5 px-4 rounded-lg bg-green-950 hover:bg-green-900 text-white text-xs font-bold shadow-sm transition"
                         >
                           <Bookmark className="w-3.5 h-3.5" />
                           <span>Rent / Hold Physical Copy</span>
@@ -377,7 +377,7 @@ export default function OPACPage() {
 
             <button
               onClick={() => setHoldModal({ ...holdModal, isOpen: false })}
-              className="w-full py-2.5 bg-blue-950 hover:bg-blue-900 text-white rounded-xl text-xs font-bold shadow transition"
+              className="w-full py-2.5 bg-green-950 hover:bg-green-900 text-white rounded-xl text-xs font-bold shadow transition"
             >
               Done / Got It
             </button>

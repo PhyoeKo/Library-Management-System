@@ -10,6 +10,7 @@ import {
   Sparkles,
   Barcode,
   Trash2,
+  Edit2,
   CheckCircle,
   AlertTriangle,
   RefreshCw,
@@ -54,6 +55,7 @@ export default function CatalogPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [isAddBookModalOpen, setIsAddBookModalOpen] = useState(false);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [selectedBookForCopies, setSelectedBookForCopies] = useState<Book | null>(null);
 
   // Form State for Add Book
@@ -151,14 +153,18 @@ export default function CatalogPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleCreateBook = async (e: React.FormEvent) => {
+  const handleSubmitBook = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormMessage(null);
     setFormSubmitting(true);
 
     try {
-      const res = await fetch('/api/books', {
-        method: 'POST',
+      const isEditing = !!editingBook;
+      const url = isEditing ? `/api/books/${editingBook.id}` : '/api/books';
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           isbn: isbnInput,
@@ -172,11 +178,13 @@ export default function CatalogPage() {
           coverUrl: coverUrlInput,
           maxRentDays: maxRentDaysInput,
           originalPrice: originalPriceInput,
-          bookType,
-          numberOfCopies,
-          callNumber: callNumberInput,
-          location: locationInput,
-          pdfUrl: pdfUrlInput,
+          ...(isEditing ? {} : {
+            bookType,
+            numberOfCopies,
+            callNumber: callNumberInput,
+            location: locationInput,
+            pdfUrl: pdfUrlInput,
+          }),
         }),
       });
       const data = await res.json();
@@ -188,7 +196,7 @@ export default function CatalogPage() {
         setFormMessage({ type: 'error', text: data.error });
       }
     } catch (err: any) {
-      setFormMessage({ type: 'error', text: 'Failed to create book record.' });
+      setFormMessage({ type: 'error', text: editingBook ? 'Failed to update book record.' : 'Failed to create book record.' });
     } finally {
       setFormSubmitting(false);
     }
@@ -254,6 +262,24 @@ export default function CatalogPage() {
     setLocationInput('Main Floor - Shelf CS-01');
     setPdfUrlInput('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
     setFormMessage(null);
+    setEditingBook(null);
+  };
+
+  const handleEditBook = (book: Book) => {
+    setEditingBook(book);
+    setIsbnInput(book.isbn);
+    setTitleInput(book.title);
+    setAuthorInput(book.author);
+    setPublisherInput(book.publisher || '');
+    setYearInput(book.publicationYear ? String(book.publicationYear) : '');
+    setGenreInput(book.genre || 'Computer Science');
+    setSubjectInput(book.subject || '');
+    setDescriptionInput(book.description || '');
+    setCoverUrlInput(book.coverUrl || '');
+    setMaxRentDaysInput(book.maxRentDays ? String(book.maxRentDays) : '7');
+    setOriginalPriceInput(book.originalPrice ? String(book.originalPrice) : '');
+    setFormMessage(null);
+    setIsAddBookModalOpen(true);
   };
 
   return (
@@ -266,7 +292,7 @@ export default function CatalogPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                <BookOpen className="w-8 h-8 text-blue-900" />
+                <BookOpen className="w-8 h-8 text-green-900" />
                 <span>{t.cataloging.title}</span>
               </h1>
               <p className="text-xs text-slate-600 mt-1">
@@ -279,7 +305,7 @@ export default function CatalogPage() {
                 resetBookForm();
                 setIsAddBookModalOpen(true);
               }}
-              className="flex items-center justify-center space-x-2 bg-blue-950 hover:bg-blue-900 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition"
+              className="flex items-center justify-center space-x-2 bg-green-950 hover:bg-green-900 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition"
             >
               <Plus className="w-4 h-4" />
               <span>{t.cataloging.addRecord}</span>
@@ -295,7 +321,7 @@ export default function CatalogPage() {
                 placeholder={t.cataloging.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
               />
             </div>
           </div>
@@ -317,7 +343,7 @@ export default function CatalogPage() {
                   {loading ? (
                     <tr>
                       <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
-                        <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-blue-900" />
+                        <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-green-900" />
                         <span>Loading catalog...</span>
                       </td>
                     </tr>
@@ -398,7 +424,7 @@ export default function CatalogPage() {
 
                           <td className="px-6 py-4">
                             <div className="flex items-center space-x-1.5 font-bold">
-                              <span className="text-blue-900">{availableCopies}</span>
+                              <span className="text-green-900">{availableCopies}</span>
                               <span className="text-slate-400">/ {totalCopies}</span>
                             </div>
                           </td>
@@ -407,14 +433,22 @@ export default function CatalogPage() {
                             <div className="flex items-center justify-end space-x-2">
                               <button
                                 onClick={() => setSelectedBookForCopies(book)}
-                                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-900 hover:bg-blue-100 text-xs font-bold border border-blue-200 transition"
+                                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-green-50 text-green-900 hover:bg-green-100 text-xs font-bold border border-green-200 transition"
                               >
                                 <Barcode className="w-3.5 h-3.5" />
                                 <span>{t.cataloging.manageBarcodes} ({totalCopies})</span>
                               </button>
                               <button
+                                onClick={() => handleEditBook(book)}
+                                className="p-1.5 text-slate-400 hover:text-green-700 hover:bg-green-50 rounded-lg transition"
+                                title="Edit book"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
                                 onClick={() => handleDeleteBook(book.id, book.title)}
                                 className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition"
+                                title="Delete book"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -435,8 +469,8 @@ export default function CatalogPage() {
               <div className="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 shadow-2xl my-8 text-xs">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                   <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-blue-900" />
-                    <span>{t.cataloging.addRecord}</span>
+                    <Sparkles className="w-4 h-4 text-green-900" />
+                    <span>{editingBook ? 'Edit Bibliographic Record' : t.cataloging.addRecord}</span>
                   </h2>
                   <button onClick={() => setIsAddBookModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
                 </div>
@@ -458,7 +492,7 @@ export default function CatalogPage() {
                   </div>
                 )}
 
-                <form onSubmit={handleCreateBook} className="space-y-4">
+                <form onSubmit={handleSubmitBook} className="space-y-4">
                   {/* ISBN with Auto-Fill */}
                   <div>
                     <label className="block font-semibold text-slate-700 mb-1">{t.cataloging.isbn} *</label>
@@ -469,13 +503,13 @@ export default function CatalogPage() {
                         value={isbnInput}
                         onChange={(e) => setIsbnInput(e.target.value)}
                         required
-                        className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800 font-mono"
+                        className="flex-1 bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 font-mono"
                       />
                       <button
                         type="button"
                         onClick={handleIsbnLookup}
                         disabled={isbnLookupLoading}
-                        className="bg-blue-100 text-blue-900 hover:bg-blue-200 font-bold px-3 py-2 rounded-lg transition"
+                        className="bg-green-100 text-green-900 hover:bg-green-200 font-bold px-3 py-2 rounded-lg transition"
                       >
                         {isbnLookupLoading ? 'Fetching...' : t.cataloging.isbnAutoFill}
                       </button>
@@ -492,7 +526,7 @@ export default function CatalogPage() {
                         value={titleInput}
                         onChange={(e) => setTitleInput(e.target.value)}
                         required
-                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                       />
                     </div>
 
@@ -504,7 +538,7 @@ export default function CatalogPage() {
                         value={authorInput}
                         onChange={(e) => setAuthorInput(e.target.value)}
                         required
-                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                       />
                     </div>
                   </div>
@@ -519,7 +553,7 @@ export default function CatalogPage() {
                       placeholder="Enter a brief summary, introduction, or synopsis of the book..."
                       value={descriptionInput}
                       onChange={(e) => setDescriptionInput(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                      className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                     />
                   </div>
 
@@ -541,10 +575,27 @@ export default function CatalogPage() {
                     </p>
                   </div>
 
+                  {/* Maximum Rent Days */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                    <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Maximum Rent Days (Default 7) *</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="90"
+                      value={maxRentDaysInput}
+                      onChange={(e) => setMaxRentDaysInput(e.target.value)}
+                      required
+                      className="w-full bg-white border border-amber-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono font-extrabold focus:outline-none focus:ring-2 focus:ring-amber-600"
+                    />
+                  </div>
+
                   {/* Book Cover Image */}
                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3">
                     <label className="block font-bold text-slate-800 flex items-center gap-1.5">
-                      <ImageIcon className="w-4 h-4 text-blue-900" />
+                      <ImageIcon className="w-4 h-4 text-green-900" />
                       <span>Book Cover Image</span>
                     </label>
 
@@ -562,7 +613,7 @@ export default function CatalogPage() {
 
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2">
-                          <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-950 hover:bg-blue-900 text-white text-xs font-bold shadow-sm transition">
+                          <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-950 hover:bg-green-900 text-white text-xs font-bold shadow-sm transition">
                             <Upload className="w-3.5 h-3.5" />
                             <span>Pick Image From Device</span>
                             <input
@@ -580,14 +631,14 @@ export default function CatalogPage() {
                           placeholder="Image URL (e.g. https://images.unsplash.com/...)"
                           value={coverUrlInput}
                           onChange={(e) => setCoverUrlInput(e.target.value)}
-                          className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                          className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Type of Book (Physical vs E-Book) */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3">
+                  {!editingBook && (
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3">
                     <label className="block font-bold text-slate-800">
                       Type of Book Format *
                     </label>
@@ -598,7 +649,7 @@ export default function CatalogPage() {
                         onClick={() => setBookType('physical')}
                         className={`p-3 rounded-lg border text-left flex items-center space-x-2 transition ${
                           bookType === 'physical'
-                            ? 'bg-blue-900 border-blue-900 text-white font-bold shadow-sm'
+                            ? 'bg-green-900 border-green-900 text-white font-bold shadow-sm'
                             : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
                         }`}
                       >
@@ -626,7 +677,7 @@ export default function CatalogPage() {
                       </button>
                     </div>
 
-                    {/* Conditional Fields for Physical Books: Copies & Max Rent Days */}
+                    {/* Conditional Fields for Physical Books: Copies & Shelf Location */}
                     {bookType === 'physical' && (
                       <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
@@ -640,23 +691,7 @@ export default function CatalogPage() {
                             value={numberOfCopies}
                             onChange={(e) => setNumberOfCopies(e.target.value)}
                             required
-                            className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-blue-800"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-amber-600" />
-                            <span>Maximum Rent Days (Default 7) *</span>
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            max="90"
-                            value={maxRentDaysInput}
-                            onChange={(e) => setMaxRentDaysInput(e.target.value)}
-                            required
-                            className="w-full bg-white border border-amber-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono font-extrabold focus:outline-none focus:ring-2 focus:ring-amber-600"
+                            className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-green-800"
                           />
                         </div>
 
@@ -670,14 +705,14 @@ export default function CatalogPage() {
                               placeholder="Call Number (e.g. QA76.73)"
                               value={callNumberInput}
                               onChange={(e) => setCallNumberInput(e.target.value)}
-                              className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                              className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                             />
                             <input
                               type="text"
                               placeholder="Location (e.g. Shelf CS-01)"
                               value={locationInput}
                               onChange={(e) => setLocationInput(e.target.value)}
-                              className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                              className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                             />
                           </div>
                         </div>
@@ -705,6 +740,7 @@ export default function CatalogPage() {
                       </div>
                     )}
                   </div>
+                  )}
 
                   <div className="flex justify-end space-x-2 pt-4 border-t border-slate-100">
                     <button
@@ -717,9 +753,13 @@ export default function CatalogPage() {
                     <button
                       type="submit"
                       disabled={formSubmitting}
-                      className="px-5 py-2 rounded-lg bg-blue-950 hover:bg-blue-900 text-white font-bold shadow-sm"
+                      className="px-5 py-2 rounded-lg bg-green-950 hover:bg-green-900 text-white font-bold shadow-sm"
                     >
-                      {formSubmitting ? 'Saving...' : 'Save Bibliographic Record'}
+                      {formSubmitting
+                        ? 'Saving...'
+                        : editingBook
+                        ? 'Update Bibliographic Record'
+                        : 'Save Bibliographic Record'}
                     </button>
                   </div>
                 </form>
@@ -733,7 +773,7 @@ export default function CatalogPage() {
               <div className="bg-white border border-slate-200 rounded-xl max-w-xl w-full p-6 shadow-2xl text-xs">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                   <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <Barcode className="w-4 h-4 text-blue-900" />
+                    <Barcode className="w-4 h-4 text-green-900" />
                     <span>{t.cataloging.manageBarcodes}: {selectedBookForCopies.title}</span>
                   </h2>
                   <button onClick={() => setSelectedBookForCopies(null)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
@@ -767,7 +807,7 @@ export default function CatalogPage() {
                       className="bg-white border border-slate-300 text-slate-900 rounded px-2.5 py-1.5 text-xs"
                     />
                   </div>
-                  <button type="submit" className="mt-3 bg-blue-950 hover:bg-blue-900 text-white font-bold px-3 py-1.5 rounded">
+                  <button type="submit" className="mt-3 bg-green-950 hover:bg-green-900 text-white font-bold px-3 py-1.5 rounded">
                     {t.cataloging.addBarcodeBtn}
                   </button>
                 </form>

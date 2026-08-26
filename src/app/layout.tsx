@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Skylark Library - Enterprise Library Management System",
-  description: "Production-ready Skylark Library Management System with OPAC, Cataloging, Circulation & Fines POS",
+  title: "DLAC - Digital Library Access Catalogue",
+  description: "Digital Library Access Catalogue (DLAC) - Enterprise Library Management System with OPAC, Cataloging, Circulation & Fines POS",
 };
 
 export default function RootLayout({

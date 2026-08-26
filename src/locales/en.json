@@ -1,8 +1,9 @@
 {
   "nav": {
     "catalog": "Catalog",
-    "patronPortal": "Member Portal",
-    "patrons": "Members",
+    "patronPortal": "Member (renter) Portal",
+    "dashboard": "Dashboard",
+    "patrons": "Members (renters)",
     "cataloging": "Cataloging",
     "circulation": "Circulation Desk",
     "fines": "Fines & POS",
@@ -11,21 +12,21 @@
   },
   "login": {
     "title": "System Sign In",
-    "subtitle": "Access your Skylark Library Member Dashboard or Staff Administration Panel.",
-    "patronTab": "Member Portal",
+    "subtitle": "Access your Digital Library Access Catalogue (DLAC) Member Dashboard or Staff Administration Panel.",
+    "patronTab": "Member (renter) Portal",
     "staffTab": "Staff Portal",
-    "emailOrBarcode": "Email or Member Barcode",
+    "emailOrBarcode": "Email or Member (renter) Barcode",
     "password": "Password",
     "signIn": "Sign In",
     "quickDemo": "Quick Demo One-Click Login",
     "staffRole": "Staff",
-    "patronRole": "Member"
+    "patronRole": "Member (renter)"
   },
   "patronMgmt": {
-    "title": "Member Management",
-    "subtitle": "Register library members, view and print barcodes, manage roles, and monitor membership statuses.",
-    "addPatron": "Add New Member",
-    "searchPlaceholder": "Search Members by Name, Email, or Barcode...",
+    "title": "Member (renter) Management",
+    "subtitle": "Register library members (renters), view and print barcodes, manage roles, and monitor membership statuses.",
+    "addPatron": "Add New Member (renter)",
+    "searchPlaceholder": "Search Members (renters) by Name, Email, or Barcode...",
     "barcode": "Barcode",
     "name": "Full Name",
     "email": "Email Address",
@@ -34,13 +35,13 @@
     "actions": "Actions",
     "active": "Active",
     "suspended": "Suspended",
-    "editPatron": "Edit Member Record",
+    "editPatron": "Edit Member (renter) Record",
     "autoBarcodeTip": "Leave blank to auto-generate (PAT-XXXXX)",
     "phone": "Phone Number",
     "address": "Address"
   },
   "opac": {
-    "title": "Skylark Library Search & Catalog",
+    "title": "Digital Library Access Catalogue",
     "subtitle": "Search physical collections, open-access e-books, and digital archives.",
     "searchPlaceholder": "Search title, author, ISBN, or subject...",
     "allCategories": "All Categories",
@@ -54,7 +55,7 @@
     "hold": "Hold"
   },
   "patron": {
-    "title": "Member Dashboard",
+    "title": "Member (renter) Dashboard",
     "fineBalance": "Fine Balance",
     "overdueItem": "Overdue Item",
     "activeLoans": "Active Borrowed Books",
@@ -67,7 +68,7 @@
   },
   "cataloging": {
     "title": "Hard Copy Cataloging & Inventory",
-    "subtitle": "Manage Skylark Library bibliographic records, physical copy barcodes, shelf locations, and item availability.",
+    "subtitle": "Manage Digital Library Access Catalogue (DLAC) bibliographic records, physical copy barcodes, shelf locations, and item availability.",
     "addRecord": "Add Bibliographic Record",
     "isbnAutoFill": "ISBN Auto-Fill",
     "manageBarcodes": "Manage Barcodes",
@@ -88,7 +89,7 @@
     "subtitle": "Barcode scanning interface for physical book loans, returns, and instant fine calculations.",
     "checkoutTab": "Quick Check-Out (Issue Loan)",
     "checkinTab": "Quick Check-In (Return Book)",
-    "patronBarcode": "Member Barcode",
+    "patronBarcode": "Member (renter) Barcode",
     "copyBarcode": "Book Copy Barcode",
     "issueLoan": "Confirm & Issue Loan",
     "returnBook": "Process Return & Update Copy Status",
@@ -96,7 +97,7 @@
   },
   "fines": {
     "title": "Penalty Fee Ledger & Point-of-Sale (POS)",
-    "subtitle": "Automated Skylark Library overdue matrix calculations, cash/card fee collection, and receipting.",
+    "subtitle": "Automated Digital Library Access Catalogue (DLAC) overdue matrix calculations, cash/card fee collection, and receipting.",
     "runEngine": "Run Overdue Fine Engine",
     "outstandingBalance": "Total Outstanding Balance",
     "revenueCollected": "Total Revenue Collected",
@@ -116,7 +117,7 @@
     "fineDesc": "Calculate fines & issue receipts",
     "titlesCount": "Bibliographic Titles",
     "activeLoans": "Active Loans",
-    "registeredPatrons": "Registered Members",
+    "registeredPatrons": "Registered Members (renters)",
     "recentLogs": "Recent System Circulation Logs"
   }
 }

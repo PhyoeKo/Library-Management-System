@@ -144,8 +144,8 @@ export default function PatronDashboardPage() {
             {/* Header Banner */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-900 text-xs font-bold mb-2">
-                  <ShieldCheck className="w-4 h-4 text-blue-800" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-900 text-xs font-bold mb-2">
+                  <ShieldCheck className="w-4 h-4 text-green-800" />
                   <span>Admin / Staff Master Circulation Registry</span>
                 </div>
                 <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
@@ -159,7 +159,7 @@ export default function PatronDashboardPage() {
               <div className="flex items-center gap-4">
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
                   <span className="text-xs text-slate-500 font-bold block">Active Rented Copies</span>
-                  <span className="text-xl font-extrabold text-blue-950 font-mono">
+                  <span className="text-xl font-extrabold text-green-950 font-mono">
                     {activeLoansList.length}
                   </span>
                 </div>
@@ -182,7 +182,7 @@ export default function PatronDashboardPage() {
                   placeholder="Filter by Renting Member Name, Member Barcode, Book Title, or Copy Barcode..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
                 />
               </div>
             </div>
@@ -191,7 +191,7 @@ export default function PatronDashboardPage() {
             <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
               <div className="p-4 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
                 <h3 className="font-bold text-slate-900 text-xs flex items-center gap-2">
-                  <Users className="w-4 h-4 text-blue-900" />
+                  <Users className="w-4 h-4 text-green-900" />
                   <span>Renting Members List & Copy Details</span>
                 </h3>
                 <span className="text-xs text-slate-500 font-mono">
@@ -214,7 +214,7 @@ export default function PatronDashboardPage() {
                     {loading ? (
                       <tr>
                         <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
-                          <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-blue-900" />
+                          <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-green-900" />
                           <span>Loading active member rentals...</span>
                         </td>
                       </tr>
@@ -232,8 +232,8 @@ export default function PatronDashboardPage() {
                               <span className="font-extrabold text-slate-900 text-xs block">
                                 {loan.memberName}
                               </span>
-                              <span className="text-[11px] text-blue-900 font-mono font-bold flex items-center gap-1 mt-0.5">
-                                <Barcode className="w-3 h-3 text-blue-700" />
+                              <span className="text-[11px] text-green-900 font-mono font-bold flex items-center gap-1 mt-0.5">
+                                <Barcode className="w-3 h-3 text-green-700" />
                                 <span>{loan.memberBarcode}</span>
                               </span>
                               <span className="text-[10px] text-slate-500 font-mono block">
@@ -319,7 +319,7 @@ export default function PatronDashboardPage() {
             {/* Member Profile Header */}
             <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-xl bg-blue-900 flex items-center justify-center font-black text-xl text-white shadow-sm uppercase">
+                <div className="w-14 h-14 rounded-xl bg-green-900 flex items-center justify-center font-black text-xl text-white shadow-sm uppercase">
                   {currentUser?.name ? currentUser.name.charAt(0) : 'M'}
                 </div>
                 <div>
@@ -327,7 +327,7 @@ export default function PatronDashboardPage() {
                     <h1 className="text-xl font-extrabold text-slate-900">
                       {currentUser?.name || 'Alex Rivera'}
                     </h1>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-900 border border-green-200">
                       Student Member
                     </span>
                   </div>
@@ -353,7 +353,7 @@ export default function PatronDashboardPage() {
               <div className="lg:col-span-2 space-y-6">
                 <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                   <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-blue-900" />
+                    <BookOpen className="w-5 h-5 text-green-900" />
                     <span>{t.patron.activeLoans} (1)</span>
                   </h2>
 
@@ -383,7 +383,7 @@ export default function PatronDashboardPage() {
                 {/* Reading History */}
                 <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                   <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <History className="w-5 h-5 text-blue-900" />
+                    <History className="w-5 h-5 text-green-900" />
                     <span>{t.patron.borrowingHistory}</span>
                   </h2>
 
@@ -431,7 +431,7 @@ export default function PatronDashboardPage() {
 
                 <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                   <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <Bookmark className="w-4 h-4 text-blue-900" />
+                    <Bookmark className="w-4 h-4 text-green-900" />
                     <span>{t.patron.savedLists}</span>
                   </h3>
 

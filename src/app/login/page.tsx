@@ -82,7 +82,7 @@ export default function LoginPage() {
             }}
             className={`flex-1 pb-2.5 pt-2 text-xs font-bold flex items-center justify-center space-x-1.5 border-b-2 transition ${
               activePortal === 'patron'
-                ? 'border-blue-900 text-blue-900 font-extrabold'
+                ? 'border-green-900 text-green-900 font-extrabold'
                 : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
@@ -139,7 +139,7 @@ export default function LoginPage() {
                   value={emailOrBarcode}
                   onChange={(e) => setEmailOrBarcode(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800 focus:bg-white font-mono"
+                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 focus:bg-white font-mono"
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800 focus:bg-white"
+                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 focus:bg-white"
                 />
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function LoginPage() {
               className={`w-full py-2.5 rounded-lg text-white text-xs font-bold shadow flex items-center justify-center space-x-1.5 transition ${
                 activePortal === 'staff'
                   ? 'bg-emerald-800 hover:bg-emerald-700'
-                  : 'bg-blue-950 hover:bg-blue-900'
+                  : 'bg-green-950 hover:bg-green-900'
               }`}
             >
               <span>{loading ? 'Authenticating...' : t.login.signIn}</span>
@@ -196,7 +196,7 @@ export default function LoginPage() {
                 className="w-full p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex justify-between items-center text-slate-800 text-left transition"
               >
                 <span className="font-medium">Alex Rivera (Student Member)</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-900">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-900">
                   {t.login.patronRole}
                 </span>
               </button>

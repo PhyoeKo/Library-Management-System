@@ -167,7 +167,7 @@ export default function FinesPOSPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                <CreditCard className="w-6 h-6 text-blue-900" />
+                <CreditCard className="w-6 h-6 text-green-900" />
                 <span>{t.fines.title}</span>
               </h1>
               <p className="text-xs text-slate-600 mt-1">
@@ -178,7 +178,7 @@ export default function FinesPOSPage() {
             <button
               onClick={handleRunFineEngine}
               disabled={calculating}
-              className="flex items-center justify-center space-x-1.5 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2.5 rounded-lg font-bold text-xs transition shadow-sm"
+              className="flex items-center justify-center space-x-1.5 bg-green-900 hover:bg-green-800 text-white px-4 py-2.5 rounded-lg font-bold text-xs transition shadow-sm"
             >
               {calculating ? (
                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -217,7 +217,7 @@ export default function FinesPOSPage() {
                 placeholder="Search Patron Name or Barcode..."
                 value={searchPatron}
                 onChange={(e) => setSearchPatron(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-800"
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
               />
             </div>
 
@@ -228,7 +228,7 @@ export default function FinesPOSPage() {
                   onClick={() => setFilterStatus(st)}
                   className={`px-3 py-1.5 rounded text-[11px] font-bold transition ${
                     filterStatus === st
-                      ? 'bg-blue-900 text-white shadow-sm'
+                      ? 'bg-green-900 text-white shadow-sm'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -404,7 +404,7 @@ export default function FinesPOSPage() {
                         setSelectedFineForPOS(null);
                         setGeneratedReceipt(null);
                       }}
-                      className="w-full mt-4 py-2.5 bg-blue-950 hover:bg-blue-900 text-white rounded-lg text-xs font-sans font-bold shadow-sm"
+                      className="w-full mt-4 py-2.5 bg-green-950 hover:bg-green-900 text-white rounded-lg text-xs font-sans font-bold shadow-sm"
                     >
                       Done
                     </button>
