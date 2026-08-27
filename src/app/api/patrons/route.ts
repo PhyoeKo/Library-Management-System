@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// GET /api/patrons - List patrons with Koha borrower metrics
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('q') || '';
+    const categoryId = searchParams.get('categoryId');
+    const status = searchParams.get('status');
 
     const whereCondition: any = {};
     if (search) {
@@ -13,20 +16,59 @@ export async function GET(request: NextRequest) {
         { email: { contains: search } },
         { barcode: { contains: search } },
         { nrcNumber: { contains: search } },
+        { phone: { contains: search } },
       ];
+    }
+    if (categoryId) {
+      whereCondition.categoryId = categoryId;
+    }
+    if (status === 'ACTIVE') {
+      whereCondition.isBlocked = false;
+    } else if (status === 'SUSPENDED') {
+      whereCondition.isBlocked = true;
     }
 
     const patrons = await prisma.user.findMany({
       where: whereCondition,
       include: {
         category: true,
-        loans: { where: { status: 'ISSUED' } },
-        fines: { where: { status: 'UNPAID' } },
+        loans: {
+          where: { status: { in: ['ISSUED', 'OVERDUE'] } },
+          include: {
+            copy: { include: { book: true } },
+          },
+        },
+        fines: {
+          where: { status: { in: ['UNPAID', 'PARTIALLY_PAID'] } },
+        },
+        holds: {
+          where: { status: { in: ['PENDING', 'APPROVED'] } },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({ success: true, count: patrons.length, patrons });
+    const now = new Date();
+    const enriched = patrons.map((p) => {
+      const activeLoanCount = p.loans.length;
+      const overdueLoanCount = p.loans.filter((l) => new Date(l.dueDate) < now).length;
+      const unpaidFineTotal = p.fines.reduce((sum, f) => sum + (f.amount - f.paidAmount), 0);
+      const activeHoldCount = p.holds.length;
+
+      return {
+        ...p,
+        activeLoanCount,
+        overdueLoanCount,
+        unpaidFineTotal,
+        activeHoldCount,
+      };
+    });
+
+    return NextResponse.json({
+      success: true,
+      count: enriched.length,
+      patrons: enriched,
+    });
   } catch (error: any) {
     console.error('Error fetching patrons:', error);
     return NextResponse.json(
@@ -36,6 +78,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// POST /api/patrons - Create patron with category
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -44,9 +87,10 @@ export async function POST(request: NextRequest) {
       email,
       password,
       role = 'PATRON',
+      categoryId,
       barcode,
       phone,
-      address, // Current Location
+      address,
       nrcNumber,
       nrcFrontUrl,
       nrcBackUrl,
@@ -62,7 +106,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check existing email
     const existingUser = await prisma.user.findUnique({
       where: { email: email.trim() },
     });
@@ -74,14 +117,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Auto-generate barcode if blank
     let finalBarcode = barcode ? barcode.trim() : '';
     if (!finalBarcode) {
       const randomNum = Math.floor(10000 + Math.random() * 90000);
       finalBarcode = `PAT-${randomNum}`;
     }
 
-    // Check existing barcode
     const existingBarcode = await prisma.user.findUnique({
       where: { barcode: finalBarcode },
     });
@@ -99,6 +140,7 @@ export async function POST(request: NextRequest) {
         email: email.trim(),
         passwordHash: password || 'pbkdf2_hash_placeholder',
         role: role || 'PATRON',
+        categoryId: categoryId || null,
         barcode: finalBarcode,
         phone: phone || null,
         address: address || null,
@@ -107,8 +149,9 @@ export async function POST(request: NextRequest) {
         nrcBackUrl: nrcBackUrl || null,
         kycStatus: kycStatus || 'VERIFIED',
         isBlocked: Boolean(isBlocked),
-        blockReason: blockReason || null,
+        blockReason: isBlocked ? (blockReason || 'Suspended by staff') : null,
       },
+      include: { category: true },
     });
 
     return NextResponse.json({ success: true, patron }, { status: 201 });

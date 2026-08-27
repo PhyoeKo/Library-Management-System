@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BookOpen, CreditCard, Repeat, UserCheck, Users, LayoutDashboard, LogIn, LogOut, Globe } from 'lucide-react';
+import { BookOpen, CreditCard, Repeat, UserCheck, Users, LayoutDashboard, LogIn, LogOut, Globe, BookMarked, BarChart3, ShoppingBag, Layers } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageContext';
 
 interface AuthUser {
@@ -59,6 +59,10 @@ export default function Navbar() {
     { href: '/admin/patrons', label: t.nav.patrons || 'Members', icon: Users, requiresAdmin: true, requiresPatron: false },
     { href: '/admin/catalog', label: t.nav.cataloging, icon: BookOpen, requiresAdmin: true, requiresPatron: false },
     { href: '/admin/circulation', label: t.nav.circulation, icon: Repeat, requiresAdmin: true, requiresPatron: false },
+    { href: '/admin/holds', label: (t.nav as any).holds || 'Holds Queue', icon: BookMarked, requiresAdmin: true, requiresPatron: false },
+    { href: '/admin/acquisitions', label: (t.nav as any).acquisitions || 'Acquisitions', icon: ShoppingBag, requiresAdmin: true, requiresPatron: false },
+    { href: '/admin/library-services', label: (t.nav as any).libraryServices || 'Library Services', icon: Layers, requiresAdmin: true, requiresPatron: false },
+    { href: '/admin/reports', label: (t.nav as any).reports || 'Reports', icon: BarChart3, requiresAdmin: true, requiresPatron: false },
     { href: '/admin/fines', label: t.nav.fines, icon: CreditCard, requiresAdmin: true, requiresPatron: false },
   ];
 

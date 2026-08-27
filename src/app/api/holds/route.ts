@@ -1,6 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// GET /api/holds — list all holds, optionally filtered by ?status=PENDING|APPROVED|FULFILLED|CANCELLED
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status') || '';
+
+    const where: any = {};
+    if (status && status !== 'ALL') {
+      where.status = status;
+    }
+
+    const holds = await prisma.hold.findMany({
+      where,
+      include: {
+        user: true,
+        book: {
+          include: {
+            copies: {
+              select: { id: true, status: true, barcode: true },
+            },
+          },
+        },
+      },
+      orderBy: { requestDate: 'asc' },
+    });
+
+    // Enrich with queue position and available copy count
+    const enriched = await Promise.all(
+      holds.map(async (hold) => {
+        const queuePosition = await prisma.hold.count({
+          where: {
+            bookId: hold.bookId,
+            status: 'PENDING',
+            requestDate: { lte: hold.requestDate },
+          },
+        });
+        const availableCopies = hold.book.copies.filter(
+          (c) => c.status === 'AVAILABLE'
+        ).length;
+        return { ...hold, queuePosition, availableCopies };
+      })
+    );
+
+    return NextResponse.json({ success: true, count: enriched.length, holds: enriched });
+  } catch (error: any) {
+    console.error('Error fetching holds:', error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to fetch holds' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

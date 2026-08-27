@@ -6,6 +6,10 @@
     "patrons": "Members (renters)",
     "cataloging": "Cataloging",
     "circulation": "Circulation Desk",
+    "holds": "Holds Queue",
+    "acquisitions": "Acquisitions",
+    "libraryServices": "Library Services",
+    "reports": "Reports",
     "fines": "Fines & POS",
     "login": "Login",
     "logout": "Logout"
@@ -113,11 +117,23 @@
     "catalogingDesc": "Add ISBN records & barcode copies",
     "circulationDesk": "Circulation Desk",
     "circulationDesc": "Quick Check-Out & Check-In items",
+    "holdsQueue": "Holds & Reservations",
+    "holdsDesc": "Manage patron reservation requests",
+    "acquisitionsTitle": "Acquisitions & Vendors",
+    "acquisitionsDesc": "Purchase orders, booksellers & ERM",
+    "libraryServicesTitle": "Serials & ILL Services",
+    "libraryServicesDesc": "Periodicals, ILL & course reserves",
+    "reportsAnalytics": "Reports & Analytics",
+    "reportsDesc": "Live KPIs, trends & overdue alerts",
     "fineMatrix": "Fine Matrix & POS",
     "fineDesc": "Calculate fines & issue receipts",
     "titlesCount": "Bibliographic Titles",
     "activeLoans": "Active Loans",
     "registeredPatrons": "Registered Members (renters)",
     "recentLogs": "Recent System Circulation Logs"
+  },
+  "holds": {
+    "title": "Holds & Reservation Queue",
+    "subtitle": "Manage patron book reservations, approve or fulfil holds, and monitor the waiting queue."
   }
 }

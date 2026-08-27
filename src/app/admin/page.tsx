@@ -13,6 +13,10 @@ import {
   AlertTriangle,
   Users,
   Clock,
+  BookMarked,
+  BarChart3,
+  ShoppingBag,
+  Layers,
 } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageContext';
 
@@ -41,38 +45,82 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Quick Action Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             <Link
               href="/admin/catalog"
-              className="bg-white border border-slate-200 hover:border-green-900 p-6 rounded-xl shadow-sm hover:shadow-md transition group"
+              className="bg-white border border-slate-200 hover:border-green-900 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
             >
-              <div className="w-12 h-12 rounded-lg bg-green-50 text-green-900 flex items-center justify-center mb-4 group-hover:scale-105 transition">
-                <BookOpen className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl bg-green-50 text-green-900 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                <BookOpen className="w-5 h-5" />
               </div>
-              <h3 className="font-extrabold text-slate-900 text-base">{t.admin.catalogingItems}</h3>
-              <p className="text-xs text-slate-500 mt-1">{t.admin.catalogingDesc}</p>
+              <h3 className="font-extrabold text-slate-900 text-sm">{t.admin.catalogingItems}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">{t.admin.catalogingDesc}</p>
             </Link>
 
             <Link
               href="/admin/circulation"
-              className="bg-white border border-slate-200 hover:border-cyan-700 p-6 rounded-xl shadow-sm hover:shadow-md transition group"
+              className="bg-white border border-slate-200 hover:border-cyan-700 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
             >
-              <div className="w-12 h-12 rounded-lg bg-cyan-50 text-cyan-800 flex items-center justify-center mb-4 group-hover:scale-105 transition">
-                <Repeat className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-800 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                <Repeat className="w-5 h-5" />
               </div>
-              <h3 className="font-extrabold text-slate-900 text-base">{t.admin.circulationDesk}</h3>
-              <p className="text-xs text-slate-500 mt-1">{t.admin.circulationDesc}</p>
+              <h3 className="font-extrabold text-slate-900 text-sm">{t.admin.circulationDesk}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">{t.admin.circulationDesc}</p>
+            </Link>
+
+            <Link
+              href="/admin/holds"
+              className="bg-white border border-slate-200 hover:border-violet-600 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
+            >
+              <div className="w-11 h-11 rounded-xl bg-violet-50 text-violet-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                <BookMarked className="w-5 h-5" />
+              </div>
+              <h3 className="font-extrabold text-slate-900 text-sm">{(t.admin as any).holdsQueue || 'Holds & Reservations'}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">{(t.admin as any).holdsDesc || 'Manage patron reservation requests'}</p>
+            </Link>
+
+            <Link
+              href="/admin/acquisitions"
+              className="bg-white border border-slate-200 hover:border-amber-600 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
+            >
+              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+              <h3 className="font-extrabold text-slate-900 text-sm">{(t.admin as any).acquisitionsTitle || 'Acquisitions & Vendors'}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">{(t.admin as any).acquisitionsDesc || 'Purchase orders, booksellers & ERM'}</p>
+            </Link>
+
+            <Link
+              href="/admin/library-services"
+              className="bg-white border border-slate-200 hover:border-teal-700 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
+            >
+              <div className="w-11 h-11 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                <Layers className="w-5 h-5" />
+              </div>
+              <h3 className="font-extrabold text-slate-900 text-sm">{(t.admin as any).libraryServicesTitle || 'Serials & ILL Services'}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">{(t.admin as any).libraryServicesDesc || 'Periodicals, ILL & course reserves'}</p>
+            </Link>
+
+            <Link
+              href="/admin/reports"
+              className="bg-white border border-slate-200 hover:border-indigo-600 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
+            >
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <h3 className="font-extrabold text-slate-900 text-sm">{(t.admin as any).reportsAnalytics || 'Reports & Analytics'}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">{(t.admin as any).reportsDesc || 'Live KPIs, trends & overdue alerts'}</p>
             </Link>
 
             <Link
               href="/admin/fines"
-              className="bg-white border border-slate-200 hover:border-emerald-700 p-6 rounded-xl shadow-sm hover:shadow-md transition group"
+              className="bg-white border border-slate-200 hover:border-emerald-700 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
             >
-              <div className="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center mb-4 group-hover:scale-105 transition">
-                <CreditCard className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                <CreditCard className="w-5 h-5" />
               </div>
-              <h3 className="font-extrabold text-slate-900 text-base">{t.admin.fineMatrix}</h3>
-              <p className="text-xs text-slate-500 mt-1">{t.admin.fineDesc}</p>
+              <h3 className="font-extrabold text-slate-900 text-sm">{t.admin.fineMatrix}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">{t.admin.fineDesc}</p>
             </Link>
           </div>
 

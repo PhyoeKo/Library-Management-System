@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
 import {
   BookOpen,
@@ -16,39 +16,129 @@ import {
   Phone,
   Barcode,
   IdCard,
-  ShieldCheck,
+  GraduationCap,
+  RotateCw,
+  Tag,
+  Calendar,
+  AlertCircle,
+  CheckCheck,
+  XCircle,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageContext';
 
-interface AuthUser {
+interface PatronProfile {
   id: string;
   name: string;
   email: string;
-  role: string;
-  barcode?: string;
+  barcode: string;
   phone?: string;
+  address?: string;
+  isBlocked: boolean;
+  blockReason?: string;
+  category: {
+    name: string;
+    code: string;
+    maxLoanCount: number;
+    loanPeriodDays: number;
+    fineRatePerDay: number;
+  };
 }
 
-interface ActiveLoan {
+interface CheckoutItem {
   id: string;
-  memberName: string;
-  memberBarcode: string;
-  memberEmail: string;
-  memberPhone?: string;
   bookTitle: string;
+  author: string;
+  coverUrl?: string;
+  isbn?: string;
   copyBarcode: string;
+  callNumber?: string;
   issuedDate: string;
   dueDate: string;
+  renewalCount: number;
   isOverdue: boolean;
-  fineAmount: number;
+  daysRemaining: number;
+  daysOverdue: number;
+  fineAccrued: number;
+  canRenew: boolean;
+}
+
+interface HoldItem {
+  id: string;
+  bookId: string;
+  bookTitle: string;
+  author: string;
+  coverUrl?: string;
+  isbn?: string;
+  requestDate: string;
+  status: string;
+  queueRank: number;
+  totalQueue: number;
+  availableCopies: number;
+}
+
+interface FineItem {
+  id: string;
+  reason: string;
+  amount: number;
+  paidAmount: number;
+  balance: number;
+  status: string;
+  bookTitle: string;
+  createdAt: string;
+}
+
+interface HistoryItem {
+  id: string;
+  bookTitle: string;
+  author: string;
+  coverUrl?: string;
+  copyBarcode: string;
+  issuedDate: string;
+  returnedDate?: string;
+}
+
+interface SavedListItem {
+  id: string;
+  name: string;
+  description?: string;
+  bookCount: number;
 }
 
 export default function PatronDashboardPage() {
   const { t } = useLanguage();
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const [activeLoansList, setActiveLoansList] = useState<ActiveLoan[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [patronData, setPatronData] = useState<{
+    patron: PatronProfile;
+    summary: {
+      currentCheckoutsCount: number;
+      overdueCount: number;
+      activeHoldsCount: number;
+      totalOutstandingFine: number;
+      totalHistoryCount: number;
+    };
+    checkouts: CheckoutItem[];
+    holds: HoldItem[];
+    fineStatement: FineItem[];
+    history: HistoryItem[];
+    savedLists: SavedListItem[];
+  } | null>(null);
+
+  const [activeTab, setActiveTab] = useState<'CHECKOUTS' | 'HOLDS' | 'FINES' | 'HISTORY' | 'LISTS'>('CHECKOUTS');
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  // New list modal
+  const [isListModalOpen, setIsListModalOpen] = useState(false);
+  const [listNameInput, setListNameInput] = useState('');
+  const [listDescInput, setListDescInput] = useState('');
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   useEffect(() => {
     try {
@@ -61,385 +151,640 @@ export default function PatronDashboardPage() {
     }
   }, []);
 
-  const isStaffOrAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'STAFF';
-
-  // Load all active loans for Admin/Staff master view
-  const fetchMasterActiveLoans = async () => {
+  const fetchPatronAccount = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/patrons');
+      const userIdParam = currentUser?.id ? `?userId=${currentUser.id}` : '';
+      const res = await fetch(`/api/patron/me${userIdParam}`);
       const data = await res.json();
       if (data.success) {
-        const loans: ActiveLoan[] = [];
-        for (const member of data.patrons) {
-          if (member.loans && member.loans.length > 0) {
-            for (const loan of member.loans) {
-              loans.push({
-                id: loan.id,
-                memberName: member.name,
-                memberBarcode: member.barcode,
-                memberEmail: member.email,
-                memberPhone: member.phone,
-                bookTitle: loan.copy?.book?.title || 'The C Programming Language',
-                copyBarcode: loan.copy?.barcode || 'BC-1002',
-                issuedDate: loan.issuedDate || new Date().toISOString(),
-                dueDate: loan.dueDate || new Date().toISOString(),
-                isOverdue: new Date() > new Date(loan.dueDate),
-                fineAmount: 4500,
-              });
-            }
-          }
-        }
-        // If empty, supply demo active loans for visual preview
-        if (loans.length === 0) {
-          loans.push({
-            id: 'loan-101',
-            memberName: 'Alex Rivera',
-            memberBarcode: 'PAT-88401',
-            memberEmail: 'alex.rivera@student.edu',
-            memberPhone: '09-971234567',
-            bookTitle: 'The C Programming Language',
-            copyBarcode: 'BC-1002',
-            issuedDate: '2026-07-14',
-            dueDate: '2026-07-28',
-            isOverdue: true,
-            fineAmount: 4500,
-          });
-        }
-        setActiveLoansList(loans);
+        setPatronData(data);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Failed to load patron account:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
 
   useEffect(() => {
-    if (isStaffOrAdmin) {
-      fetchMasterActiveLoans();
-    } else {
-      setLoading(false);
-    }
-  }, [isStaffOrAdmin]);
+    fetchPatronAccount();
+  }, [fetchPatronAccount]);
 
-  const filteredMasterLoans = activeLoansList.filter(
-    (loan) =>
-      loan.memberName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      loan.memberBarcode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      loan.bookTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      loan.copyBarcode.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Self-service loan renewal
+  const handleRenewLoan = async (loanId: string) => {
+    setActionLoading(`renew_${loanId}`);
+    try {
+      const res = await fetch('/api/patron/renew', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ loanId, userId: currentUser?.id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || 'Loan renewed successfully');
+        fetchPatronAccount();
+      } else {
+        showToast(data.error || 'Failed to renew loan', 'error');
+      }
+    } catch {
+      showToast('Network error during renewal', 'error');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Cancel hold request
+  const handleCancelHold = async (holdId: string) => {
+    if (!confirm('Are you sure you want to cancel this reservation request?')) return;
+    setActionLoading(`hold_${holdId}`);
+    try {
+      const res = await fetch(`/api/holds/${holdId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'CANCELLED' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Hold request cancelled');
+        fetchPatronAccount();
+      } else {
+        showToast(data.error || 'Failed to cancel hold', 'error');
+      }
+    } catch {
+      showToast('Network error', 'error');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Create Saved List
+  const handleCreateList = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!listNameInput.trim()) return;
+    try {
+      const res = await fetch('/api/patron/lists', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: patronData?.patron.id || currentUser?.id,
+          name: listNameInput,
+          description: listDescInput,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Virtual list created');
+        setIsListModalOpen(false);
+        setListNameInput('');
+        setListDescInput('');
+        fetchPatronAccount();
+      } else {
+        showToast(data.error || 'Failed to create list', 'error');
+      }
+    } catch {
+      showToast('Network error', 'error');
+    }
+  };
+
+  // Delete Saved List
+  const handleDeleteList = async (id: string) => {
+    try {
+      const res = await fetch(`/api/patron/lists?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Virtual list deleted');
+        fetchPatronAccount();
+      }
+    } catch {
+      showToast('Network error', 'error');
+    }
+  };
+
+  const p = patronData?.patron;
+  const s = patronData?.summary;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <Navbar />
 
+      {/* Toast */}
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-xs font-bold text-white transition-all ${
+            toast.type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'
+          }`}
+        >
+          {toast.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          <span>{toast.message}</span>
+        </div>
+      )}
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* ========================================================================= */}
-        {/* VIEW 1: STAFF / ADMIN MASTER MEMBER RENTAL REGISTRY VIEW                  */}
-        {/* ========================================================================= */}
-        {isStaffOrAdmin ? (
-          <div className="space-y-6">
-            {/* Header Banner */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-900 text-xs font-bold mb-2">
-                  <ShieldCheck className="w-4 h-4 text-green-800" />
-                  <span>Admin / Staff Master Circulation Registry</span>
-                </div>
-                <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                  All Active Renting Members & Loan Details
+        {/* Patron Header Ribbon */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-800 text-white flex items-center justify-center font-black text-2xl shadow-sm uppercase flex-shrink-0">
+              {p?.name ? p.name.charAt(0) : 'P'}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                  {p?.name || 'Borrower Account'}
                 </h1>
-                <p className="text-xs text-slate-600 mt-1">
-                  Master registry of library members currently holding physical copies, due dates, and fine balances.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
-                  <span className="text-xs text-slate-500 font-bold block">Active Rented Copies</span>
-                  <span className="text-xl font-extrabold text-green-950 font-mono">
-                    {activeLoansList.length}
+                {p?.category && (
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200 flex items-center gap-1">
+                    <GraduationCap className="w-3 h-3" />
+                    <span>{p.category.name}</span>
                   </span>
-                </div>
-
-                <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-center">
-                  <span className="text-xs text-rose-700 font-bold block">Overdue Items</span>
-                  <span className="text-xl font-extrabold text-rose-700 font-mono">
-                    {activeLoansList.filter((l) => l.isOverdue).length}
-                  </span>
-                </div>
+                )}
               </div>
-            </div>
-
-            {/* Search Bar */}
-            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-              <div className="relative">
-                <Search className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Filter by Renting Member Name, Member Barcode, Book Title, or Copy Barcode..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 rounded-lg pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
-                />
-              </div>
-            </div>
-
-            {/* Active Renting Members Table */}
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-              <div className="p-4 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
-                <h3 className="font-bold text-slate-900 text-xs flex items-center gap-2">
-                  <Users className="w-4 h-4 text-green-900" />
-                  <span>Renting Members List & Copy Details</span>
-                </h3>
-                <span className="text-xs text-slate-500 font-mono">
-                  Showing {filteredMasterLoans.length} entries
-                </span>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-700">
-                  <thead className="bg-slate-50 text-slate-700 uppercase text-[10px] font-bold border-b border-slate-200">
-                    <tr>
-                      <th className="px-6 py-3">Renting Member Details</th>
-                      <th className="px-6 py-3">Rented Book & Copy Barcode</th>
-                      <th className="px-6 py-3">Issue Date</th>
-                      <th className="px-6 py-3">Due Date & Status</th>
-                      <th className="px-6 py-3 text-right">Fine Balance</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {loading ? (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
-                          <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-green-900" />
-                          <span>Loading active member rentals...</span>
-                        </td>
-                      </tr>
-                    ) : filteredMasterLoans.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
-                          No active member rentals match search.
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredMasterLoans.map((loan) => (
-                        <tr key={loan.id} className="hover:bg-slate-50 transition">
-                          <td className="px-6 py-4">
-                            <div>
-                              <span className="font-extrabold text-slate-900 text-xs block">
-                                {loan.memberName}
-                              </span>
-                              <span className="text-[11px] text-green-900 font-mono font-bold flex items-center gap-1 mt-0.5">
-                                <Barcode className="w-3 h-3 text-green-700" />
-                                <span>{loan.memberBarcode}</span>
-                              </span>
-                              <span className="text-[10px] text-slate-500 font-mono block">
-                                {loan.memberEmail}
-                              </span>
-                            </div>
-                          </td>
-
-                          <td className="px-6 py-4">
-                            <div>
-                              <span className="font-bold text-slate-900 text-xs block">
-                                {loan.bookTitle}
-                              </span>
-                              <span className="text-[11px] text-slate-600 font-mono mt-0.5 block">
-                                Copy Barcode: <span className="font-bold text-slate-900">{loan.copyBarcode}</span>
-                              </span>
-                            </div>
-                          </td>
-
-                          <td className="px-6 py-4 font-mono text-xs text-slate-600">
-                            {new Date(loan.issuedDate).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })}
-                          </td>
-
-                          <td className="px-6 py-4">
-                            {loan.isOverdue ? (
-                              <div className="space-y-1">
-                                <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-700 text-[10px] font-extrabold border border-rose-200 inline-flex items-center gap-1">
-                                  <AlertTriangle className="w-3 h-3" />
-                                  <span>OVERDUE</span>
-                                </span>
-                                <span className="text-[11px] text-rose-600 font-mono font-bold block">
-                                  Was due:{' '}
-                                  {new Date(loan.dueDate).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                  })}
-                                </span>
-                              </div>
-                            ) : (
-                              <div className="space-y-1">
-                                <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">
-                                  ACTIVE LOAN
-                                </span>
-                                <span className="text-[11px] text-slate-600 font-mono block">
-                                  Due:{' '}
-                                  {new Date(loan.dueDate).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                  })}
-                                </span>
-                              </div>
-                            )}
-                          </td>
-
-                          <td className="px-6 py-4 text-right font-mono font-extrabold text-xs">
-                            {loan.isOverdue ? (
-                              <span className="text-rose-600 font-black text-sm">
-                                {loan.fineAmount.toLocaleString()} MMK
-                              </span>
-                            ) : (
-                              <span className="text-slate-400">0 MMK</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              <p className="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                <span>Card / Barcode: <b className="font-mono text-slate-800">{p?.barcode || 'PAT-00000'}</b></span>
+                <span>•</span>
+                <span className="font-mono">{p?.email}</span>
+                {p?.phone && (
+                  <>
+                    <span>•</span>
+                    <span className="font-mono text-emerald-800 font-semibold">{p.phone}</span>
+                  </>
+                )}
+              </p>
             </div>
           </div>
-        ) : (
-          /* ========================================================================= */
-          /* VIEW 2: SINGLE MEMBER PERSONAL DASHBOARD VIEW                             */
-          /* ========================================================================= */
-          <div className="space-y-8">
-            {/* Member Profile Header */}
-            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-xl bg-green-900 flex items-center justify-center font-black text-xl text-white shadow-sm uppercase">
-                  {currentUser?.name ? currentUser.name.charAt(0) : 'M'}
-                </div>
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <h1 className="text-xl font-extrabold text-slate-900">
-                      {currentUser?.name || 'Alex Rivera'}
-                    </h1>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-900 border border-green-200">
-                      Student Member
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Barcode: <span className="font-mono text-slate-800 font-semibold">{currentUser?.barcode || 'PAT-88401'}</span> • Email: {currentUser?.email || 'alex.rivera@student.edu'}
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-center space-x-4 bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <div className="text-right">
-                  <span className="text-xs text-slate-500 block font-semibold">{t.patron.fineBalance}</span>
-                  <span className="font-mono font-black text-rose-600 text-lg">4,500 MMK</span>
-                </div>
-                <span className="text-xs font-bold text-rose-700 bg-rose-100 px-2.5 py-1 rounded border border-rose-200">
-                  1 {t.patron.overdueItem}
-                </span>
-              </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center">
+              <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">
+                Circulation Balance
+              </span>
+              <span className={`text-base font-black font-mono ${(s?.totalOutstandingFine ?? 0) > 0 ? 'text-rose-600' : 'text-slate-800'}`}>
+                {(s?.totalOutstandingFine ?? 0).toLocaleString()} MMK
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Active Loans Section */}
-              <div className="lg:col-span-2 space-y-6">
-                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                  <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-green-900" />
-                    <span>{t.patron.activeLoans} (1)</span>
-                  </h2>
+            {p?.isBlocked ? (
+              <div className="bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5 flex items-center gap-2 text-rose-700">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+                <div>
+                  <span className="text-xs font-extrabold block">Account Suspended</span>
+                  <span className="text-[10px]">{p.blockReason || 'Contact circulation desk'}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2 text-emerald-800">
+                <CheckCircle className="w-5 h-5 flex-shrink-0 text-emerald-600" />
+                <div>
+                  <span className="text-xs font-extrabold block">Good Standing</span>
+                  <span className="text-[10px]">Borrowing permitted (Max {p?.category.maxLoanCount || 5} items)</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
-                  <div className="space-y-4">
-                    <div className="bg-slate-50 border border-rose-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Tab Navigation (Koha OPAC Account Tabs) */}
+        <div className="flex border-b border-slate-200 mb-6 gap-2 overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('CHECKOUTS')}
+            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition whitespace-nowrap ${
+              activeTab === 'CHECKOUTS'
+                ? 'border-emerald-700 text-emerald-800'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Current Checkouts ({patronData?.checkouts.length || 0})</span>
+            {(s?.overdueCount ?? 0) > 0 && (
+              <span className="w-2 h-2 rounded-full bg-rose-500" />
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('HOLDS')}
+            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition whitespace-nowrap ${
+              activeTab === 'HOLDS'
+                ? 'border-emerald-700 text-emerald-800'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            <span>Holds & Reservations ({patronData?.holds.length || 0})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('FINES')}
+            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition whitespace-nowrap ${
+              activeTab === 'FINES'
+                ? 'border-emerald-700 text-emerald-800'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <CreditCard className="w-4 h-4" />
+            <span>Fines & Charges ({patronData?.fineStatement.length || 0})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('HISTORY')}
+            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition whitespace-nowrap ${
+              activeTab === 'HISTORY'
+                ? 'border-emerald-700 text-emerald-800'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <History className="w-4 h-4" />
+            <span>Borrowing History ({patronData?.history.length || 0})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('LISTS')}
+            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition whitespace-nowrap ${
+              activeTab === 'LISTS'
+                ? 'border-emerald-700 text-emerald-800'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <Bookmark className="w-4 h-4" />
+            <span>Virtual Shelves ({patronData?.savedLists.length || 0})</span>
+          </button>
+        </div>
+
+        {/* ══════════════════════════════════════════════════════════════
+            TAB 1: CURRENT CHECKOUTS
+        ══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'CHECKOUTS' && (
+          <div className="space-y-4">
+            {loading ? (
+              <div className="py-20 text-center text-slate-400 text-xs">
+                <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-emerald-800" />
+                Loading your current checkouts...
+              </div>
+            ) : !patronData?.checkouts || patronData.checkouts.length === 0 ? (
+              <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
+                <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="font-bold text-slate-700 text-sm">No items currently checked out</p>
+                <p className="text-xs text-slate-400 mt-1">Browse the library catalog to borrow physical books or read e-books.</p>
+                <a
+                  href="/"
+                  className="inline-block mt-4 px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold rounded-xl transition"
+                >
+                  Explore OPAC Catalog
+                </a>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {patronData.checkouts.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`bg-white border rounded-2xl p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition ${
+                      item.isOverdue ? 'border-rose-300 bg-rose-50/20' : 'border-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      {item.coverUrl ? (
+                        <img
+                          src={item.coverUrl}
+                          alt={item.bookTitle}
+                          className="w-14 h-20 object-cover rounded-lg border border-slate-200 shadow-sm flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-14 h-20 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center flex-shrink-0 border border-emerald-200">
+                          <BookOpen className="w-6 h-6" />
+                        </div>
+                      )}
+
                       <div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs font-extrabold px-2 py-0.5 rounded bg-rose-100 text-rose-700 border border-rose-200">
-                            OVERDUE
-                          </span>
-                          <h4 className="font-bold text-slate-900 text-sm">The C Programming Language</h4>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-1">Barcode: BC-1002 • Call: QA76.73.C15 K47 c.2</p>
-                        <div className="text-xs text-rose-600 mt-2 flex items-center gap-1 font-semibold">
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>{t.patron.wasDue} (Fine: 4,500 MMK)</span>
-                        </div>
-                      </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {item.isOverdue ? (
+                            <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-extrabold border border-rose-200 inline-flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" />
+                              <span>OVERDUE BY {item.daysOverdue} DAYS</span>
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                              DUE IN {item.daysRemaining} DAYS
+                            </span>
+                          )}
 
-                      <button className="px-3 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-sm">
-                        {t.patron.payFine}
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            Renewals: {item.renewalCount}/3
+                          </span>
+                        </div>
+
+                        <h3 className="font-extrabold text-slate-900 text-base mt-1">{item.bookTitle}</h3>
+                        <p className="text-xs text-slate-500">By {item.author}</p>
+
+                        <div className="flex items-center gap-3 text-[11px] text-slate-500 font-mono mt-2 flex-wrap">
+                          <span>Barcode: <b className="text-slate-800">{item.copyBarcode}</b></span>
+                          {item.callNumber && <span>• Call: {item.callNumber}</span>}
+                          <span>• Due Date: <b className={item.isOverdue ? 'text-rose-600' : 'text-slate-800'}>
+                            {new Date(item.dueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </b></span>
+                        </div>
+
+                        {item.fineAccrued > 0 && (
+                          <p className="text-xs font-bold text-rose-600 mt-1">
+                            Accrued Fine: {item.fineAccrued.toLocaleString()} MMK
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end md:self-center">
+                      <button
+                        onClick={() => handleRenewLoan(item.id)}
+                        disabled={!item.canRenew || actionLoading === `renew_${item.id}`}
+                        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm ${
+                          item.canRenew
+                            ? 'bg-emerald-800 hover:bg-emerald-900 text-white'
+                            : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
+                        }`}
+                      >
+                        <RotateCw className={`w-3.5 h-3.5 ${actionLoading === `renew_${item.id}` ? 'animate-spin' : ''}`} />
+                        <span>{item.canRenew ? 'Self-Renew (+14d)' : 'Cannot Renew'}</span>
                       </button>
                     </div>
                   </div>
-                </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-                {/* Reading History */}
-                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                  <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <History className="w-5 h-5 text-green-900" />
-                    <span>{t.patron.borrowingHistory}</span>
-                  </h2>
-
-                  <div className="space-y-3">
-                    {[
-                      { title: 'Introduction to Algorithms', returnedDate: '2026-07-15', status: t.patron.returnedOnTime },
-                      { title: 'Domain-Driven Design', returnedDate: '2026-06-20', status: t.patron.returnedOnTime },
-                    ].map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center justify-between text-xs"
-                      >
-                        <div>
-                          <span className="font-bold text-slate-900 block">{item.title}</span>
-                          <span className="text-slate-500">Returned: {item.returnedDate}</span>
-                        </div>
-                        <span className="text-emerald-700 font-bold flex items-center gap-1">
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          {item.status}
+        {/* ══════════════════════════════════════════════════════════════
+            TAB 2: HOLDS & RESERVATIONS
+        ══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'HOLDS' && (
+          <div className="space-y-4">
+            {!patronData?.holds || patronData.holds.length === 0 ? (
+              <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
+                <Clock className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="font-bold text-slate-700 text-sm">No active holds or reservations</p>
+                <p className="text-xs text-slate-400 mt-1">When books are currently checked out, place a hold to reserve the next copy.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {patronData.holds.map((hold) => (
+                  <div
+                    key={hold.id}
+                    className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${
+                            hold.status === 'APPROVED'
+                              ? 'bg-blue-100 text-blue-800 border-blue-200'
+                              : hold.status === 'PENDING'
+                              ? 'bg-amber-100 text-amber-800 border-amber-200'
+                              : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                          }`}
+                        >
+                          {hold.status === 'APPROVED' ? 'WAITING FOR PICKUP' : hold.status}
                         </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
 
-              {/* Sidebar: Fine Ledger */}
-              <div className="space-y-6">
-                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                  <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-emerald-700" />
-                    <span>{t.patron.fineBalance}</span>
-                  </h3>
-
-                  <div className="space-y-3 text-xs">
-                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between items-center">
-                      <div>
-                        <span className="font-bold text-slate-900 block">Overdue Loan Fine</span>
-                        <span className="text-slate-500">The C Programming Language</span>
+                        {hold.status === 'PENDING' && (
+                          <span className="text-[10px] font-mono font-bold text-slate-500">
+                            Queue Position: #{hold.queueRank} of {hold.totalQueue}
+                          </span>
+                        )}
                       </div>
-                      <span className="font-mono font-black text-rose-600">4,500 MMK</span>
+
+                      <h3 className="font-extrabold text-slate-900 text-base">{hold.bookTitle}</h3>
+                      <p className="text-xs text-slate-500">By {hold.author}</p>
+                      <p className="text-[11px] text-slate-400 font-mono mt-1">
+                        Requested on {new Date(hold.requestDate).toLocaleDateString('en-GB')} •{' '}
+                        {hold.availableCopies > 0 ? (
+                          <span className="text-emerald-700 font-bold">{hold.availableCopies} copy available at desk</span>
+                        ) : (
+                          <span>All copies currently on loan</span>
+                        )}
+                      </p>
                     </div>
+
+                    {hold.status !== 'CANCELLED' && hold.status !== 'FULFILLED' && (
+                      <button
+                        onClick={() => handleCancelHold(hold.id)}
+                        disabled={actionLoading === `hold_${hold.id}`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 text-xs font-bold rounded-xl border border-slate-200 transition"
+                      >
+                        <XCircle className="w-3.5 h-3.5" />
+                        <span>Cancel Hold</span>
+                      </button>
+                    )}
                   </div>
-                </div>
-
-                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                  <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <Bookmark className="w-4 h-4 text-green-900" />
-                    <span>{t.patron.savedLists}</span>
-                  </h3>
-
-                  <p className="text-xs text-slate-500">
-                    {t.patron.noSavedLists}
-                  </p>
-                </div>
+                ))}
               </div>
+            )}
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════
+            TAB 3: FINES & CHARGES STATEMENT
+        ══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'FINES' && (
+          <div className="space-y-4">
+            {!patronData?.fineStatement || patronData.fineStatement.length === 0 ? (
+              <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
+                <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
+                <p className="font-bold text-slate-700 text-sm">No library fines or charges</p>
+                <p className="text-xs text-slate-400 mt-1">Your library circulation record is clean with zero outstanding debts.</p>
+              </div>
+            ) : (
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-3.5">Charge Reason & Item</th>
+                      <th className="px-6 py-3.5">Date Assessed</th>
+                      <th className="px-6 py-3.5">Total Amount</th>
+                      <th className="px-6 py-3.5">Outstanding Balance</th>
+                      <th className="px-6 py-3.5 text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {patronData.fineStatement.map((fine) => (
+                      <tr key={fine.id} className="hover:bg-slate-50 transition">
+                        <td className="px-6 py-4">
+                          <span className="font-bold text-slate-900 block">{fine.reason}</span>
+                          <span className="text-slate-500 text-[11px]">{fine.bookTitle}</span>
+                        </td>
+                        <td className="px-6 py-4 font-mono text-slate-500">
+                          {new Date(fine.createdAt).toLocaleDateString('en-GB')}
+                        </td>
+                        <td className="px-6 py-4 font-mono text-slate-700">
+                          {fine.amount.toLocaleString()} MMK
+                        </td>
+                        <td className="px-6 py-4 font-mono font-bold text-rose-600">
+                          {fine.balance.toLocaleString()} MMK
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
+                              fine.status === 'PAID'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-rose-100 text-rose-800'
+                            }`}
+                          >
+                            {fine.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════
+            TAB 4: BORROWING HISTORY
+        ══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'HISTORY' && (
+          <div className="space-y-4">
+            {!patronData?.history || patronData.history.length === 0 ? (
+              <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
+                <History className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="font-bold text-slate-700 text-sm">No returned loans history yet</p>
+                <p className="text-xs text-slate-400 mt-1">Returned books and reading logs will appear here automatically.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {patronData.history.map((h) => (
+                  <div
+                    key={h.id}
+                    className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 shadow-sm"
+                  >
+                    <div className="w-12 h-16 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-slate-900 text-sm truncate">{h.bookTitle}</h4>
+                      <p className="text-xs text-slate-500 truncate">{h.author}</p>
+                      <p className="text-[10px] text-slate-400 font-mono mt-1">
+                        Borrowed: {new Date(h.issuedDate).toLocaleDateString('en-GB')}
+                        {h.returnedDate && ` • Returned: ${new Date(h.returnedDate).toLocaleDateString('en-GB')}`}
+                      </p>
+                    </div>
+                    <span className="text-emerald-700 text-xs font-bold flex items-center gap-1">
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Returned</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════
+            TAB 5: VIRTUAL SHELVES / LISTS
+        ══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'LISTS' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">Your Personal Virtual Lists & Shelves</h3>
+                <p className="text-xs text-slate-500">Organize and bookmark library materials for study or future borrowing.</p>
+              </div>
+              <button
+                onClick={() => setIsListModalOpen(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-sm transition"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create New List</span>
+              </button>
+            </div>
+
+            {!patronData?.savedLists || patronData.savedLists.length === 0 ? (
+              <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
+                <Bookmark className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="font-bold text-slate-700 text-sm">No virtual lists created yet</p>
+                <p className="text-xs text-slate-400 mt-1">Create reading lists to bookmark items from the catalog.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {patronData.savedLists.map((list) => (
+                  <div
+                    key={list.id}
+                    className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-start justify-between"
+                  >
+                    <div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        {list.bookCount} Saved Books
+                      </span>
+                      <h4 className="font-extrabold text-slate-900 text-base mt-2">{list.name}</h4>
+                      {list.description && <p className="text-xs text-slate-500 mt-0.5">{list.description}</p>}
+                    </div>
+                    <button
+                      onClick={() => handleDeleteList(list.id)}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-50 rounded-lg transition"
+                      title="Delete List"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Modal: Create Virtual Shelf */}
+        {isListModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl text-xs space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                  <Bookmark className="w-4 h-4 text-emerald-800" />
+                  <span>Create Virtual Shelf / List</span>
+                </h3>
+                <button onClick={() => setIsListModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold">
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateList} className="space-y-3.5">
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">List Name *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Computer Architecture Finals Prep"
+                    value={listNameInput}
+                    onChange={(e) => setListNameInput(e.target.value)}
+                    required
+                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Description (Optional)</label>
+                  <textarea
+                    placeholder="Notes or purpose of this reading shelf"
+                    value={listDescInput}
+                    onChange={(e) => setListDescInput(e.target.value)}
+                    rows={3}
+                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setIsListModalOpen(false)}
+                    className="px-3 py-2 text-slate-600 font-bold hover:bg-slate-100 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold rounded-lg shadow-sm"
+                  >
+                    Create List
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

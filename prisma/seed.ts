@@ -177,7 +177,126 @@ async function main() {
     },
   });
 
-  console.log('Seed with MMK currency completed!');
+  // 7. Seed Vendors & Purchase Orders
+  const vendor1 = await prisma.vendor.upsert({
+    where: { code: 'OUP-01' },
+    update: {},
+    create: {
+      name: 'Oxford University Press / Global Books',
+      code: 'OUP-01',
+      contactEmail: 'orders@oup-distrib.com',
+      phone: '+1-800-555-6871',
+      address: '198 Madison Ave, New York, NY',
+      accountNumber: 'KBZ-9812-4410-01',
+    },
+  });
+
+  const vendor2 = await prisma.vendor.upsert({
+    where: { code: 'MIT-PUB' },
+    update: {},
+    create: {
+      name: 'MIT Press Academic Bookstore',
+      code: 'MIT-PUB',
+      contactEmail: 'sales@mitpress.mit.edu',
+      phone: '+1-617-555-0199',
+      address: 'One Rogers Street, Cambridge, MA',
+      accountNumber: 'AYA-1102-3344-90',
+    },
+  });
+
+  await prisma.purchaseOrder.upsert({
+    where: { orderNumber: 'PO-2026-001' },
+    update: {},
+    create: {
+      orderNumber: 'PO-2026-001',
+      vendorId: vendor1.id,
+      status: 'ORDERED',
+      totalBudget: 1250000,
+    },
+  });
+
+  await prisma.purchaseOrder.upsert({
+    where: { orderNumber: 'PO-2026-002' },
+    update: {},
+    create: {
+      orderNumber: 'PO-2026-002',
+      vendorId: vendor2.id,
+      status: 'RECEIVED',
+      totalBudget: 850000,
+    },
+  });
+
+  // 8. Seed Serials & Periodicals
+  await prisma.serialSubscription.deleteMany({});
+  await prisma.serialSubscription.createMany({
+    data: [
+      {
+        title: 'ACM Transactions on Programming Languages and Systems (TOPLAS)',
+        issn: '0164-0925',
+        frequency: 'MONTHLY',
+        publisher: 'ACM',
+        active: true,
+      },
+      {
+        title: 'IEEE Software Magazine',
+        issn: '0740-7459',
+        frequency: 'BI-MONTHLY',
+        publisher: 'IEEE Computer Society',
+        active: true,
+      },
+      {
+        title: 'Communications of the ACM (CACM)',
+        issn: '0001-0782',
+        frequency: 'MONTHLY',
+        publisher: 'ACM',
+        active: true,
+      },
+    ],
+  });
+
+  // 9. Seed ILL Request
+  await prisma.iLLRequest.deleteMany({});
+  await prisma.iLLRequest.create({
+    data: {
+      userId: studentUser.id,
+      partnerLibrary: 'MIT Central Library System',
+      bookTitle: 'Designing Data-Intensive Applications',
+      author: 'Martin Kleppmann',
+      status: 'IN_TRANSIT',
+    },
+  });
+
+  // 10. Seed Course Reserves
+  await prisma.courseReserveItem.deleteMany({});
+  await prisma.courseReserveItem.create({
+    data: {
+      courseCode: 'CS101',
+      courseName: 'Introduction to Computer Science',
+      instructor: 'Dr. Sarah Chen',
+      bookId: book1.id,
+    },
+  });
+  await prisma.courseReserveItem.create({
+    data: {
+      courseCode: 'CS204',
+      courseName: 'Algorithms & Data Structures',
+      instructor: 'Prof. Ronald Rivest',
+      bookId: book2.id,
+    },
+  });
+
+  // 11. Seed Saved Virtual Shelves
+  await prisma.savedList.deleteMany({});
+  await prisma.savedList.create({
+    data: {
+      userId: studentUser.id,
+      name: 'Computer Architecture & Systems Reading',
+      description: 'Core references for 3rd semester',
+      bookIds: JSON.stringify([book1.id]),
+    },
+  });
+
+  console.log('Seed with complete Koha modules completed!');
 }
 
 main()
