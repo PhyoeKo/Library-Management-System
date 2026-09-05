@@ -33,6 +33,7 @@ interface PatronProfile {
   name: string;
   email: string;
   barcode: string;
+  nrcNumber?: string;
   phone?: string;
   address?: string;
   isBlocked: boolean;
@@ -281,17 +282,21 @@ export default function PatronDashboardPage() {
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Patron Header Ribbon */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        {/* MOCHT Official Government Patron Header Ribbon */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-800 text-white flex items-center justify-center font-black text-2xl shadow-sm uppercase flex-shrink-0">
-              {p?.name ? p.name.charAt(0) : 'P'}
+            <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-300 to-amber-600 p-[2px] shadow flex-shrink-0">
+              <img
+                src="/mocht-logo.png"
+                alt="Ministry of Culture, Hotels and Tourism Seal"
+                className="w-full h-full object-cover rounded-2xl"
+              />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                  {p?.name || 'Borrower Account'}
-                </h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200">
+                  ပြည်ထောင်စုသမ္မတမြန်မာနိုင်ငံတော် · MOCHT LMS
+                </span>
                 {p?.category && (
                   <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200 flex items-center gap-1">
                     <GraduationCap className="w-3 h-3" />
@@ -299,8 +304,16 @@ export default function PatronDashboardPage() {
                   </span>
                 )}
               </div>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                {p?.name || 'နိုင်ငံသား စာကြည့်တိုက် အဖွဲ့ဝင်'}
+              </h1>
               <p className="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
-                <span>Card / Barcode: <b className="font-mono text-slate-800">{p?.barcode || 'PAT-00000'}</b></span>
+                {p?.nrcNumber && (
+                  <span className="font-semibold text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    NRC: <b>{p.nrcNumber}</b>
+                  </span>
+                )}
+                <span>Card Barcode: <b className="font-mono text-slate-800">{p?.barcode || 'PAT-00000'}</b></span>
                 <span>•</span>
                 <span className="font-mono">{p?.email}</span>
                 {p?.phone && (

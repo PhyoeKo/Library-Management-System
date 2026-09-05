@@ -14,8 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DLAC - Digital Library Access Catalogue",
-  description: "Digital Library Access Catalogue (DLAC) - Enterprise Library Management System with OPAC, Cataloging, Circulation & Fines POS",
+  title: "MOCHT စာကြည့်တိုက် | Ministry of Culture, Hotels and Tourism - National LMS",
+  description:
+    "ပြည်ထောင်စုသမ္မတမြန်မာနိုင်ငံတော် ယဉ်ကျေးမှု၊ ဟိုတယ်နှင့် ခရီးသွားလာရေး ဝန်ကြီးဌာန - အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှု စနစ် (MOCHT Library Management System for all Citizens of Myanmar).",
+  icons: {
+    icon: [
+      { url: "/mocht-logo.png", type: "image/png" },
+    ],
+    shortcut: "/mocht-logo.png",
+    apple: "/mocht-logo.png",
+  },
 };
 
 export default function RootLayout({

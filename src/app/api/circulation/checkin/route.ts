@@ -13,8 +13,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const copy = await prisma.bookCopy.findUnique({
-      where: { barcode: copyBarcode },
+    const inputTrimmed = copyBarcode.trim();
+    let copy = await prisma.bookCopy.findUnique({
+      where: { barcode: inputTrimmed },
       include: {
         book: true,
         loans: {
@@ -25,8 +26,40 @@ export async function POST(request: NextRequest) {
     });
 
     if (!copy) {
+      // Try by ISBN
+      const bookByIsbn = await prisma.book.findUnique({
+        where: { isbn: inputTrimmed },
+        include: { copies: true },
+      });
+
+      if (bookByIsbn && bookByIsbn.copies.length > 0) {
+        const activeLoan = await prisma.loan.findFirst({
+          where: {
+            copyId: { in: bookByIsbn.copies.map((c) => c.id) },
+            status: { in: ['ISSUED', 'OVERDUE'] },
+          },
+          include: {
+            copy: {
+              include: {
+                book: true,
+                loans: {
+                  where: { status: { in: ['ISSUED', 'OVERDUE'] } },
+                  include: { user: { include: { category: true } } },
+                },
+              },
+            },
+          },
+        });
+
+        if (activeLoan) {
+          copy = activeLoan.copy;
+        }
+      }
+    }
+
+    if (!copy) {
       return NextResponse.json(
-        { success: false, error: `Copy with barcode "${copyBarcode}" not found.` },
+        { success: false, error: `Copy with Barcode or ISBN "${copyBarcode}" not found.` },
         { status: 404 }
       );
     }
@@ -45,13 +78,17 @@ export async function POST(request: NextRequest) {
 
     if (now > new Date(activeLoan.dueDate)) {
       const category = activeLoan.user.category;
-      const fineRatePerDay = category?.fineRatePerDay ?? 0.50;
-      const gracePeriodDays = category?.gracePeriodDays ?? 1;
+      // Use the book's specific daily overdue fine rate in MMK, fallback to patron category or 500 MMK
+      const bookFineRate = copy.book.dailyFineRate;
+      let fineRatePerDay = bookFineRate ?? category?.fineRatePerDay ?? 500;
+      if (fineRatePerDay < 10) fineRatePerDay = 500;
+
+      const gracePeriodDays = category?.gracePeriodDays ?? 0;
 
       const diffMs = now.getTime() - new Date(activeLoan.dueDate).getTime();
       const overdueDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
       const chargeableDays = Math.max(0, overdueDays - gracePeriodDays);
-      calculatedFineAmount = parseFloat((chargeableDays * fineRatePerDay).toFixed(2));
+      calculatedFineAmount = Math.round(chargeableDays * fineRatePerDay);
 
       if (calculatedFineAmount > 0) {
         fineRecord = await prisma.fine.create({

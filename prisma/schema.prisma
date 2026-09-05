@@ -67,6 +67,7 @@ model Book {
   language         String      @default("English")
   maxRentDays      Int         @default(7) // Maximum rent duration (default 7 days)
   originalPrice    Float?      // Original Book Price in MMK (Optional for lost book calculation)
+  dailyFineRate    Float?      @default(500) // Daily Overdue Fine in MMK (Total fine = Overdue Days * dailyFineRate)
   marcMetadata     String?     // JSON string representing MARC21/Dublin Core
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt

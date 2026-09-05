@@ -47,15 +47,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find Book Copy
-    const copy = await prisma.bookCopy.findUnique({
-      where: { barcode: copyBarcode },
+    // Find Book Copy by Barcode or ISBN
+    const inputTrimmed = copyBarcode.trim();
+    let copy = await prisma.bookCopy.findUnique({
+      where: { barcode: inputTrimmed },
       include: { book: true },
     });
 
     if (!copy) {
+      const bookByIsbn = await prisma.book.findUnique({
+        where: { isbn: inputTrimmed },
+        include: { copies: { include: { book: true } } },
+      });
+
+      if (bookByIsbn && bookByIsbn.copies.length > 0) {
+        copy = bookByIsbn.copies.find((c) => c.status === 'AVAILABLE') || bookByIsbn.copies[0];
+      }
+    }
+
+    if (!copy) {
       return NextResponse.json(
-        { success: false, error: `Book copy with barcode "${copyBarcode}" not found.` },
+        { success: false, error: `Book copy with Barcode or ISBN "${copyBarcode}" not found.` },
         { status: 404 }
       );
     }
@@ -63,6 +75,25 @@ export async function POST(request: NextRequest) {
     if (copy.status !== 'AVAILABLE') {
       return NextResponse.json(
         { success: false, error: `Copy is currently "${copy.status}" and cannot be issued.` },
+        { status: 400 }
+      );
+    }
+
+    // Check if user already has an active loan on this book
+    const existingActiveLoan = await prisma.loan.findFirst({
+      where: {
+        userId: user.id,
+        status: { in: ['ISSUED', 'OVERDUE'] },
+        copy: { bookId: copy.bookId },
+      },
+    });
+
+    if (existingActiveLoan) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Member already has an active borrowed copy of "${copy.book.title}". Each member can only rent one copy per book.`,
+        },
         { status: 400 }
       );
     }
@@ -90,6 +121,15 @@ export async function POST(request: NextRequest) {
       prisma.bookCopy.update({
         where: { id: copy.id },
         data: { status: 'ON_LOAN' },
+      }),
+      // Fulfill any active hold the user had for this book
+      prisma.hold.updateMany({
+        where: {
+          userId: user.id,
+          bookId: copy.bookId,
+          status: { in: ['PENDING', 'APPROVED'] },
+        },
+        data: { status: 'FULFILLED' },
       }),
     ]);
 

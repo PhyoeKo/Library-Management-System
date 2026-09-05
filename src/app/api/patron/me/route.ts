@@ -83,9 +83,11 @@ export async function GET(request: NextRequest) {
       const daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
       const daysOverdue = isOverdue ? Math.abs(daysRemaining) : 0;
 
-      // Calculate accrued fine
-      const fineRate = patron.category?.fineRatePerDay || 500;
-      const graceDays = patron.category?.gracePeriodDays || 1;
+      // Calculate accrued fine using book's daily fine rate
+      const bookRate = l.copy?.book?.dailyFineRate;
+      let fineRate = bookRate ?? patron.category?.fineRatePerDay ?? 500;
+      if (fineRate < 10) fineRate = 500;
+      const graceDays = patron.category?.gracePeriodDays || 0;
       const fineAccrued = isOverdue && daysOverdue > graceDays ? (daysOverdue - graceDays) * fineRate : 0;
 
       return {
@@ -183,6 +185,7 @@ export async function GET(request: NextRequest) {
         name: patron.name,
         email: patron.email,
         barcode: patron.barcode,
+        nrcNumber: patron.nrcNumber,
         phone: patron.phone,
         address: patron.address,
         isBlocked: patron.isBlocked,

@@ -96,6 +96,8 @@ export default function HoldsQueuePage() {
   const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [expandedHoldId, setExpandedHoldId] = useState<string | null>(null);
 
+  const [sortOrder, setSortOrder] = useState<'LIFO' | 'FIFO'>('LIFO');
+
   const showToast = (type: 'success' | 'error', text: string) => {
     setToast({ type, text });
     setTimeout(() => setToast(null), 4000);
@@ -146,17 +148,23 @@ export default function HoldsQueuePage() {
     }
   };
 
-  const filteredHolds = holds.filter((h) => {
-    const q = searchQuery.toLowerCase();
-    if (!q) return true;
-    return (
-      h.user.name.toLowerCase().includes(q) ||
-      h.user.barcode.toLowerCase().includes(q) ||
-      h.book.title.toLowerCase().includes(q) ||
-      h.book.isbn.toLowerCase().includes(q) ||
-      h.book.author.toLowerCase().includes(q)
-    );
-  });
+  const filteredHolds = holds
+    .filter((h) => {
+      const q = searchQuery.toLowerCase();
+      if (!q) return true;
+      return (
+        h.user.name.toLowerCase().includes(q) ||
+        h.user.barcode.toLowerCase().includes(q) ||
+        h.book.title.toLowerCase().includes(q) ||
+        h.book.isbn.toLowerCase().includes(q) ||
+        h.book.author.toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => {
+      const timeA = new Date(a.requestDate).getTime();
+      const timeB = new Date(b.requestDate).getTime();
+      return sortOrder === 'LIFO' ? timeB - timeA : timeA - timeB;
+    });
 
   // Summary stats
   const pendingCount = holds.filter((h) => h.status === 'PENDING').length;
@@ -281,7 +289,7 @@ export default function HoldsQueuePage() {
             </div>
 
             {/* Search row */}
-            <div className="flex items-center gap-3 px-4 py-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 px-4 py-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
@@ -292,14 +300,28 @@ export default function HoldsQueuePage() {
                   className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent"
                 />
               </div>
-              <button
-                onClick={fetchHolds}
-                disabled={loading}
-                className="flex items-center gap-2 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 transition"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
-              </button>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                  <ListOrdered className="w-3.5 h-3.5 text-violet-600" />
+                  <span className="text-slate-500 font-medium">Order:</span>
+                  <select
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value as 'LIFO' | 'FIFO')}
+                    className="bg-transparent font-bold text-slate-800 outline-none cursor-pointer"
+                  >
+                    <option value="LIFO">LIFO (Newest First)</option>
+                    <option value="FIFO">FIFO (Oldest First)</option>
+                  </select>
+                </div>
+                <button
+                  onClick={fetchHolds}
+                  disabled={loading}
+                  className="flex items-center gap-2 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 transition"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                  Refresh
+                </button>
+              </div>
             </div>
           </div>
 

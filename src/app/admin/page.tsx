@@ -15,8 +15,6 @@ import {
   Clock,
   BookMarked,
   BarChart3,
-  ShoppingBag,
-  Layers,
 } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageContext';
 
@@ -29,23 +27,43 @@ export default function AdminDashboardPage() {
         <Navbar />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center space-x-3">
-              <Shield className="w-8 h-8 text-green-900" />
+          {/* Header with Official MOCHT Seal */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center space-x-4">
+              <div className="relative w-14 h-14 rounded-full bg-gradient-to-tr from-amber-500 via-amber-300 to-amber-600 p-[2px] shadow flex-shrink-0">
+                <img
+                  src="/mocht-logo.png"
+                  alt="MOCHT Official Seal"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200">
+                    ပြည်ထောင်စုသမ္မတမြန်မာနိုင်ငံတော်
+                  </span>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200">
+                    MOCHT National LMS Admin
+                  </span>
+                </div>
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   {t.admin.title}
                 </h1>
-                <p className="text-sm text-slate-600 mt-1">
+                <p className="text-xs text-slate-500 mt-0.5">
                   {t.admin.subtitle}
                 </p>
               </div>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl flex items-center gap-1.5">
+                <span>🇲🇲</span>
+                <span>တိုင်းဒေသကြီးနှင့် ပြည်နယ်အားလုံး ချိတ်ဆက်ထားသည်</span>
+              </span>
+            </div>
           </div>
 
           {/* Quick Action Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-8">
             <Link
               href="/admin/catalog"
               className="bg-white border border-slate-200 hover:border-green-900 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
@@ -77,28 +95,6 @@ export default function AdminDashboardPage() {
               </div>
               <h3 className="font-extrabold text-slate-900 text-sm">{(t.admin as any).holdsQueue || 'Holds & Reservations'}</h3>
               <p className="text-xs text-slate-500 mt-0.5">{(t.admin as any).holdsDesc || 'Manage patron reservation requests'}</p>
-            </Link>
-
-            <Link
-              href="/admin/acquisitions"
-              className="bg-white border border-slate-200 hover:border-amber-600 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
-            >
-              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                <ShoppingBag className="w-5 h-5" />
-              </div>
-              <h3 className="font-extrabold text-slate-900 text-sm">{(t.admin as any).acquisitionsTitle || 'Acquisitions & Vendors'}</h3>
-              <p className="text-xs text-slate-500 mt-0.5">{(t.admin as any).acquisitionsDesc || 'Purchase orders, booksellers & ERM'}</p>
-            </Link>
-
-            <Link
-              href="/admin/library-services"
-              className="bg-white border border-slate-200 hover:border-teal-700 p-5 rounded-2xl shadow-sm hover:shadow-md transition group"
-            >
-              <div className="w-11 h-11 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                <Layers className="w-5 h-5" />
-              </div>
-              <h3 className="font-extrabold text-slate-900 text-sm">{(t.admin as any).libraryServicesTitle || 'Serials & ILL Services'}</h3>
-              <p className="text-xs text-slate-500 mt-0.5">{(t.admin as any).libraryServicesDesc || 'Periodicals, ILL & course reserves'}</p>
             </Link>
 
             <Link

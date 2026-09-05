@@ -36,14 +36,15 @@ export async function GET(request: NextRequest) {
           include: {
             loans: {
               where: { status: { in: ['ISSUED', 'OVERDUE'] } },
-              select: { dueDate: true, status: true },
+              select: { dueDate: true, status: true, userId: true },
             },
           },
         },
         eResources: true,
         holds: {
-          where: { status: 'PENDING' },
+          where: { status: { in: ['PENDING', 'APPROVED'] } },
           orderBy: { requestDate: 'asc' },
+          select: { id: true, userId: true, bookId: true, requestDate: true, status: true },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
       return {
         ...book,
         earliestDueDate,
-        pendingHoldsCount: book.holds.length,
+        pendingHoldsCount: book.holds.filter((h) => h.status === 'PENDING').length,
       };
     });
 
@@ -92,6 +93,7 @@ export async function POST(request: NextRequest) {
       language,
       maxRentDays = 7,
       originalPrice, // Optional original book replacement price in MMK
+      dailyFineRate = 500, // Daily Overdue Fine in MMK (calculates for all overdue days)
       bookType, // 'physical' or 'ebook'
       numberOfCopies = 1,
       callNumber = 'QA76.73',
@@ -120,6 +122,7 @@ export async function POST(request: NextRequest) {
     }
 
     const priceVal = originalPrice ? parseFloat(String(originalPrice)) : null;
+    const fineRateVal = dailyFineRate !== undefined && dailyFineRate !== '' ? parseFloat(String(dailyFineRate)) : 500;
 
     const newBook = await prisma.book.create({
       data: {
@@ -135,6 +138,7 @@ export async function POST(request: NextRequest) {
         language: language || 'English',
         maxRentDays: maxRentDays ? parseInt(String(maxRentDays)) : 7,
         originalPrice: priceVal,
+        dailyFineRate: isNaN(fineRateVal) ? 500 : fineRateVal,
       },
     });
 
@@ -161,14 +165,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (bookType === 'ebook' || pdfUrl) {
+    if (bookType === 'ebook') {
       await prisma.eResource.create({
         data: {
           bookId: newBook.id,
           title: `${title} (Digital Version)`,
           author,
           format: ebookFormat || 'PDF',
-          fileUrl: pdfUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          fileUrl: pdfUrl || '',
           isOpenAccess: true,
         },
       });

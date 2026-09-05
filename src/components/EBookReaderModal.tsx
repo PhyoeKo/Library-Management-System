@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Download, ZoomIn, ZoomOut, RotateCw, FileText, Lock, CheckCircle2 } from 'lucide-react';
+import { X, Download, ZoomIn, ZoomOut, RotateCw, FileText, Lock, CheckCircle2, ExternalLink } from 'lucide-react';
 
 interface EBookReaderModalProps {
   isOpen: boolean;
@@ -70,6 +70,17 @@ export default function EBookReaderModal({
               </button>
             </div>
 
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition"
+              title="Open full PDF in new tab"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Full Tab</span>
+            </a>
+
             {isOpenAccess ? (
               <a
                 href={fileUrl}
@@ -79,7 +90,7 @@ export default function EBookReaderModal({
                 className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 transition"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Download</span>
+                <span>Download PDF</span>
               </a>
             ) : (
               <span className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 text-xs border border-amber-500/30">
@@ -98,16 +109,16 @@ export default function EBookReaderModal({
         </div>
 
         {/* E-Book Display Area */}
-        <div className="flex-1 bg-slate-950 p-6 overflow-auto flex items-center justify-center relative">
+        <div className="flex-1 bg-slate-950 p-4 sm:p-6 overflow-auto flex items-center justify-center relative">
           <div
-            className="w-full h-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-200"
+            className="w-full h-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-200"
             style={{
               transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
               transformOrigin: 'top center',
             }}
           >
             <iframe
-              src={fileUrl}
+              src={fileUrl.startsWith('http') ? fileUrl : `${fileUrl}#toolbar=1&navpanes=1`}
               className="w-full h-full border-0"
               title={`E-Book Viewer - ${title}`}
             />

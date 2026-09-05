@@ -13,11 +13,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Support Myanmar digits conversion to standard digits
+    const myanmarToEnglishDigits = (str: string) =>
+      str.replace(/[၀-၉]/g, (d) => String(d.charCodeAt(0) - 4160));
+
+    const cleanInput = emailOrBarcode.trim();
+    const convertedInput = myanmarToEnglishDigits(cleanInput);
+
     const user = await prisma.user.findFirst({
       where: {
         OR: [
-          { email: emailOrBarcode.trim() },
-          { barcode: emailOrBarcode.trim() },
+          { email: cleanInput },
+          { barcode: cleanInput },
+          { barcode: convertedInput },
+          { phone: cleanInput },
+          { phone: convertedInput },
         ],
       },
       include: { category: true },

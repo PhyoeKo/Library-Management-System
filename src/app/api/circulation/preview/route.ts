@@ -41,9 +41,10 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // 2. Fetch Copy with Active Loan & Holds Priority Queue
-      const copy = await prisma.bookCopy.findUnique({
-        where: { barcode: copyBarcode.trim() },
+      // 2. Fetch Copy with Active Loan & Holds Priority Queue (Lookup by Copy Barcode OR Book ISBN)
+      const inputTrimmed = copyBarcode.trim();
+      let copy = await prisma.bookCopy.findUnique({
+        where: { barcode: inputTrimmed },
         include: {
           book: {
             include: {
@@ -62,8 +63,52 @@ export async function POST(request: NextRequest) {
       });
 
       if (!copy) {
+        // Try looking up by Book ISBN
+        const bookByIsbn = await prisma.book.findUnique({
+          where: { isbn: inputTrimmed },
+          include: {
+            copies: {
+              include: {
+                loans: {
+                  where: { status: { in: ['ISSUED', 'OVERDUE'] } },
+                  include: { user: true },
+                },
+              },
+            },
+            holds: {
+              where: { status: 'PENDING' },
+              include: { user: true },
+              orderBy: { requestDate: 'asc' },
+            },
+          },
+        });
+
+        if (bookByIsbn) {
+          if (!bookByIsbn.copies || bookByIsbn.copies.length === 0) {
+            return NextResponse.json(
+              {
+                success: false,
+                error: `Book "${bookByIsbn.title}" (ISBN: ${bookByIsbn.isbn}) has no physical copies in inventory.`,
+              },
+              { status: 400 }
+            );
+          }
+
+          // Pick an available copy first; if none available, pick the first copy to show rental/queue status
+          const availableCopy = bookByIsbn.copies.find((c) => c.status === 'AVAILABLE');
+          const chosen = availableCopy || bookByIsbn.copies[0];
+
+          copy = {
+            ...chosen,
+            book: bookByIsbn,
+            loans: chosen.loans || [],
+          } as any;
+        }
+      }
+
+      if (!copy) {
         return NextResponse.json(
-          { success: false, error: `Book copy with barcode "${copyBarcode}" not found.` },
+          { success: false, error: `Book copy with barcode or ISBN "${copyBarcode}" not found.` },
           { status: 404 }
         );
       }
@@ -164,14 +209,43 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const copy = await prisma.bookCopy.findUnique({
-        where: { barcode: copyBarcode.trim() },
+      const inputTrimmed = copyBarcode.trim();
+      let copy = await prisma.bookCopy.findUnique({
+        where: { barcode: inputTrimmed },
         include: { book: true },
       });
 
       if (!copy) {
+        // Try finding by Book ISBN
+        const bookByIsbn = await prisma.book.findUnique({
+          where: { isbn: inputTrimmed },
+          include: { copies: true },
+        });
+
+        if (bookByIsbn && bookByIsbn.copies.length > 0) {
+          // Find which copy of this book is currently on loan
+          const activeLoan = await prisma.loan.findFirst({
+            where: {
+              copyId: { in: bookByIsbn.copies.map((c) => c.id) },
+              status: { in: ['ISSUED', 'OVERDUE'] },
+            },
+            include: { copy: { include: { book: true } } },
+          });
+
+          if (activeLoan) {
+            copy = activeLoan.copy;
+          } else {
+            copy = {
+              ...bookByIsbn.copies[0],
+              book: bookByIsbn,
+            } as any;
+          }
+        }
+      }
+
+      if (!copy) {
         return NextResponse.json(
-          { success: false, error: `Book copy with barcode "${copyBarcode}" not found.` },
+          { success: false, error: `Book copy with barcode or ISBN "${copyBarcode}" not found.` },
           { status: 404 }
         );
       }
@@ -204,8 +278,9 @@ export async function POST(request: NextRequest) {
         overdueDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
         const gracePeriod = activeLoan.user.category?.gracePeriodDays ?? 1;
         const chargeableDays = Math.max(0, overdueDays - gracePeriod);
-        const rate = activeLoan.user.category?.fineRatePerDay ?? 500;
-        finePreview = Math.round(chargeableDays * (rate < 10 ? 500 : rate));
+        const rate = copy.book.dailyFineRate ?? activeLoan.user.category?.fineRatePerDay ?? 500;
+        const effectiveRate = rate < 10 ? 500 : rate;
+        finePreview = Math.round(chargeableDays * effectiveRate);
       }
 
       return NextResponse.json({
@@ -223,6 +298,7 @@ export async function POST(request: NextRequest) {
             author: copy.book.author,
             callNumber: copy.callNumber,
             location: copy.location,
+            dailyFineRate: copy.book.dailyFineRate ?? 500,
           },
           loan: {
             issuedDate: activeLoan.issuedDate,
@@ -230,6 +306,7 @@ export async function POST(request: NextRequest) {
           },
           overdueDays,
           finePreview,
+          dailyFineRate: copy.book.dailyFineRate ?? 500,
         },
       });
     }

@@ -12,6 +12,9 @@ export async function POST(request: NextRequest) {
         dueDate: { lt: now },
       },
       include: {
+        copy: {
+          include: { book: true },
+        },
         user: {
           include: { category: true },
         },
@@ -25,8 +28,8 @@ export async function POST(request: NextRequest) {
 
     for (const loan of overdueLoans) {
       const category = loan.user.category;
-      // Default to 500 MMK / day if fineRatePerDay < 10 (migration adjustment to MMK)
-      let fineRatePerDay = category?.fineRatePerDay ?? 500;
+      const bookFineRate = loan.copy?.book?.dailyFineRate;
+      let fineRatePerDay = bookFineRate ?? category?.fineRatePerDay ?? 500;
       if (fineRatePerDay < 10) fineRatePerDay = 500;
 
       const gracePeriodDays = category?.gracePeriodDays ?? 1;

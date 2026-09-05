@@ -61,6 +61,7 @@ export async function PUT(
       language,
       maxRentDays,
       originalPrice,
+      dailyFineRate,
       marcMetadata,
     } = body;
 
@@ -78,7 +79,8 @@ export async function PUT(
         coverUrl,
         language,
         maxRentDays: maxRentDays ? parseInt(maxRentDays) : undefined,
-        originalPrice: originalPrice ? parseFloat(originalPrice) : undefined,
+        originalPrice: originalPrice !== undefined ? (originalPrice ? parseFloat(originalPrice) : null) : undefined,
+        dailyFineRate: dailyFineRate !== undefined ? (dailyFineRate ? parseFloat(dailyFineRate) : 500) : undefined,
         marcMetadata: marcMetadata ? JSON.stringify(marcMetadata) : undefined,
       },
       include: { copies: true },

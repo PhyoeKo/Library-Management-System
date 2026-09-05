@@ -45,6 +45,7 @@ interface Book {
   coverUrl?: string;
   maxRentDays?: number;
   originalPrice?: number;
+  dailyFineRate?: number;
   copies: Copy[];
   eResources?: any[];
 }
@@ -74,9 +75,13 @@ export default function CatalogPage() {
   const [numberOfCopies, setNumberOfCopies] = useState('1');
   const [maxRentDaysInput, setMaxRentDaysInput] = useState('7'); // Default 7 days
   const [originalPriceInput, setOriginalPriceInput] = useState(''); // Optional Original Book Price (MMK)
+  const [dailyFineRateInput, setDailyFineRateInput] = useState('500'); // Daily Overdue Fine Amount (MMK)
   const [callNumberInput, setCallNumberInput] = useState('QA76.73');
   const [locationInput, setLocationInput] = useState('Main Floor - Shelf CS-01');
-  const [pdfUrlInput, setPdfUrlInput] = useState('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+  const [pdfUrlInput, setPdfUrlInput] = useState('');
+  const [pdfUploading, setPdfUploading] = useState(false);
+  const [uploadedPdfName, setUploadedPdfName] = useState<string | null>(null);
+  const [uploadedPdfSize, setUploadedPdfSize] = useState<number | null>(null);
 
   const [isbnLookupLoading, setIsbnLookupLoading] = useState(false);
   const [formMessage, setFormMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -153,6 +158,42 @@ export default function CatalogPage() {
     reader.readAsDataURL(file);
   };
 
+  const handlePdfFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      alert('Please select a valid PDF file (.pdf).');
+      return;
+    }
+
+    setPdfUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'ebooks');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setPdfUrlInput(data.fileUrl);
+        setUploadedPdfName(data.fileName);
+        setUploadedPdfSize(data.fileSize);
+      } else {
+        alert(data.error || 'Failed to upload PDF file.');
+      }
+    } catch (err: any) {
+      console.error('PDF upload failed:', err);
+      alert('Failed to upload PDF file.');
+    } finally {
+      setPdfUploading(false);
+    }
+  };
+
   const handleSubmitBook = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormMessage(null);
@@ -178,12 +219,16 @@ export default function CatalogPage() {
           coverUrl: coverUrlInput,
           maxRentDays: maxRentDaysInput,
           originalPrice: originalPriceInput,
+          dailyFineRate: dailyFineRateInput,
           ...(isEditing ? {} : {
             bookType,
-            numberOfCopies,
-            callNumber: callNumberInput,
-            location: locationInput,
-            pdfUrl: pdfUrlInput,
+            ...(bookType === 'physical' ? {
+              numberOfCopies,
+              callNumber: callNumberInput,
+              location: locationInput,
+            } : {
+              pdfUrl: pdfUrlInput,
+            }),
           }),
         }),
       });
@@ -258,9 +303,12 @@ export default function CatalogPage() {
     setNumberOfCopies('1');
     setMaxRentDaysInput('7'); // Default 7 days
     setOriginalPriceInput('');
+    setDailyFineRateInput('500');
     setCallNumberInput('QA76.73');
     setLocationInput('Main Floor - Shelf CS-01');
-    setPdfUrlInput('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    setPdfUrlInput('');
+    setUploadedPdfName(null);
+    setUploadedPdfSize(null);
     setFormMessage(null);
     setEditingBook(null);
   };
@@ -278,6 +326,7 @@ export default function CatalogPage() {
     setCoverUrlInput(book.coverUrl || '');
     setMaxRentDaysInput(book.maxRentDays ? String(book.maxRentDays) : '7');
     setOriginalPriceInput(book.originalPrice ? String(book.originalPrice) : '');
+    setDailyFineRateInput(book.dailyFineRate !== undefined && book.dailyFineRate !== null ? String(book.dailyFineRate) : '500');
     setFormMessage(null);
     setIsAddBookModalOpen(true);
   };
@@ -405,6 +454,11 @@ export default function CatalogPage() {
                                   Max: {book.maxRentDays || 7} Days
                                 </span>
                               )}
+                              {totalCopies > 0 && (
+                                <span className="px-1.5 py-0.5 rounded bg-rose-50 text-rose-900 font-mono text-[10px] border border-rose-200" title="Overdue fine calculated per day">
+                                  Fine: {(book.dailyFineRate ?? 500).toLocaleString()} MMK/day
+                                </span>
+                              )}
                               {book.originalPrice ? (
                                 <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-900 font-mono font-bold text-[10px] border border-emerald-200">
                                   {book.originalPrice.toLocaleString()} MMK
@@ -430,24 +484,17 @@ export default function CatalogPage() {
                           </td>
 
                           <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end space-x-2">
-                              <button
-                                onClick={() => setSelectedBookForCopies(book)}
-                                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-green-50 text-green-900 hover:bg-green-100 text-xs font-bold border border-green-200 transition"
-                              >
-                                <Barcode className="w-3.5 h-3.5" />
-                                <span>{t.cataloging.manageBarcodes} ({totalCopies})</span>
-                              </button>
+                            <div className="flex items-center justify-end space-x-1.5">
                               <button
                                 onClick={() => handleEditBook(book)}
-                                className="p-1.5 text-slate-400 hover:text-green-700 hover:bg-green-50 rounded-lg transition"
+                                className="p-2 text-slate-500 hover:text-green-800 hover:bg-green-50 rounded-lg transition"
                                 title="Edit book"
                               >
                                 <Edit2 className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleDeleteBook(book.id, book.title)}
-                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition"
+                                className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                                 title="Delete book"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -557,41 +604,6 @@ export default function CatalogPage() {
                     />
                   </div>
 
-                  {/* Requested Field: Original Book Replacement Price (MMK) - Optional */}
-                  <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 space-y-1.5">
-                    <label className="block font-bold text-emerald-900 flex items-center gap-1.5">
-                      <Banknote className="w-4 h-4 text-emerald-700" />
-                      <span>Original Book Price (MMK) — Optional</span>
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 25000 (Used to calculate replacement fee if lost)"
-                      value={originalPriceInput}
-                      onChange={(e) => setOriginalPriceInput(e.target.value)}
-                      className="w-full bg-white border border-emerald-300 text-slate-900 rounded-lg px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-emerald-700"
-                    />
-                    <p className="text-[10px] text-emerald-800">
-                      If a member loses or damages this book, this price will be used for POS replacement fee billing.
-                    </p>
-                  </div>
-
-                  {/* Maximum Rent Days */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
-                    <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Maximum Rent Days (Default 7) *</span>
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="90"
-                      value={maxRentDaysInput}
-                      onChange={(e) => setMaxRentDaysInput(e.target.value)}
-                      required
-                      className="w-full bg-white border border-amber-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono font-extrabold focus:outline-none focus:ring-2 focus:ring-amber-600"
-                    />
-                  </div>
-
                   {/* Book Cover Image */}
                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3">
                     <label className="block font-bold text-slate-800 flex items-center gap-1.5">
@@ -679,67 +691,338 @@ export default function CatalogPage() {
 
                     {/* Conditional Fields for Physical Books: Copies & Shelf Location */}
                     {bookType === 'physical' && (
-                      <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block font-semibold text-slate-700 mb-1">
-                            Number of Physical Copies
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            max="20"
-                            value={numberOfCopies}
-                            onChange={(e) => setNumberOfCopies(e.target.value)}
-                            required
-                            className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-green-800"
-                          />
+                      <div className="space-y-3 pt-2">
+                        {/* Physical Copies & Shelf Location */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block font-semibold text-slate-700 mb-1 text-xs">
+                              Number of Physical Copies
+                            </label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="20"
+                              value={numberOfCopies}
+                              onChange={(e) => setNumberOfCopies(e.target.value)}
+                              required
+                              className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-green-800"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-2">
+                            <label className="block font-semibold text-slate-700 mb-1 text-xs">
+                              Call Number & Shelf Location
+                            </label>
+                            <div className="grid grid-cols-2 gap-2">
+                              <input
+                                type="text"
+                                placeholder="Call Number (e.g. QA76.73)"
+                                value={callNumberInput}
+                                onChange={(e) => setCallNumberInput(e.target.value)}
+                                className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Location (e.g. Shelf CS-01)"
+                                value={locationInput}
+                                onChange={(e) => setLocationInput(e.target.value)}
+                                className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
+                              />
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="sm:col-span-2">
-                          <label className="block font-semibold text-slate-700 mb-1">
-                            Call Number & Shelf Location
+                        {/* Original Book Replacement Price (MMK) - Optional */}
+                        <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 space-y-1.5">
+                          <label className="block font-bold text-emerald-900 flex items-center justify-between text-xs">
+                            <span className="flex items-center gap-1.5">
+                              <Banknote className="w-4 h-4 text-emerald-700" />
+                              <span>Original Book Price (MMK) — Optional</span>
+                            </span>
+                            <span className="text-[10px] font-normal text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                              POS Replacement Fee
+                            </span>
                           </label>
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="flex rounded-lg border border-emerald-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-emerald-700">
                             <input
-                              type="text"
-                              placeholder="Call Number (e.g. QA76.73)"
-                              value={callNumberInput}
-                              onChange={(e) => setCallNumberInput(e.target.value)}
-                              className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
+                              type="number"
+                              placeholder="e.g. 25000"
+                              value={originalPriceInput}
+                              onChange={(e) => setOriginalPriceInput(e.target.value)}
+                              className="w-full bg-white text-slate-900 px-3 py-2 text-xs font-mono font-bold focus:outline-none"
                             />
-                            <input
-                              type="text"
-                              placeholder="Location (e.g. Shelf CS-01)"
-                              value={locationInput}
-                              onChange={(e) => setLocationInput(e.target.value)}
-                              className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800"
-                            />
+                            <span className="inline-flex items-center px-3 text-xs font-bold text-emerald-800 bg-emerald-100/70 border-l border-emerald-200 select-none whitespace-nowrap">
+                              MMK
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-emerald-800">
+                            If a member loses or damages this physical book, this price will be used for POS replacement fee billing.
+                          </p>
+                        </div>
+
+                        {/* Rent Duration & Overdue Fine Rate Configuration */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                          {/* Maximum Rent Days */}
+                          <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-3 space-y-1.5 flex flex-col justify-between">
+                            <div>
+                              <label className="block font-bold text-amber-950 flex items-center gap-1.5 text-xs mb-1">
+                                <Clock className="w-4 h-4 text-amber-600" />
+                                <span>Maximum Rent Days (Default 7) *</span>
+                              </label>
+                              <div className="flex rounded-lg border border-amber-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-amber-600">
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="90"
+                                  value={maxRentDaysInput}
+                                  onChange={(e) => setMaxRentDaysInput(e.target.value)}
+                                  required={bookType === 'physical'}
+                                  className="w-full bg-white text-slate-900 px-3 py-2 text-xs font-mono font-extrabold focus:outline-none"
+                                />
+                                <span className="inline-flex items-center px-3 text-xs font-bold text-amber-900 bg-amber-100 border-l border-amber-200 select-none whitespace-nowrap">
+                                  Days
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-[10px] text-amber-800">
+                              Default loan duration allowed before this book is marked overdue.
+                            </p>
+                          </div>
+
+                          {/* Overdue Book Fine Amount (MMK / Day) */}
+                          <div className="bg-rose-50/60 border border-rose-200 rounded-xl p-3 space-y-1.5 flex flex-col justify-between">
+                            <div>
+                              <label className="block font-bold text-rose-950 flex items-center gap-1.5 text-xs mb-1">
+                                <AlertTriangle className="w-4 h-4 text-rose-600" />
+                                <span>Overdue Fine Amount (MMK / Day) *</span>
+                              </label>
+                              <div className="flex rounded-lg border border-rose-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-rose-600">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="50"
+                                  placeholder="e.g. 500"
+                                  value={dailyFineRateInput}
+                                  onChange={(e) => setDailyFineRateInput(e.target.value)}
+                                  required={bookType === 'physical'}
+                                  className="w-full bg-white text-slate-900 px-3 py-2 text-xs font-mono font-extrabold focus:outline-none"
+                                />
+                                <span className="inline-flex items-center px-3 text-xs font-bold text-rose-800 bg-rose-100 border-l border-rose-200 select-none whitespace-nowrap">
+                                  MMK / day
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-[10px] text-rose-800">
+                              Calculates fine for all overdue days: <strong>Overdue Days × {dailyFineRateInput || 0} MMK</strong>.
+                            </p>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    {/* Conditional Fields for E-Books: PDF URL */}
+                    {/* Conditional Fields for E-Books: Upload PDF from computer or enter URL */}
                     {bookType === 'ebook' && (
-                      <div className="pt-2 space-y-2">
-                        <label className="block font-semibold text-slate-700 flex items-center gap-1">
-                          <FileText className="w-3.5 h-3.5 text-indigo-700" />
-                          <span>PDF File URL / Link *</span>
+                      <div className="pt-2 space-y-3">
+                        <label className="block font-bold text-slate-800 flex items-center gap-1.5">
+                          <FileText className="w-4 h-4 text-indigo-700" />
+                          <span>PDF File (Upload from Device or enter URL) *</span>
                         </label>
-                        <input
-                          type="text"
-                          placeholder="e.g. https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-                          value={pdfUrlInput}
-                          onChange={(e) => setPdfUrlInput(e.target.value)}
-                          required
-                          className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-700"
-                        />
+
+                        {/* File Upload from Computer Button */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <label
+                            className={`cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold shadow-sm transition ${
+                              pdfUploading
+                                ? 'bg-indigo-300 text-white cursor-not-allowed'
+                                : 'bg-indigo-950 hover:bg-indigo-900 text-white'
+                            }`}
+                          >
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>{pdfUploading ? 'Uploading PDF from Computer...' : 'Upload PDF from Computer'}</span>
+                            <input
+                              type="file"
+                              accept=".pdf,application/pdf"
+                              onChange={handlePdfFileUpload}
+                              disabled={pdfUploading}
+                              className="hidden"
+                            />
+                          </label>
+                          <span className="text-[10px] text-slate-500">or enter PDF URL / link below</span>
+                        </div>
+
+                        {/* Upload Status Card */}
+                        {uploadedPdfName && (
+                          <div className="flex items-center justify-between p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-800 flex items-center justify-center flex-shrink-0">
+                                <FileText className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0 truncate">
+                                <span className="font-bold text-slate-900 truncate block">{uploadedPdfName}</span>
+                                {uploadedPdfSize && (
+                                  <span className="text-[10px] text-indigo-700 font-mono">
+                                    {(uploadedPdfSize / (1024 * 1024)).toFixed(2)} MB • Uploaded & Ready
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded flex items-center gap-1 flex-shrink-0">
+                              <CheckCircle className="w-3 h-3" /> Uploaded
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Direct URL input */}
+                        <div>
+                          <input
+                            type="text"
+                            placeholder="e.g. /uploads/ebooks/my-book.pdf or https://..."
+                            value={pdfUrlInput}
+                            onChange={(e) => {
+                              setPdfUrlInput(e.target.value);
+                              if (!e.target.value.startsWith('/uploads/')) {
+                                setUploadedPdfName(null);
+                                setUploadedPdfSize(null);
+                              }
+                            }}
+                            required
+                            className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-700"
+                          />
+                        </div>
+
                         <p className="text-[10px] text-slate-500">
-                          E-Books do not require copy counts or rental holds. Any public visitor can read it instantly.
+                          E-Books do not require copy counts or rental holds. Any public visitor can read it instantly via the built-in reader.
                         </p>
                       </div>
                     )}
                   </div>
+                  )}
+
+                  {/* Physical Book Rental & Fine Configuration inside Edit Modal */}
+                  {editingBook && (!editingBook.eResources || editingBook.eResources.length === 0) && (
+                    <div className="space-y-3 pt-2 border-t border-slate-200">
+                      {/* Original Book Replacement Price (MMK) */}
+                      <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 space-y-1.5">
+                        <label className="block font-bold text-emerald-900 flex items-center justify-between text-xs">
+                          <span className="flex items-center gap-1.5">
+                            <Banknote className="w-4 h-4 text-emerald-700" />
+                            <span>Original Book Price (MMK) — Optional</span>
+                          </span>
+                          <span className="text-[10px] font-normal text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                            POS Replacement Fee
+                          </span>
+                        </label>
+                        <div className="flex rounded-lg border border-emerald-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-emerald-700">
+                          <input
+                            type="number"
+                            placeholder="e.g. 25000"
+                            value={originalPriceInput}
+                            onChange={(e) => setOriginalPriceInput(e.target.value)}
+                            className="w-full bg-white text-slate-900 px-3 py-2 text-xs font-mono font-bold focus:outline-none"
+                          />
+                          <span className="inline-flex items-center px-3 text-xs font-bold text-emerald-800 bg-emerald-100/70 border-l border-emerald-200 select-none whitespace-nowrap">
+                            MMK
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-emerald-800">
+                          Used to calculate replacement fee billing if a member loses this book.
+                        </p>
+                      </div>
+
+                      {/* Rent Duration & Overdue Fine Rate */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-3 space-y-1.5 flex flex-col justify-between">
+                          <div>
+                            <label className="block font-bold text-amber-950 flex items-center gap-1.5 text-xs mb-1">
+                              <Clock className="w-4 h-4 text-amber-600" />
+                              <span>Maximum Rent Days (Default 7) *</span>
+                            </label>
+                            <div className="flex rounded-lg border border-amber-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-amber-600">
+                              <input
+                                type="number"
+                                min="1"
+                                max="90"
+                                value={maxRentDaysInput}
+                                onChange={(e) => setMaxRentDaysInput(e.target.value)}
+                                required
+                                className="w-full bg-white text-slate-900 px-3 py-2 text-xs font-mono font-extrabold focus:outline-none"
+                              />
+                              <span className="inline-flex items-center px-3 text-xs font-bold text-amber-900 bg-amber-100 border-l border-amber-200 select-none whitespace-nowrap">
+                                Days
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-rose-50/60 border border-rose-200 rounded-xl p-3 space-y-1.5 flex flex-col justify-between">
+                          <div>
+                            <label className="block font-bold text-rose-950 flex items-center gap-1.5 text-xs mb-1">
+                              <AlertTriangle className="w-4 h-4 text-rose-600" />
+                              <span>Overdue Fine Amount (MMK / Day) *</span>
+                            </label>
+                            <div className="flex rounded-lg border border-rose-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-rose-600">
+                              <input
+                                type="number"
+                                min="0"
+                                step="50"
+                                placeholder="e.g. 500"
+                                value={dailyFineRateInput}
+                                onChange={(e) => setDailyFineRateInput(e.target.value)}
+                                required
+                                className="w-full bg-white text-slate-900 px-3 py-2 text-xs font-mono font-extrabold focus:outline-none"
+                              />
+                              <span className="inline-flex items-center px-3 text-xs font-bold text-rose-800 bg-rose-100 border-l border-rose-200 select-none whitespace-nowrap">
+                                MMK / day
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Physical Copies Overview inside Edit Modal */}
+                  {editingBook && (!editingBook.eResources || editingBook.eResources.length === 0) && (
+                    <div className="pt-3 border-t border-slate-100 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="block font-bold text-slate-800 flex items-center gap-1.5">
+                          <Barcode className="w-4 h-4 text-green-900" />
+                          <span>Assigned Physical Barcodes ({editingBook.copies?.length || 0})</span>
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedBookForCopies(editingBook);
+                          }}
+                          className="text-xs text-green-800 hover:text-green-950 font-bold underline"
+                        >
+                          + Add More Copies
+                        </button>
+                      </div>
+                      {editingBook.copies && editingBook.copies.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-2 bg-slate-50 border border-slate-200 rounded-lg">
+                          {editingBook.copies.map((copy: any) => (
+                            <div
+                              key={copy.id}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-slate-200 rounded text-[11px] font-mono shadow-xs"
+                            >
+                              <span className="font-bold text-slate-800">{copy.barcode}</span>
+                              <span
+                                className={`text-[9px] px-1 py-0.2 rounded font-sans font-bold uppercase ${
+                                  copy.status === 'AVAILABLE'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-amber-100 text-amber-800'
+                                }`}
+                              >
+                                {copy.status}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-slate-400">No physical copies registered yet.</p>
+                      )}
+                    </div>
                   )}
 
                   <div className="flex justify-end space-x-2 pt-4 border-t border-slate-100">

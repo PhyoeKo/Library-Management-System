@@ -65,28 +65,43 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <Navbar />
 
-      <main className="max-w-md mx-auto px-4 py-16">
+      <main className="max-w-lg mx-auto px-4 py-10 sm:py-14">
+        {/* Official Government Seal & Ministry Header */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">{t.login.title}</h1>
-          <p className="text-xs text-slate-600 mt-1">
-            {t.login.subtitle}
-          </p>
+          <div className="inline-block relative mb-3">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full bg-gradient-to-tr from-amber-500 via-amber-300 to-amber-600 p-[2.5px] shadow-xl hover:scale-105 transition-transform">
+              <img
+                src="/mocht-logo.png"
+                alt="Ministry of Culture, Hotels and Tourism Government Approved Seal"
+                className="w-full h-full object-cover rounded-full"
+              />
+            </div>
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] tracking-wider uppercase shadow">
+              MOCHT
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Digital Library Access Catalogue
+            </h1>
+          </div>
         </div>
 
-        {/* Minimalist Portal Tabs */}
-        <div className="flex border-b border-slate-200 mb-6 bg-white p-1 rounded-t-xl">
+        {/* Portal Selection Tabs */}
+        <div className="flex border-b border-slate-200 mb-6 bg-white p-1 rounded-t-2xl shadow-sm">
           <button
             onClick={() => {
               setActivePortal('patron');
               setErrorMsg('');
             }}
-            className={`flex-1 pb-2.5 pt-2 text-xs font-bold flex items-center justify-center space-x-1.5 border-b-2 transition ${
+            className={`flex-1 py-3 text-xs font-bold flex items-center justify-center space-x-2 border-b-2 rounded-t-xl transition ${
               activePortal === 'patron'
-                ? 'border-green-900 text-green-900 font-extrabold'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                ? 'border-green-800 text-green-900 bg-green-50/70 font-black'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
             }`}
           >
-            <UserCheck className="w-3.5 h-3.5" />
+            <UserCheck className="w-4 h-4 text-green-800" />
             <span>{t.login.patronTab}</span>
           </button>
 
@@ -95,66 +110,76 @@ export default function LoginPage() {
               setActivePortal('staff');
               setErrorMsg('');
             }}
-            className={`flex-1 pb-2.5 pt-2 text-xs font-bold flex items-center justify-center space-x-1.5 border-b-2 transition ${
+            className={`flex-1 py-3 text-xs font-bold flex items-center justify-center space-x-2 border-b-2 rounded-t-xl transition ${
               activePortal === 'staff'
-                ? 'border-emerald-700 text-emerald-800 font-extrabold'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                ? 'border-emerald-700 text-emerald-800 bg-emerald-50/70 font-black'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
             }`}
           >
-            <Shield className="w-3.5 h-3.5" />
+            <Shield className="w-4 h-4 text-emerald-700" />
             <span>{t.login.staffTab}</span>
           </button>
         </div>
 
-        {/* Simple Form Container */}
-        <div className="bg-white border border-slate-200 rounded-b-xl rounded-t-sm p-6 shadow-sm">
+        {/* Credentials Form */}
+        <div className="bg-white border border-slate-200 rounded-b-2xl rounded-t-sm p-6 sm:p-8 shadow-sm">
           {errorMsg && (
-            <div className="p-3 rounded-lg mb-4 text-xs bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <div className="p-3.5 rounded-xl mb-5 text-xs bg-rose-50 border border-rose-200 text-rose-700 flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-600" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-lg mb-4 text-xs bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 flex-shrink-0" />
+            <div className="p-3.5 rounded-xl mb-5 text-xs bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-start gap-2.5">
+              <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-600" />
               <span>{successMsg}</span>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                {t.login.emailOrBarcode}
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-xs font-bold text-slate-800">
+                  {t.login.emailOrBarcode}
+                </label>
+                <span className="text-[10px] text-green-800 font-semibold">
+                  {activePortal === 'patron' ? 'Barcode / Email / Phone' : 'Staff Barcode / Email'}
+                </span>
+              </div>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   placeholder={
                     activePortal === 'staff'
-                      ? 'admin@library.edu'
-                      : 'alex.rivera@student.edu'
+                      ? 'admin@library.edu သို့မဟုတ် STAFF-001'
+                      : 'alex.rivera@student.edu သို့မဟုတ် PAT-88401'
                   }
                   value={emailOrBarcode}
                   onChange={(e) => setEmailOrBarcode(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 focus:bg-white font-mono"
+                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl pl-10 pr-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 focus:bg-white font-sans"
                 />
               </div>
+              <p className="text-[10px] text-slate-500 mt-1">
+                စာကြည့်တိုက် ဘားကုဒ်၊ အီးမေးလ် သို့မဟုတ် ဖုန်းနံပါတ်ဖြင့် ဝင်ရောက်နိုင်ပါသည်
+              </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">{t.login.password}</label>
+              <label className="block text-xs font-bold text-slate-800 mb-1">
+                {t.login.password}
+              </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                <Lock className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
                 <input
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 focus:bg-white"
+                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl pl-10 pr-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-800 focus:bg-white"
                 />
               </div>
             </div>
@@ -162,30 +187,34 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-2.5 rounded-lg text-white text-xs font-bold shadow flex items-center justify-center space-x-1.5 transition ${
+              className={`w-full py-3 rounded-xl text-white text-xs font-extrabold shadow-md flex items-center justify-center space-x-2 transition ${
                 activePortal === 'staff'
                   ? 'bg-emerald-800 hover:bg-emerald-700'
-                  : 'bg-green-950 hover:bg-green-900'
+                  : 'bg-green-900 hover:bg-green-800'
               }`}
             >
-              <span>{loading ? 'Authenticating...' : t.login.signIn}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>{loading ? 'အတည်ပြုနေပါသည်...' : t.login.signIn}</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
           {/* Quick Demo Credentials Assistant */}
           <div className="mt-6 pt-5 border-t border-slate-100">
-            <p className="text-[11px] font-bold text-slate-500 mb-2">
-              {t.login.quickDemo}
+            <p className="text-[11px] font-bold text-slate-600 mb-2.5 flex items-center justify-between">
+              <span>{t.login.quickDemo}</span>
+              <span className="text-[10px] font-normal text-slate-400">Demo Testing</span>
             </p>
             <div className="space-y-2 text-xs">
               <button
                 type="button"
                 onClick={() => handleQuickLoginPreset('admin@library.edu', 'staff')}
-                className="w-full p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex justify-between items-center text-slate-800 text-left transition"
+                className="w-full p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 flex justify-between items-center text-slate-800 text-left transition"
               >
-                <span className="font-medium">Eleanor Vance (Staff / Admin)</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                <div>
+                  <span className="font-bold block">ဒေါ် Eleanor Vance (Chief Librarian)</span>
+                  <span className="text-[10px] text-slate-500 font-mono">STAFF-001 · admin@library.edu</span>
+                </div>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                   {t.login.staffRole}
                 </span>
               </button>
@@ -193,14 +222,24 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleQuickLoginPreset('alex.rivera@student.edu', 'patron')}
-                className="w-full p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex justify-between items-center text-slate-800 text-left transition"
+                className="w-full p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 flex justify-between items-center text-slate-800 text-left transition"
               >
-                <span className="font-medium">Alex Rivera (Student Member)</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-900">
+                <div>
+                  <span className="font-bold block">ကို Alex Rivera (မြန်မာနိုင်ငံသား အဖွဲ့ဝင်)</span>
+                  <span className="text-[10px] text-slate-500 font-mono">PAT-88401 · alex.rivera@student.edu</span>
+                </div>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-100 text-green-900">
                   {t.login.patronRole}
                 </span>
               </button>
             </div>
+          </div>
+
+          {/* Ministry Regional Verification Note */}
+          <div className="mt-6 pt-4 border-t border-slate-100 text-center">
+            <p className="text-[10px] text-slate-400">
+              ယဉ်ကျေးမှု၊ ဟိုတယ်နှင့် ခရီးသွားလာရေး ဝန်ကြီးဌာန (MOCHT) တရားဝင် လုံခြုံရေး စနစ်ဖြင့် စစ်ဆေးထားပါသည်
+            </p>
           </div>
         </div>
       </main>

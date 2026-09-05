@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: { requestDate: 'asc' },
+      orderBy: { requestDate: 'desc' },
     });
 
     // Enrich with queue position and available copy count
@@ -75,22 +75,41 @@ export async function POST(request: NextRequest) {
       user = await prisma.user.findUnique({ where: { email: patronEmail } });
     }
     if (!user) {
-      user = await prisma.user.findFirst({ where: { role: 'PATRON' } });
-    }
-
-    if (!user) {
       return NextResponse.json(
-        { success: false, error: 'Please sign in as a patron to reserve books.' },
+        { success: false, error: 'Please sign in as a member to rent or reserve books.' },
         { status: 401 }
       );
     }
 
-    // Check if user already has an active hold on this book
+    // 1. Check if user already has an active loan (rented copy) on this book
+    const activeLoan = await prisma.loan.findFirst({
+      where: {
+        userId: user.id,
+        status: { in: ['ISSUED', 'OVERDUE'] },
+        copy: { bookId },
+      },
+      include: {
+        copy: { select: { barcode: true } },
+      },
+    });
+
+    if (activeLoan) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'You already have an active borrowed copy of this book in your account. Each member account can only rent or hold one copy.',
+        },
+        { status: 400 }
+      );
+    }
+
+    // 2. Check if user already has an active hold on this book (PENDING or APPROVED)
     const existingHold = await prisma.hold.findFirst({
       where: {
         userId: user.id,
         bookId,
-        status: 'PENDING',
+        status: { in: ['PENDING', 'APPROVED'] },
       },
     });
 
@@ -104,12 +123,15 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      return NextResponse.json({
-        success: true,
-        alreadyReserved: true,
-        queuePosition: previousHolds + 1,
-        message: `You already have an active hold on this item (Queue Position #${previousHolds + 1}).`,
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          alreadyReserved: true,
+          queuePosition: previousHolds + 1,
+          error: `You already have an active hold on this book (Queue Position #${previousHolds + 1}). Each member account can only rent or hold one copy.`,
+        },
+        { status: 400 }
+      );
     }
 
     // Create new Hold
