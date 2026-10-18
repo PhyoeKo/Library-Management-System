@@ -23,6 +23,7 @@ model User {
   kycStatus        String          @default("VERIFIED") // PENDING, VERIFIED, REJECTED
   categoryId       String?
   category         PatronCategory? @relation(fields: [categoryId], references: [id])
+  isVip            Boolean         @default(false) // VIP Member (+7 Days loan period privilege)
   isBlocked        Boolean         @default(false)
   blockReason      String?
   createdAt        DateTime        @default(now())
@@ -49,6 +50,18 @@ model PatronCategory {
   users            User[]
 
   @@map("patron_categories")
+}
+
+model BookCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g. "Computer Science", "Historical Fiction"
+  code        String?  @unique // e.g. "CS", "HIST_FIC"
+  description String?
+  icon        String?  @default("BookOpen")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("book_categories")
 }
 
 // 2. Bibliographic Records (Books) & Physical Items (Copies)

@@ -57,6 +57,7 @@ export async function PUT(
       nrcFrontUrl,
       nrcBackUrl,
       kycStatus,
+      isVip,
       isBlocked,
       blockReason,
     } = body;
@@ -75,6 +76,7 @@ export async function PUT(
         ...(nrcFrontUrl !== undefined && { nrcFrontUrl: nrcFrontUrl || null }),
         ...(nrcBackUrl !== undefined && { nrcBackUrl: nrcBackUrl || null }),
         ...(kycStatus !== undefined && { kycStatus }),
+        ...(isVip !== undefined && { isVip: Boolean(isVip) }),
         ...(isBlocked !== undefined && {
           isBlocked: Boolean(isBlocked),
           blockReason: isBlocked ? (blockReason || 'Suspended by staff') : null,

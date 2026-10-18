@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('q') || '';
     const categoryId = searchParams.get('categoryId');
     const status = searchParams.get('status');
+    const vip = searchParams.get('vip');
 
     const whereCondition: any = {};
     if (search) {
@@ -21,6 +22,11 @@ export async function GET(request: NextRequest) {
     }
     if (categoryId) {
       whereCondition.categoryId = categoryId;
+    }
+    if (vip === 'true') {
+      whereCondition.isVip = true;
+    } else if (vip === 'false') {
+      whereCondition.isVip = false;
     }
     if (status === 'ACTIVE') {
       whereCondition.isBlocked = false;
@@ -95,6 +101,7 @@ export async function POST(request: NextRequest) {
       nrcFrontUrl,
       nrcBackUrl,
       kycStatus = 'VERIFIED',
+      isVip = false,
       isBlocked = false,
       blockReason,
     } = body;
@@ -148,6 +155,7 @@ export async function POST(request: NextRequest) {
         nrcFrontUrl: nrcFrontUrl || null,
         nrcBackUrl: nrcBackUrl || null,
         kycStatus: kycStatus || 'VERIFIED',
+        isVip: Boolean(isVip),
         isBlocked: Boolean(isBlocked),
         blockReason: isBlocked ? (blockReason || 'Suspended by staff') : null,
       },

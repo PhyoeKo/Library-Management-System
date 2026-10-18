@@ -7,6 +7,8 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('q') || '';
     const genre = searchParams.get('genre') || '';
     const format = searchParams.get('format') || '';
+    const collection = searchParams.get('collection') || 'all';
+    const sortBy = searchParams.get('sort') || '';
 
     const whereCondition: any = {};
 
@@ -35,14 +37,12 @@ export async function GET(request: NextRequest) {
         copies: {
           include: {
             loans: {
-              where: { status: { in: ['ISSUED', 'OVERDUE'] } },
-              select: { dueDate: true, status: true, userId: true },
+              select: { id: true, dueDate: true, status: true, userId: true },
             },
           },
         },
         eResources: true,
         holds: {
-          where: { status: { in: ['PENDING', 'APPROVED'] } },
           orderBy: { requestDate: 'asc' },
           select: { id: true, userId: true, bookId: true, requestDate: true, status: true },
         },
@@ -50,24 +50,168 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    const books = rawBooks.map((book) => {
+    const scoredBooks = rawBooks.map((book) => {
       let earliestDueDate: string | null = null;
+      let activeLoansCount = 0;
+      let totalLoansCount = 0;
+
       for (const copy of book.copies) {
+        totalLoansCount += copy.loans.length;
         for (const loan of copy.loans) {
-          if (!earliestDueDate || new Date(loan.dueDate) < new Date(earliestDueDate)) {
-            earliestDueDate = loan.dueDate.toISOString();
+          if (loan.status === 'ISSUED' || loan.status === 'OVERDUE') {
+            activeLoansCount++;
+            if (!earliestDueDate || new Date(loan.dueDate) < new Date(earliestDueDate)) {
+              earliestDueDate = loan.dueDate.toISOString();
+            }
           }
         }
       }
 
+      const activeHolds = book.holds.filter(
+        (h) => h.status === 'PENDING' || h.status === 'APPROVED'
+      );
+      const pendingHoldsCount = activeHolds.length;
+      const totalHoldsCount = book.holds.length;
+
+      const isClassicIcon = [
+        'မြသန်းတင့်',
+        'ချစ်ဦးညို',
+        'ဂျာနယ်ကျော်မမလေး',
+        'မောင်ထင်',
+        'ရွှေဥဒေါင်း',
+        'ဒဂုန်တာရာ',
+        'မင်းသုဝဏ်',
+      ].some((a) => book.author && book.author.includes(a));
+
+      const popularityScore =
+        pendingHoldsCount * 25 +
+        totalHoldsCount * 12 +
+        totalLoansCount * 15 +
+        activeLoansCount * 10 +
+        (isClassicIcon ? 15 : 0) +
+        (book.eResources.length > 0 ? 5 : 0);
+
+      const year = book.publicationYear || 0;
+      const isLatest = year >= 2004;
+
       return {
         ...book,
         earliestDueDate,
-        pendingHoldsCount: book.holds.filter((h) => h.status === 'PENDING').length,
+        pendingHoldsCount,
+        totalHoldsCount,
+        totalLoansCount,
+        activeLoansCount,
+        popularityScore,
+        isLatest,
       };
     });
 
-    return NextResponse.json({ success: true, count: books.length, books });
+    // Rank top trending books
+    const sortedForTrending = [...scoredBooks].sort(
+      (a, b) => b.popularityScore - a.popularityScore
+    );
+    const trendingSet = new Set(sortedForTrending.slice(0, 15).map((b) => b.id));
+    const trendingRankMap = new Map(
+      sortedForTrending.slice(0, 15).map((b, idx) => [b.id, idx + 1])
+    );
+
+    let books = scoredBooks.map((b) => ({
+      ...b,
+      isTrending: trendingSet.has(b.id) || b.pendingHoldsCount > 0 || b.totalLoansCount > 0,
+      trendingRank: trendingRankMap.get(b.id) || null,
+    }));
+
+    // Apply collection filter
+    if (collection === 'trending') {
+      books = books
+        .filter((b) => b.isTrending)
+        .sort((a, b) => b.popularityScore - a.popularityScore);
+    } else if (collection === 'latest') {
+      books = books
+        .filter((b) => b.isLatest)
+        .sort((a, b) => (b.publicationYear || 0) - (a.publicationYear || 0));
+    } else if (collection === 'most_borrowed') {
+      books = books
+        .filter((b) => b.totalLoansCount > 0)
+        .sort((a, b) => b.totalLoansCount - a.totalLoansCount);
+    } else if (collection === 'myanmar_classics') {
+      books = books.filter((b) => {
+        const g = (b.genre || '').toLowerCase();
+        return (
+          b.language === 'Burmese' ||
+          g.includes('classic') ||
+          g.includes('historical') ||
+          g.includes('heritage') ||
+          g.includes('poetry') ||
+          g.includes('myanmar') ||
+          g.includes('buddhist')
+        );
+      });
+    } else if (collection === 'tech') {
+      books = books.filter((b) => {
+        const g = (b.genre || '').toLowerCase();
+        return (
+          g.includes('computer') ||
+          g.includes('software') ||
+          g.includes('algorithm') ||
+          g.includes('tech')
+        );
+      });
+    }
+
+    // Apply sorting
+    if (sortBy === 'trending') {
+      books.sort((a, b) => b.popularityScore - a.popularityScore);
+    } else if (sortBy === 'latest') {
+      books.sort((a, b) => (b.publicationYear || 0) - (a.publicationYear || 0));
+    } else if (sortBy === 'oldest') {
+      books.sort((a, b) => (a.publicationYear || 9999) - (b.publicationYear || 9999));
+    } else if (sortBy === 'title_asc') {
+      books.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    const allGenres = Array.from(
+      new Set(rawBooks.map((b) => b.genre).filter(Boolean))
+    ).sort();
+
+    const collectionCounts = {
+      all: scoredBooks.length,
+      trending: scoredBooks.filter(
+        (b) => trendingSet.has(b.id) || b.pendingHoldsCount > 0 || b.totalLoansCount > 0
+      ).length,
+      latest: scoredBooks.filter((b) => b.isLatest).length,
+      most_borrowed: scoredBooks.filter((b) => b.totalLoansCount > 0).length,
+      myanmar_classics: scoredBooks.filter((b) => {
+        const g = (b.genre || '').toLowerCase();
+        return (
+          b.language === 'Burmese' ||
+          g.includes('classic') ||
+          g.includes('historical') ||
+          g.includes('heritage') ||
+          g.includes('poetry') ||
+          g.includes('myanmar') ||
+          g.includes('buddhist')
+        );
+      }).length,
+      tech: scoredBooks.filter((b) => {
+        const g = (b.genre || '').toLowerCase();
+        return (
+          g.includes('computer') ||
+          g.includes('software') ||
+          g.includes('algorithm') ||
+          g.includes('tech')
+        );
+      }).length,
+    };
+
+    return NextResponse.json({
+      success: true,
+      count: books.length,
+      totalCatalogCount: rawBooks.length,
+      collectionCounts,
+      genres: allGenres,
+      books,
+    });
   } catch (error: any) {
     console.error('Error fetching books:', error);
     return NextResponse.json(

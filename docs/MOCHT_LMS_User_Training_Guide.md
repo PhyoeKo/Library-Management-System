@@ -260,26 +260,33 @@
 **Objective:** Train catalogers on registering new titles, attaching e-book PDFs, and setting individual overdue fine rates in MMK/day under the Book Type section.
 
 #### Key Talking Points:
-1. **Bibliographic Metadata Entry:** Title, Author, ISBN, Publisher, Year, Genre, and Shelf Classification.
-2. **Book Type Selection (Physical vs. E-Book):**
+1. **Bibliographic Metadata Entry:** Title, Author, ISBN, Publisher, Year, Subject, and Category/Genre.
+2. **Category / Genre Assignment & Inline Creation:**
+   - Select an existing category from the dropdown list.
+   - Or click **"+ New Category"** right inside the form to quickly create and assign a new category on the spot.
+   - Access full Category CRUD (Add, Rename, Delete, Book Counts) at `/admin/categories` or via **"Manage Categories"**.
+3. **Book Type Selection (Physical vs. E-Book):**
    - Choosing **E-Book** displays digital PDF upload / link fields.
-   - Choosing **Physical Hardcopy** reveals the dedicated **Overdue Fine Amount in MMK** input field.
-3. **Flexible Per-Book Fine Rates:** Standard books can be set to 500 MMK/day, rare collections to 2,000 MMK/day, and reference materials to 5,000 MMK/day.
+   - Choosing **Physical Hardcopy** reveals the dedicated **Overdue Fine Amount in MMK** and **Original Book Price (MMK)** fields.
+4. **Flexible Per-Book Fine Rates:** Standard books can be set to 500 MMK/day, rare collections to 2,000 MMK/day, and reference materials to 5,000 MMK/day.
 
 #### Step-by-Step Officer Instructions:
 1. Navigate to **"Cataloging" (စာရင်းသွင်းခြင်း)** at `/admin/catalog`.
-2. Click **"+ Add New Book" (+ စာအုပ်အသစ်ထည့်မည်)**.
-3. Fill in Title, Author, ISBN, Genre, and Publisher.
-4. Under **"Type of Book"**, select **"Hardcopy" (ပုံနှိပ်စာအုပ်)**.
-5. In the revealed **"Overdue Fine (ရက်လွန်ကြေးနှုန်းထား)"** input, enter the daily fine rate (e.g., `500` MMK / day).
-6. Click **"Save Title" (စာအုပ်သိမ်းဆည်းမည်)**.
+2. Click **"+ Add Record" (+ စာအုပ်အသစ်ထည့်မည်)**.
+3. Fill in Title, Author, ISBN, Publisher, Publication Year, and Subject.
+4. Select the **"Book Category / Genre"** from the dropdown (or click `+ New Category` to define one).
+5. Under **"Type of Book Format"**, select **"Physical Book"** or **"E-Book (Digital)"**.
+6. Set shelf location, number of initial copies, original book price (MMK), and daily overdue fine rate (e.g., `500` MMK / day).
+7. Click **"Save Bibliographic Record" (စာအုပ်သိမ်းဆည်းမည်)**.
+
+> 💡 **Category CRUD Management:** Librarians can manage all library categories at `/admin/categories` (accessible via the top navigation under **More > Book Categories** or by clicking **"Manage Categories"** on the Cataloging page). You can view book counts per category, rename categories (automatically updates all linked books), or delete obsolete categories.
 
 ```
 +-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 09: Cataloging Form with MMK Overdue Fine Field         |
+| 📷 SCREENSHOT PLACEHOLDER 09: Cataloging Form with Category & Overdue Fine Field  |
 | Recommended View: http://206.189.47.42:3000/admin/catalog (Modal open)           |
-| Caption: "Book Cataloging form displaying Type of Book selector with custom daily  |
-| overdue fine input addon styled in Myanmar Kyats (MMK / day)."                    |
+| Caption: "Book Cataloging form displaying Category/Genre selection, quick-add,   |
+| and custom daily overdue fine input styled in Myanmar Kyats (MMK / day)."         |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -426,22 +433,25 @@
 #### Key Talking Points:
 1. **Interactive Member Pass Modal:** Click **"View Card" (ကတ်ကြည့်ရန်)** on any member row to open the official MOCHT National Library pass.
 2. **Official Government Aesthetic:** Designed with deep emerald tones, gold seal insignia, member barcode, NRC number, and issue date.
-3. **HTML5 Canvas 2D Engine:** Renders a crisp $1050 \times 660$ pixel image with crisp typography and standard code-128 barcode simulation.
-4. **"Export as Image" (PNG ပုံထုတ်ယူရန်):** Downloads an immediate PNG file ready for physical PVC card printing or digital distribution.
+3. **VIP User Type & Special Loan Privileges (+7 Days):**
+   - Members with **VIP User Type** receive a distinctive luxury gold card header (`👑 VIP MEMBER PASS`), gold border accent, and a "+7 Days Loan Privilege" badge.
+   - When borrowing books at the Circulation Desk, the loan period for VIP members is automatically extended by **+7 Days** over the standard book rent duration (e.g., standard 7 days ➔ 14 days).
+4. **HTML5 Canvas 2D Engine:** Renders a crisp $1050 \times 660$ pixel image with crisp typography, code-128 barcode simulation, and VIP badge ribbon.
+5. **"Export as Image" (PNG ပုံထုတ်ယူရန်):** Downloads an immediate PNG file ready for physical PVC card printing or digital distribution.
 
 #### Step-by-Step Officer Instructions:
 1. In the Member table (`/admin/patrons`), find the desired member row.
 2. Click the green **"View Card" (ကတ်ကြည့်ရန်)** button.
-3. The official MOCHT Member Pass modal opens, showing the front card preview.
+3. The official MOCHT Member Pass modal opens, showing the front card preview with VIP status badge if applicable.
 4. Click **"Export as Image (PNG ပုံထုတ်ယူရန်)"**.
-5. The high-resolution PNG file (`Member_Card_PAT-xxxxx.png`) downloads immediately to your computer.
+5. The high-resolution PNG file (`MemberCard_PAT-xxxxx_Name.png`) downloads immediately to your computer.
 
 ```
 +-----------------------------------------------------------------------------------+
 | 📷 SCREENSHOT PLACEHOLDER 15: Member ID Card Preview & PNG Image Export           |
 | Recommended View: http://206.189.47.42:3000/admin/patrons (Member Card modal open)|
-| Caption: "Official MOCHT Library Member Card modal displaying government seal,     |
-| barcode, NRC details, and Export as Image (PNG) action button."                   |
+| Caption: "Official MOCHT Library Member Card modal displaying VIP crown badge,    |
+| +7 days extended loan privilege tag, barcode, NRC details, and PNG export button." |
 +-----------------------------------------------------------------------------------+
 ```
 

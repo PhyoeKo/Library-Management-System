@@ -165,8 +165,12 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // 3. Calculate Due Date using Book's maxRentDays (Default 7 Days)
-      const loanPeriodDays = copy.book.maxRentDays || patron.category?.loanPeriodDays || 7;
+      // 3. Calculate Due Date using Book's maxRentDays (Default 7 Days) + VIP Bonus (+7 Days)
+      const isVip = Boolean(patron.isVip) || patron.category?.code === 'VIP' || (patron.category?.name?.toLowerCase().includes('vip') ?? false);
+      const baseRentDays = copy.book.maxRentDays || patron.category?.loanPeriodDays || 7;
+      const vipBonusDays = isVip ? 7 : 0;
+      const loanPeriodDays = baseRentDays + vipBonusDays;
+
       const dueDate = new Date();
       dueDate.setDate(dueDate.getDate() + loanPeriodDays);
 
@@ -183,6 +187,8 @@ export async function POST(request: NextRequest) {
             activeLoansCount: patron.loans.length,
             maxLoanCount: patron.category?.maxLoanCount || 5,
             unpaidFinesCount: patron.fines.length,
+            isVip,
+            vipBonusDays,
           },
           copy: {
             id: copy.id,
@@ -196,7 +202,10 @@ export async function POST(request: NextRequest) {
             coverUrl: copy.book.coverUrl,
           },
           dueDate: dueDate.toISOString(),
+          baseRentDays,
+          vipBonusDays,
           loanPeriodDays,
+          isVip,
         },
       });
     }

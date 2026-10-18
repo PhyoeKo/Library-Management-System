@@ -35,8 +35,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Maximum loan renewal limit (3 times) reached for this item.' }, { status: 400 });
     }
 
-    // Extend due date by patron category loan period (default 14 days)
-    const loanPeriodDays = loan.user.category?.loanPeriodDays || 14;
+    // Extend due date by patron category loan period (default 14 days) + VIP Bonus (+7 Days)
+    const isVip = Boolean(loan.user.isVip) || loan.user.category?.code === 'VIP' || (loan.user.category?.name?.toLowerCase().includes('vip') ?? false);
+    const basePeriodDays = loan.user.category?.loanPeriodDays || 14;
+    const loanPeriodDays = isVip ? basePeriodDays + 7 : basePeriodDays;
     const currentDue = new Date(loan.dueDate);
     const baseDate = currentDue > new Date() ? currentDue : new Date();
     const newDueDate = new Date(baseDate);

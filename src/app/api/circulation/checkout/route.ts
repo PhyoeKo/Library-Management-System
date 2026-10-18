@@ -98,8 +98,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate Due Date based on Book's Max Rent Days (Default 7 Days)
-    const loanDurationDays = copy.book.maxRentDays || user.category?.loanPeriodDays || 7;
+    // Calculate Due Date based on Book's Max Rent Days (Default 7 Days) + VIP Bonus (+7 Days)
+    const isVip = Boolean(user.isVip) || user.category?.code === 'VIP' || (user.category?.name?.toLowerCase().includes('vip') ?? false);
+    const baseDurationDays = copy.book.maxRentDays || user.category?.loanPeriodDays || 7;
+    const vipBonusDays = isVip ? 7 : 0;
+    const loanDurationDays = baseDurationDays + vipBonusDays;
+
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + loanDurationDays);
 
@@ -133,10 +137,16 @@ export async function POST(request: NextRequest) {
       }),
     ]);
 
+    const vipNotice = isVip ? ` (👑 VIP Privilege: +7 Days Extended Loan Applied: ${baseDurationDays}d + 7d = ${loanDurationDays} Days)` : '';
+
     return NextResponse.json({
       success: true,
-      message: `Book "${copy.book.title}" checked out to ${user.name} for ${loanDurationDays} days (Due: ${dueDate.toLocaleDateString()}).`,
+      message: `Book "${copy.book.title}" checked out to ${user.name} for ${loanDurationDays} days${vipNotice} (Due: ${dueDate.toLocaleDateString()}).`,
       loan,
+      isVip,
+      baseDurationDays,
+      vipBonusDays,
+      loanDurationDays,
     });
   } catch (error: any) {
     console.error('Checkout error:', error);

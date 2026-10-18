@@ -563,9 +563,22 @@ export default function CirculationDeskPage() {
                         <p className="text-slate-500 font-mono text-[11px]">
                           Barcode: <span className="font-bold text-slate-800">{checkoutPreview.patron.barcode}</span>
                         </p>
-                        <p className="text-slate-600">
-                          Category: <span className="font-bold text-slate-800">{checkoutPreview.patron.categoryName}</span>
-                        </p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-slate-600">
+                            Category: <span className="font-bold text-slate-800">{checkoutPreview.patron.categoryName}</span>
+                          </p>
+                          {checkoutPreview.patron.isVip && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 border border-amber-300 shadow-2xs">
+                              👑 VIP Member
+                            </span>
+                          )}
+                        </div>
+                        {checkoutPreview.patron.isVip && (
+                          <div className="bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1 text-[11px] text-amber-900 font-semibold flex items-center gap-1">
+                            <span>✨</span>
+                            <span><strong>VIP Privilege:</strong> +7 Days Extra Rent Duration applied</span>
+                          </div>
+                        )}
                         <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                           <span className="text-slate-500">Loan Capacity:</span>
                           <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded font-mono">
@@ -614,11 +627,16 @@ export default function CirculationDeskPage() {
 
                     {/* Due Date & Rule Summary */}
                     <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between text-xs gap-2">
-                      <div className="flex items-center space-x-2 text-emerald-900">
+                      <div className="flex items-center space-x-2 text-emerald-900 flex-wrap">
                         <Calendar className="w-4 h-4 text-emerald-700" />
                         <span className="font-bold">
                           Calculated Loan Period & Return Due Date:
                         </span>
+                        {checkoutPreview.patron.isVip && (
+                          <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-950 font-black text-[11px] border border-amber-300">
+                            Book {checkoutPreview.baseRentDays || 7}d + 7d VIP = {checkoutPreview.loanPeriodDays} Days
+                          </span>
+                        )}
                       </div>
                       <span className="font-mono font-extrabold text-emerald-950 text-sm bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-300">
                         Due: {new Date(checkoutPreview.dueDate).toLocaleDateString('en-US', {

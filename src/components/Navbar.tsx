@@ -100,6 +100,12 @@ export default function Navbar() {
   // Secondary administrative tools grouped under "More" dropdown
   const secondaryNavLinks = [
     {
+      href: '/admin/categories',
+      label: (t.nav as any).bookCategories || 'Book Categories',
+      icon: Layers,
+      description: lang === 'my' ? 'စာအုပ် အမျိုးအစားများ စီမံခန့်ခွဲမှု (CRUD)' : 'Book Categories & Genres CRUD',
+    },
+    {
       href: '/admin/fines',
       label: t.nav.fines,
       icon: CreditCard,

@@ -48,6 +48,7 @@ interface Member {
   role: string;
   categoryId?: string | null;
   category?: PatronCategory | null;
+  isVip?: boolean;
   phone?: string;
   address?: string;
   nrcNumber?: string;
@@ -70,6 +71,7 @@ export default function MemberManagementPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [vipFilter, setVipFilter] = useState<'ALL' | 'VIP_ONLY' | 'STANDARD_ONLY'>('ALL');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
@@ -85,6 +87,7 @@ export default function MemberManagementPage() {
   const [phoneInput, setPhoneInput] = useState('');
   const [roleInput, setRoleInput] = useState('PATRON');
   const [categoryIdInput, setCategoryIdInput] = useState('');
+  const [isVipInput, setIsVipInput] = useState(false);
   const [statusInput, setStatusInput] = useState<'ACTIVE' | 'SUSPENDED'>('ACTIVE');
   const [blockReasonInput, setBlockReasonInput] = useState('');
 
@@ -179,9 +182,11 @@ export default function MemberManagementPage() {
       ctx.font = 'bold 15px sans-serif';
       ctx.fillText('ယဉ်ကျေးမှု၊ ဟိုတယ်နှင့် ခရီးသွားလာရေး ဝန်ကြီးဌာန · MOCHT', 160, 105);
 
-      ctx.fillStyle = '#ffffff';
+      const isMemberVip = Boolean(member.isVip) || member.category?.code === 'VIP';
+
+      ctx.fillStyle = isMemberVip ? '#fbbf24' : '#ffffff';
       ctx.font = '900 23px sans-serif';
-      ctx.fillText('NATIONAL LIBRARY OF MYANMAR · MEMBER PASS', 160, 136);
+      ctx.fillText(isMemberVip ? 'NATIONAL LIBRARY OF MYANMAR · 👑 VIP PASS' : 'NATIONAL LIBRARY OF MYANMAR · MEMBER PASS', 160, 136);
 
       // Smart chip graphic on top right
       ctx.fillStyle = '#d97706';
@@ -205,7 +210,7 @@ export default function MemberManagementPage() {
 
       ctx.fillStyle = '#fef3c7';
       ctx.font = 'bold 9px monospace';
-      ctx.fillText('RFID PASS', width - 138, 138);
+      ctx.fillText(isMemberVip ? '👑 VIP PASS' : 'RFID PASS', width - 138, 138);
 
       // Divider
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
@@ -220,8 +225,8 @@ export default function MemberManagementPage() {
       ctx.beginPath();
       ctx.roundRect(50, 190, 170, 210, 16);
       ctx.fill();
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = isMemberVip ? '#fbbf24' : '#f59e0b';
+      ctx.lineWidth = isMemberVip ? 3.5 : 2.5;
       ctx.stroke();
 
       ctx.fillStyle = '#10b981';
@@ -234,9 +239,9 @@ export default function MemberManagementPage() {
       ctx.fillText((member.name || 'U').charAt(0).toUpperCase(), 135, 288);
       ctx.textAlign = 'left';
 
-      ctx.fillStyle = '#a7f3d0';
+      ctx.fillStyle = isMemberVip ? '#fde047' : '#a7f3d0';
       ctx.font = 'bold 12px sans-serif';
-      ctx.fillText('OFFICIAL PHOTO', 82, 375);
+      ctx.fillText(isMemberVip ? '👑 VIP MEMBER' : 'OFFICIAL PHOTO', isMemberVip ? 80 : 82, 375);
 
       // 6. Member Details
       ctx.fillStyle = '#6ee7b7';
@@ -248,16 +253,52 @@ export default function MemberManagementPage() {
       ctx.fillText(member.name, 250, 242);
 
       const categoryName = member.category?.name || 'Standard Patron';
-      ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
-      ctx.beginPath();
-      ctx.roundRect(250, 255, Math.min(420, ctx.measureText(categoryName).width + 36), 30, 8);
-      ctx.fill();
-      ctx.strokeStyle = '#34d399';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.fillStyle = '#a7f3d0';
-      ctx.font = 'bold 13px sans-serif';
-      ctx.fillText(`★ ${categoryName}`, 262, 275);
+
+      if (isMemberVip) {
+        // Draw Gold VIP Badge
+        const vipGrad = ctx.createLinearGradient(250, 255, 435, 285);
+        vipGrad.addColorStop(0, '#f59e0b');
+        vipGrad.addColorStop(1, '#fbbf24');
+        ctx.fillStyle = vipGrad;
+        ctx.beginPath();
+        ctx.roundRect(250, 255, 175, 30, 8);
+        ctx.fill();
+        ctx.strokeStyle = '#fef3c7';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '900 13px sans-serif';
+        ctx.fillText('👑 VIP MEMBER PASS', 258, 275);
+
+        // Draw Category pill
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+        ctx.beginPath();
+        ctx.roundRect(435, 255, Math.min(270, ctx.measureText(categoryName).width + 30), 30, 8);
+        ctx.fill();
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = '#a7f3d0';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(`★ ${categoryName}`, 445, 275);
+
+        // Highlight VIP Privilege
+        ctx.fillStyle = '#fef08a';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('⭐ SPECIAL PRIVILEGE: +7 DAYS EXTENDED LOAN DURATION', 250, 302);
+      } else {
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+        ctx.beginPath();
+        ctx.roundRect(250, 255, Math.min(420, ctx.measureText(categoryName).width + 36), 30, 8);
+        ctx.fill();
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = '#a7f3d0';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.fillText(`★ ${categoryName}`, 262, 275);
+      }
 
       ctx.fillStyle = '#94a3b8';
       ctx.font = 'bold 12px sans-serif';
@@ -372,6 +413,8 @@ export default function MemberManagementPage() {
       let url = `/api/patrons?q=${encodeURIComponent(searchQuery)}`;
       if (selectedCategoryFilter !== 'ALL') url += `&categoryId=${selectedCategoryFilter}`;
       if (statusFilter !== 'ALL') url += `&status=${statusFilter}`;
+      if (vipFilter === 'VIP_ONLY') url += `&vip=true`;
+      if (vipFilter === 'STANDARD_ONLY') url += `&vip=false`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -383,7 +426,7 @@ export default function MemberManagementPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, selectedCategoryFilter, statusFilter]);
+  }, [searchQuery, selectedCategoryFilter, statusFilter, vipFilter]);
 
   useEffect(() => {
     fetchCategories();
@@ -421,6 +464,7 @@ export default function MemberManagementPage() {
     setPhoneInput('');
     setRoleInput('PATRON');
     setCategoryIdInput(categories[0]?.id || '');
+    setIsVipInput(false);
     setStatusInput('ACTIVE');
     setBlockReasonInput('');
     setNrcNumberInput('');
@@ -438,6 +482,7 @@ export default function MemberManagementPage() {
     setPhoneInput(member.phone || '');
     setRoleInput(member.role);
     setCategoryIdInput(member.categoryId || categories[0]?.id || '');
+    setIsVipInput(Boolean(member.isVip) || member.category?.code === 'VIP');
     setStatusInput(member.isBlocked ? 'SUSPENDED' : 'ACTIVE');
     setBlockReasonInput(member.blockReason || '');
     setNrcNumberInput(member.nrcNumber || '');
@@ -458,6 +503,7 @@ export default function MemberManagementPage() {
         email: emailInput,
         role: roleInput,
         categoryId: categoryIdInput || null,
+        isVip: isVipInput,
         barcode: barcodeInput,
         phone: phoneInput,
         address: currentLocationInput,
@@ -509,6 +555,7 @@ export default function MemberManagementPage() {
   };
 
   const totalMembers = members.length;
+  const vipMembersCount = members.filter((m) => m.isVip || m.category?.code === 'VIP').length;
   const activeMembers = members.filter((m) => !m.isBlocked).length;
   const suspendedMembers = members.filter((m) => m.isBlocked).length;
   const kycVerifiedMembers = members.filter((m) => m.nrcNumber).length;
@@ -556,7 +603,7 @@ export default function MemberManagementPage() {
           </div>
 
           {/* Stats Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
                 <Users className="w-5 h-5" />
@@ -564,6 +611,16 @@ export default function MemberManagementPage() {
               <div>
                 <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Total Members</p>
                 <p className="text-xl font-black text-slate-900">{totalMembers}</p>
+              </div>
+            </div>
+
+            <div className="bg-amber-50/40 border border-amber-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
+                👑
+              </div>
+              <div>
+                <p className="text-[10px] font-extrabold text-amber-800 uppercase tracking-wider">VIP Members (+7d)</p>
+                <p className="text-xl font-black text-amber-900">{vipMembersCount}</p>
               </div>
             </div>
 
@@ -612,6 +669,17 @@ export default function MemberManagementPage() {
             </div>
 
             <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
+              {/* Member Type / VIP Filter */}
+              <select
+                value={vipFilter}
+                onChange={(e) => setVipFilter(e.target.value as any)}
+                className="bg-amber-50/60 border border-amber-300 text-amber-950 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold"
+              >
+                <option value="ALL">All Member Types</option>
+                <option value="VIP_ONLY">👑 VIP Members Only</option>
+                <option value="STANDARD_ONLY">Standard Members Only</option>
+              </select>
+
               {/* Category Filter */}
               <select
                 value={selectedCategoryFilter}
@@ -687,9 +755,16 @@ export default function MemberManagementPage() {
 
                         <td className="px-6 py-4">
                           <div>
-                            <span className="font-extrabold text-slate-900 text-xs block">
-                              {member.name}
-                            </span>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-extrabold text-slate-900 text-xs block">
+                                {member.name}
+                              </span>
+                              {(member.isVip || member.category?.code === 'VIP') && (
+                                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 border border-amber-300 shadow-2xs">
+                                  👑 VIP (+7d Loan)
+                                </span>
+                              )}
+                            </div>
                             <span className="text-[11px] text-slate-500 font-mono block">
                               {member.email}
                             </span>
@@ -877,7 +952,14 @@ export default function MemberManagementPage() {
                       <label className="block font-semibold text-slate-700 mb-1">Borrower Category *</label>
                       <select
                         value={categoryIdInput}
-                        onChange={(e) => setCategoryIdInput(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCategoryIdInput(val);
+                          const chosen = categories.find((c) => c.id === val);
+                          if (chosen?.code === 'VIP' || chosen?.name.toLowerCase().includes('vip')) {
+                            setIsVipInput(true);
+                          }
+                        }}
                         className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">-- General Borrower --</option>
@@ -900,6 +982,57 @@ export default function MemberManagementPage() {
                         <option value="STAFF">STAFF (Library Officer)</option>
                         <option value="ADMIN">ADMIN (System Administrator)</option>
                       </select>
+                    </div>
+                  </div>
+
+                  {/* Membership Tier & VIP Privilege */}
+                  <div className={`p-3.5 rounded-xl border transition-all ${
+                    isVipInput
+                      ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-300 shadow-sm'
+                      : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-2.5">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 text-base ${
+                          isVipInput ? 'bg-amber-500 text-white shadow-xs' : 'bg-slate-200 text-slate-500'
+                        }`}>
+                          👑
+                        </div>
+                        <div>
+                          <label
+                            className="text-xs font-bold text-slate-900 cursor-pointer flex items-center gap-1.5"
+                            onClick={() => setIsVipInput(!isVipInput)}
+                          >
+                            <span>Membership Type:</span>
+                            <span className={isVipInput ? 'text-amber-900 font-extrabold' : 'text-slate-600'}>
+                              {isVipInput ? '👑 VIP User Type (အထူးအခွင့်အရေး)' : 'Standard User Type'}
+                            </span>
+                          </label>
+                          <p className="text-[11px] text-slate-600 mt-0.5">
+                            {isVipInput ? (
+                              <span className="text-amber-950 font-semibold">
+                                ✨ <strong>VIP Privilege Active:</strong> When this member borrows any book, their rent period is automatically extended by <strong className="text-amber-700">+7 Days</strong> (e.g. Standard 7 Days ➔ 14 Days).
+                              </span>
+                            ) : (
+                              <span>Standard rental duration as configured on each book. Toggle on for VIP +7 days extra loan duration.</span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsVipInput(!isVipInput)}
+                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                          isVipInput ? 'bg-amber-500' : 'bg-slate-300'
+                        }`}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                            isVipInput ? 'translate-x-5' : 'translate-x-0'
+                          }`}
+                        />
+                      </button>
                     </div>
                   </div>
 
@@ -1140,7 +1273,9 @@ export default function MemberManagementPage() {
                           ယဉ်ကျေးမှု၊ ဟိုတယ်နှင့် ခရီးသွားလာရေး ဝန်ကြီးဌာန · MOCHT
                         </span>
                         <span className="block text-[11px] font-black text-white tracking-wide uppercase mt-0.5">
-                          NATIONAL LIBRARY MEMBER PASS
+                          {(selectedMemberForCard.isVip || selectedMemberForCard.category?.code === 'VIP')
+                            ? 'NATIONAL LIBRARY · 👑 VIP MEMBER PASS'
+                            : 'NATIONAL LIBRARY MEMBER PASS'}
                         </span>
                       </div>
                     </div>
@@ -1156,7 +1291,11 @@ export default function MemberManagementPage() {
                   <div className="grid grid-cols-12 gap-3.5 mb-3 relative z-10">
                     {/* Photo Box */}
                     <div className="col-span-4 flex flex-col items-center">
-                      <div className="w-24 h-28 rounded-xl bg-emerald-900 border-2 border-amber-400/80 overflow-hidden shadow-md flex items-center justify-center">
+                      <div className={`w-24 h-28 rounded-xl bg-emerald-900 border-2 overflow-hidden shadow-md flex items-center justify-center ${
+                        (selectedMemberForCard.isVip || selectedMemberForCard.category?.code === 'VIP')
+                          ? 'border-amber-300 shadow-amber-500/20'
+                          : 'border-amber-400/80'
+                      }`}>
                         {selectedMemberForCard.nrcFrontUrl ? (
                           <img
                             src={selectedMemberForCard.nrcFrontUrl}
@@ -1169,7 +1308,7 @@ export default function MemberManagementPage() {
                               {(selectedMemberForCard.name || 'U').charAt(0).toUpperCase()}
                             </div>
                             <span className="text-[8px] font-extrabold uppercase text-emerald-300 tracking-wider">
-                              Verified
+                              {(selectedMemberForCard.isVip || selectedMemberForCard.category?.code === 'VIP') ? '👑 VIP' : 'Verified'}
                             </span>
                           </div>
                         )}
@@ -1182,16 +1321,28 @@ export default function MemberManagementPage() {
                     {/* Member Details Column */}
                     <div className="col-span-8 flex flex-col justify-between text-left space-y-1">
                       <div>
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-300 block">
-                          Member Full Name
-                        </span>
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-300 block">
+                            Member Full Name
+                          </span>
+                          {(selectedMemberForCard.isVip || selectedMemberForCard.category?.code === 'VIP') && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 border border-yellow-200 shadow-xs">
+                              👑 VIP MEMBER
+                            </span>
+                          )}
+                        </div>
                         <h3 className="text-sm font-black text-white truncate">
                           {selectedMemberForCard.name}
                         </h3>
-                        <div className="mt-0.5">
+                        <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500/20 text-emerald-200 border border-emerald-400/40">
                             ★ {selectedMemberForCard.category?.name || 'Standard Member'}
                           </span>
+                          {(selectedMemberForCard.isVip || selectedMemberForCard.category?.code === 'VIP') && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40">
+                              +7 Days Loan Privilege
+                            </span>
+                          )}
                         </div>
                       </div>
 
