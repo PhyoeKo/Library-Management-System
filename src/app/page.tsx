@@ -560,7 +560,7 @@ export default function OPACPage() {
               <BookOpen className="w-4 h-4 text-emerald-700 flex-shrink-0" />
               <span>
                 {lang === 'my'
-                  ? 'အမျိုးသားစာကြည့်တိုက် အီးဘွတ် အရင်းအမြစ်'
+                  ? 'အမျိုးသားစာကြည့်တိုက် E-Book အရင်းအမြစ်'
                   : 'National Library E-Book Resource'}
               </span>
               <ExternalLink className="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform flex-shrink-0" />
