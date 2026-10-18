@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="my" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန (MOCHT) · အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ် (LMS) - အသုံးပြုသူ လမ်းညွှန်</title>
+  <link rel="icon" type="image/png" href="images/mocht-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #047857;
+      --primary-dark: #065f46;
+      --primary-light: #10b981;
+      --primary-subtle: #f0fdf4;
+      --accent: #d97706;
+      --accent-light: #fef3c7;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --sidebar-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --font-body: 'Noto Sans Myanmar', 'Pyidaungsu', 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #34d399;
+      --primary-subtle: #064e3b33;
+      --accent: #f59e0b;
+      --accent-light: #78350f33;
+      --bg: #090d16;
+      --card-bg: #111827;
+      --sidebar-bg: #0f172a;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --code-bg: #1e293b;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 15px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.85;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* ── Sticky Top Header ── */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      padding: 0 24px;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      backdrop-filter: blur(12px);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .header-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      object-fit: cover;
+      background: #ffffff;
+    }
+
+    .header-title-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-maintitle {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+    }
+
+    .header-subtitle {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box {
+      position: relative;
+      display: none;
+    }
+    @media (min-width: 768px) {
+      .search-box {
+        display: block;
+      }
+    }
+
+    .search-input {
+      width: 220px;
+      height: 36px;
+      padding: 0 12px 0 34px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .search-input:focus {
+      width: 280px;
+      border-color: var(--primary);
+      background: var(--card-bg);
+      box-shadow: 0 0 0 3px var(--primary-subtle);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(4, 120, 87, 0.25);
+      transition: all 0.2s ease;
+    }
+    .btn-pdf:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(4, 120, 87, 0.35);
+    }
+
+    .btn-live {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    @media (min-width: 640px) {
+      .btn-live {
+        display: inline-flex;
+      }
+    }
+    .btn-live:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .theme-toggle-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+    .theme-toggle-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .menu-toggle-btn {
+      display: flex;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--text);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    @media (min-width: 1024px) {
+      .menu-toggle-btn {
+        display: none;
+      }
+    }
+
+    /* ── Main Layout (Sidebar + Content) ── */
+    .app-layout {
+      display: flex;
+      max-width: 1520px;
+      margin: 0 auto;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: sticky;
+      top: 64px;
+      width: 310px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px 40px 16px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    @media (max-width: 1023px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 64px;
+        bottom: 0;
+        z-index: 45;
+        transform: translateX(-100%);
+        box-shadow: 10px 0 25px rgba(0, 0, 0, 0.15);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      top: 64px;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 40;
+      backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    .nav-group {
+      margin-bottom: 20px;
+    }
+
+    .nav-group-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+      padding: 0 10px;
+    }
+
+    .nav-group-items {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-item-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: all 0.15s ease;
+      line-height: 1.4;
+    }
+
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .nav-item-link:hover {
+      color: var(--text);
+      background: var(--code-bg);
+    }
+
+    .nav-item-link.active {
+      color: var(--primary);
+      background: var(--primary-subtle);
+      font-weight: 700;
+    }
+    .nav-item-link.active .nav-dot {
+      background: var(--primary);
+      transform: scale(1.3);
+    }
+
+    /* ── Main Content Area ── */
+    .content-area {
+      flex: 1;
+      min-width: 0;
+      padding: 32px 24px 80px 24px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+      .content-area {
+        padding: 40px 48px 100px 48px;
+      }
+    }
+
+    /* ── Hero Banner ── */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-subtle) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 28px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-seal {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      margin-bottom: 16px;
+      box-shadow: 0 6px 16px rgba(217, 119, 6, 0.2);
+      object-fit: cover;
+      background: #ffffff;
+    }
+
+    .hero-country {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+
+    .hero-ministry {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-size: 1.95rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    @media (min-width: 768px) {
+      .hero-title {
+        font-size: 2.35rem;
+      }
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 24px auto;
+      line-height: 1.6;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .chip {
+      padding: 4px 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .chip.highlight {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-hero-primary {
+      padding: 10px 22px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 800;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+      transition: all 0.2s ease;
+    }
+    .btn-hero-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-hero-outline {
+      padding: 10px 20px;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-hero-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ── Typography & Content ── */
+    .guide-h1 {
+      font-size: 1.65rem;
+      font-weight: 850;
+      color: var(--primary);
+      border-left: 5px solid var(--primary);
+      padding-left: 14px;
+      margin: 48px 0 20px 0;
+      line-height: 1.35;
+    }
+
+    .guide-h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 36px 0 16px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .guide-h3 {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin: 32px 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .h3-anchor {
+      display: inline-block;
+      width: 4px;
+      height: 16px;
+      border-radius: 2px;
+      background: var(--primary);
+    }
+
+    .guide-h4 {
+      font-size: 0.98rem;
+      font-weight: 750;
+      color: var(--text);
+      margin: 20px 0 10px 0;
+    }
+
+    p {
+      margin-bottom: 14px;
+      font-size: 0.98rem;
+      color: var(--text);
+    }
+
+    ul, ol {
+      margin-bottom: 16px;
+      padding-left: 26px;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 0.96rem;
+    }
+
+    strong {
+      font-weight: 750;
+      color: var(--text);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      background: var(--code-bg);
+      color: var(--primary);
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .content-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 40px 0;
+    }
+
+    /* ── Table Styling ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.88rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    th {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 750;
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:nth-child(even) td {
+      background: var(--code-bg);
+    }
+
+    /* ── Image & Lightbox ── */
+    .feature-image-figure {
+      margin: 24px 0 32px 0;
+    }
+
+    .image-card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      cursor: zoom-in;
+      transition: all 0.25s ease;
+    }
+
+    .image-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 25px -4px rgba(0, 0, 0, 0.12);
+    }
+
+    .image-card img {
+      width: 100%;
+      height: auto;
+      max-height: 520px;
+      object-fit: contain;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .image-overlay {
+      position: absolute;
+      inset: 8px;
+      background: rgba(4, 120, 87, 0.45);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .image-card:hover .image-overlay {
+      opacity: 1;
+    }
+
+    .zoom-badge {
+      background: #ffffff;
+      color: var(--primary-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .image-caption {
+      text-align: center;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* ── Lightbox Modal ── */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .lightbox-modal.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      max-width: 95vw;
+      max-height: 90vh;
+      position: relative;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox-caption {
+      color: #ffffff;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -42px;
+      right: 0;
+      color: #ffffff;
+      font-size: 1.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.15);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ── Floating Back to Top ── */
+    .back-to-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border: none;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+      z-index: 30;
+    }
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    .back-to-top:hover {
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      background: var(--card-bg);
+      padding: 30px 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Top Header -->
+  <header class="top-header">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button class="menu-toggle-btn" id="menuToggle" aria-label="Toggle navigation">☰</button>
+      <a href="#" class="header-brand">
+        <img src="images/mocht-logo.png" alt="MOCHT National Seal" class="header-logo" />
+        <div class="header-title-box">
+          <span class="header-maintitle">MOCHT National LMS</span>
+          <span class="header-subtitle">အသုံးပြုသူ လမ်းညွှန်လက်စွဲ</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-actions">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="topicSearch" placeholder="အကြောင်းအရာ ရှာပါ..." />
+      </div>
+
+      <a href="MOCHT_LMS_User_Training_Guide.pdf" class="btn-pdf" download="MOCHT_LMS_User_Training_Guide.pdf">
+        <span>📥 PDF ဒေါင်းလုဒ် (31 Pages)</span>
+      </a>
+
+      <a href="http://206.189.47.42:3000" target="_blank" rel="noopener noreferrer" class="btn-live">
+        <span>🌐 Live စနစ် ဖွင့်ရန်</span>
+      </a>
+
+      <button class="theme-toggle-btn" id="themeToggle" title="Toggle dark/light theme">🌙</button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <!-- Sidebar Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      
+    <div class="nav-group">
+      <div class="nav-group-title">စနစ်မိတ်ဆက် (Introduction)</div>
+      <div class="nav-group-items">
+        
+          <a href="#overview-section" class="nav-item-link" data-target="overview-section">
+            <span class="nav-dot"></span>
+            <span class="nav-text">စနစ်ဆိုင်ရာ အချက်အလက်များ</span>
+          </a>
+        
+          <a href="#toc-section" class="nav-item-link" data-target="toc-section">
+            <span class="nav-dot"></span>
+            <span class="nav-text">မာတိကာ</span>
+          </a>
+        
+      </div>
+    </div>
+  
+    <div class="nav-group">
+      <div class="nav-group-title">အပိုင်း (၁) - အများပြည်သူနှင့် စာဖတ်သူ (Patron)</div>
+      <div class="nav-group-items">
+        
+          <a href="#feature-1" class="nav-item-link" data-target="feature-1">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁။ အများပြည်သူသုံး စာအုပ်ရှာဖွေရေး</span>
+          </a>
+        
+          <a href="#feature-2" class="nav-item-link" data-target="feature-2">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၂။ ဝဘ်ဘရောင်ဇာတွင်း E-Book ဖတ်စနစ်</span>
+          </a>
+        
+          <a href="#feature-3" class="nav-item-link" data-target="feature-3">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၃။ စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း</span>
+          </a>
+        
+          <a href="#feature-4" class="nav-item-link" data-target="feature-4">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၄။ စာဖတ်သူ အသင်းဝင် ပေါ်တယ်</span>
+          </a>
+        
+      </div>
+    </div>
+  
+    <div class="nav-group">
+      <div class="nav-group-title">အပိုင်း (၂) - စာကြည့်တိုက်မှူးနှင့် ဝန်ထမ်း (Staff)</div>
+      <div class="nav-group-items">
+        
+          <a href="#feature-5" class="nav-item-link" data-target="feature-5">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၅။ စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ်</span>
+          </a>
+        
+          <a href="#feature-6" class="nav-item-link" data-target="feature-6">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၆။ စာအုပ်စာရင်းနှင့် ကတ်တလောက်</span>
+          </a>
+        
+          <a href="#feature-7" class="nav-item-link" data-target="feature-7">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၇။ စာအုပ်အသစ်နှင့် ဒဏ်ကြေးနှုန်း</span>
+          </a>
+        
+          <a href="#feature-8" class="nav-item-link" data-target="feature-8">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၈။ စာအုပ်ကဏ္ဍခွဲများ (Categories)</span>
+          </a>
+        
+          <a href="#feature-9" class="nav-item-link" data-target="feature-9">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၉။ စာအုပ်ငှား/ပြန်ကောင်တာ (VIP +7d)</span>
+          </a>
+        
+          <a href="#feature-10" class="nav-item-link" data-target="feature-10">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၀။ ဦးစားပေး ကြိုတင်မှာယူမှု (Holds)</span>
+          </a>
+        
+          <a href="#feature-11" class="nav-item-link" data-target="feature-11">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၁။ အသင်းဝင်များနှင့် မှတ်ပုံတင် (NRC)</span>
+          </a>
+        
+          <a href="#feature-12" class="nav-item-link" data-target="feature-12">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၂။ VIP အသင်းဝင်ကတ်ပြား (PNG Export)</span>
+          </a>
+        
+          <a href="#feature-13" class="nav-item-link" data-target="feature-13">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၃။ ဒဏ်ကြေးစာရင်းနှင့် ကောက်ခံခြင်း</span>
+          </a>
+        
+      </div>
+    </div>
+  
+    <div class="nav-group">
+      <div class="nav-group-title">အပိုင်း (၃) - အစီရင်ခံစာနှင့် စာရင်းဇယား (Reports)</div>
+      <div class="nav-group-items">
+        
+          <a href="#feature-14" class="nav-item-link" data-target="feature-14">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၄။ စွမ်းဆောင်ရည် အနှစ်ချုပ် & Filter</span>
+          </a>
+        
+          <a href="#feature-15" class="nav-item-link" data-target="feature-15">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၅။ ငှားရမ်းမှုမှတ်တမ်း CSV</span>
+          </a>
+        
+          <a href="#feature-16" class="nav-item-link" data-target="feature-16">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၆။ ဒဏ်ကြေးငွေစာရင်း CSV</span>
+          </a>
+        
+          <a href="#feature-17" class="nav-item-link" data-target="feature-17">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၇။ စာအုပ်လက်ကျန်စာရင်း CSV</span>
+          </a>
+        
+          <a href="#feature-18" class="nav-item-link" data-target="feature-18">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၈။ အသင်းဝင်များနှင့် VIP စာရင်း CSV</span>
+          </a>
+        
+          <a href="#feature-19" class="nav-item-link" data-target="feature-19">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၁၉။ ရက်ကျော်လွန်စာအုပ်များ CSV</span>
+          </a>
+        
+      </div>
+    </div>
+  
+    <div class="nav-group">
+      <div class="nav-group-title">အပိုင်း (၄) - Koha အဆင့်မြင့် လုပ်ငန်းများ (Koha)</div>
+      <div class="nav-group-items">
+        
+          <a href="#feature-20" class="nav-item-link" data-target="feature-20">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၂၀။ စာအုပ်ဝယ်ယူမှု (Acquisitions)</span>
+          </a>
+        
+          <a href="#feature-21" class="nav-item-link" data-target="feature-21">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၂၁။ ဂျာနယ်နှင့် မဂ္ဂဇင်း (Serials)</span>
+          </a>
+        
+          <a href="#feature-22" class="nav-item-link" data-target="feature-22">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၂၂။ စာကြည့်တိုက်ချင်း ချိတ်ဆက်မှု (ILL)</span>
+          </a>
+        
+          <a href="#feature-23" class="nav-item-link" data-target="feature-23">
+            <span class="nav-dot"></span>
+            <span class="nav-text">၂၃။ သင်ရိုးညွှန်းတမ်း (Course Reserves)</span>
+          </a>
+        
+      </div>
+    </div>
+  
+    <div class="nav-group">
+      <div class="nav-group-title">အပိုင်း (၅) - လုပ်ငန်းလမ်းညွှန်နှင့် မေးခွန်းများ</div>
+      <div class="nav-group-items">
+        
+          <a href="#part-5" class="nav-item-link" data-target="part-5">
+            <span class="nav-dot"></span>
+            <span class="nav-text">နေ့စဉ် လုပ်ငန်းလမ်းညွှန် (SOP) & FAQ</span>
+          </a>
+        
+      </div>
+    </div>
+  
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <!-- Hero Banner -->
+      <section class="hero-banner">
+        <img src="images/mocht-logo.png" alt="MOCHT National Seal" class="hero-seal" />
+        <div class="hero-country">ပြည်ထောင်စုသမ္မတမြန်မာနိုင်ငံတော်</div>
+        <div class="hero-ministry">ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန</div>
+        <h1 class="hero-title">အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ် (LMS)</h1>
+        <p class="hero-desc">
+          အသုံးပြုသူ လေ့ကျင့်ရေးနှင့် စနစ်အသုံးပြုနည်း ပြည့်စုံသော လက်စွဲလမ်းညွှန်စာအုပ် — အများပြည်သူသုံး OPAC မှသည် စာကြည့်တိုက်မှူးများအတွက် အဆင့်မြင့် Koha စနစ်များနှင့် စာရင်းဇယားများအထိ အပြည့်အစုံ။
+        </p>
+
+        <div class="hero-chips">
+          <span class="chip highlight">Version 2.4 Enterprise</span>
+          <span class="chip">Koha Standards</span>
+          <span class="chip">မြန်မာဘာသာ (Unicode)</span>
+          <span class="chip">Live Production Ready</span>
+          <span class="chip">31-Page PDF Included</span>
+        </div>
+
+        <div class="hero-actions">
+          <a href="#feature-1" class="btn-hero-primary">📚 စတင်လေ့လာမည်</a>
+          <a href="MOCHT_LMS_User_Training_Guide.pdf" class="btn-hero-outline" download="MOCHT_LMS_User_Training_Guide.pdf">📥 PDF ဖိုင် ဒေါင်းလုဒ်ယူမည် (6 MB)</a>
+        </div>
+      </section>
+
+      <!-- Markdown Parsed Content -->
+      <article class="guide-body">
+        <h1 id="section-1" class="guide-h1">ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန (MOCHT)</h1><h1 id="section-2" class="guide-h1">အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ် (LMS)</h1><h2 id="section-3" class="guide-h2">အသုံးပြုသူ လေ့ကျင့်ရေးနှင့် စနစ်အသုံးပြုနည်း ပြည့်စုံသော လမ်းညွှန်စာအုပ်</h2><p><strong>National Library Management System — Comprehensive User &amp; Admin Training Manual</strong></p>
+<div class="content-divider"></div>
+<h2 id="overview-section" class="guide-h2">📌 စနစ်ဆိုင်ရာ အချက်အလက်များနှင့် မိတ်ဆက် (System Overview)</h2><ul>
+<li><strong>စနစ်အမည် (System Name):</strong> ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန၊ အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ် (MOCHT National Digital Library Access &amp; Management System)</li>
+<li><strong>တရားဝင် လွှင့်တင်ထားသော လိပ်စာ (Live URL):</strong> <a href="http://206.189.47.42:3000">http://206.189.47.42:3000</a> (သို့မဟုတ် Nginx Gateway: <a href="http://206.189.47.42:8080">http://206.189.47.42:8080</a>)</li>
+<li><strong>အသုံးပြုထားသော နည်းပညာများ (Tech Stack):</strong> Next.js 16 (App Router), TypeScript, Tailwind CSS, Prisma ORM, SQLite DB, Canvas 2D Barcode Engine, UTF-8 BOM CSV Export Engine</li>
+<li><strong>ရည်ရွယ်ချက် (Objective):</strong> အပြည်ပြည်ဆိုင်ရာ Koha စံနှုန်းများနှင့်အညီ ပြည်သူလူထု (စာဖတ်သူအသင်းဝင်များ) နှင့် စာကြည့်တိုက်ဝန်ထမ်းများ (စာကြည့်တိုက်မှူးများ) အကြား ချောမွေ့စွာ ချိတ်ဆက်ဆောင်ရွက်နိုင်စေရန်၊ အွန်လိုင်းမှ စာအုပ်များ ရှာဖွေဖတ်ရှုနိုင်ရန် (OPAC &amp; E-Book Viewer)၊ စာအုပ်ငှားရမ်း/အပ်နှံမှုနှင့် ဘားကုဒ်စနစ်များ ထိန်းချုပ်ရန်၊ စာအုပ်တစ်အုပ်ချင်းအလိုက် သီးခြား ဒဏ်ကြေးငွေ (MMK) တွက်ချက်ရန်၊ VIP အသင်းဝင် အထူးအခွင့်အရေးများနှင့် တရားဝင် အသင်းဝင်ကတ်ပြား (Member ID Pass) ထုတ်ယူနိုင်ရန် ပြည့်စုံစွာ ဖန်တီးထားသော စနစ်ဖြစ်ပါသည်။</li>
+</ul>
+<div class="content-divider"></div>
+<h1 id="toc-section" class="guide-h1">📑 မာတိကာ (Table of Contents)</h1><ul>
+<li><a href="#%E1%80%A1%E1%80%95%E1%80%AD%E1%80%AF%E1%80%84%E1%80%BA%E1%80%B8-%E1%81%81---%E1%80%A1%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8%E1%80%95%E1%80%BC%E1%80%8A%E1%80%BA%E1%80%9E%E1%80%B0%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%85%E1%80%AC%E1%80%96%E1%80%90%E1%80%BA%E1%80%9E%E1%80%B0-%E1%80%A1%E1%80%9E%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9D%E1%80%84%E1%80%BA%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8%E1%80%86%E1%80%AD%E1%80%AF%E1%80%84%E1%80%BA%E1%80%9B%E1%80%AC-%E1%80%85%E1%80%94%E1%80%85%E1%80%BA-public-patron-portal">အပိုင်း (၁) - အများပြည်သူနှင့် စာဖတ်သူ အသင်းဝင်များဆိုင်ရာ စနစ် (Public Patron Portal)</a><ul>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81---%E1%80%A1%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8%E1%80%95%E1%80%BC%E1%80%8A%E1%80%BA%E1%80%9E%E1%80%B0%E1%80%9E%E1%80%AF%E1%80%B6%E1%80%B8-%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%9B%E1%80%BE%E1%80%AC%E1%80%96%E1%80%BD%E1%80%B1%E1%80%9B%E1%80%B1%E1%80%B8%E1%80%85%E1%80%94%E1%80%85%E1%80%BA-opac-search--category-filters">လုပ်ဆောင်ချက် ၁ - အများပြည်သူသုံး စာအုပ်ရှာဖွေရေးစနစ် (OPAC Search &amp; Category Filters)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%82---%E1%80%9D%E1%80%98%E1%80%BA%E1%80%98%E1%80%9B%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%87%E1%80%AC%E1%80%A1%E1%80%90%E1%80%BD%E1%80%84%E1%80%BA%E1%80%B8-%E1%80%90%E1%80%AD%E1%80%AF%E1%80%80%E1%80%BA%E1%80%9B%E1%80%AD%E1%80%AF%E1%80%80%E1%80%BA%E1%80%96%E1%80%90%E1%80%BA%E1%80%9B%E1%80%BE%E1%80%AF%E1%80%94%E1%80%AD%E1%80%AF%E1%80%84%E1%80%BA%E1%80%9E%E1%80%B1%E1%80%AC-e-book-pdf-%E1%80%96%E1%80%90%E1%80%BA%E1%80%85%E1%80%94%E1%80%85%E1%80%BA-in-browser-e-book-pdf-viewer">လုပ်ဆောင်ချက် ၂ - ဝဘ်ဘရောင်ဇာအတွင်း တိုက်ရိုက်ဖတ်ရှုနိုင်သော E-Book PDF ဖတ်စနစ် (In-Browser E-Book PDF Viewer)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%83---%E1%80%85%E1%80%94%E1%80%85%E1%80%BA%E1%80%9E%E1%80%AD%E1%80%AF%E1%80%B7-%E1%80%A1%E1%80%80%E1%80%B1%E1%80%AC%E1%80%84%E1%80%B7%E1%80%BA%E1%80%9D%E1%80%84%E1%80%BA%E1%80%9B%E1%80%B1%E1%80%AC%E1%80%80%E1%80%BA%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-member--staff-authentication">လုပ်ဆောင်ချက် ၃ - စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း (Member &amp; Staff Authentication)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%84---%E1%80%85%E1%80%AC%E1%80%96%E1%80%90%E1%80%BA%E1%80%9E%E1%80%B0-%E1%80%A1%E1%80%9E%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9D%E1%80%84%E1%80%BA-%E1%80%95%E1%80%B1%E1%80%AB%E1%80%BA%E1%80%90%E1%80%9A%E1%80%BA%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%9E%E1%80%80%E1%80%BA%E1%80%90%E1%80%99%E1%80%BA%E1%80%B8%E1%80%90%E1%80%AD%E1%80%AF%E1%80%B8%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-patron-portal--self-renewal">လုပ်ဆောင်ချက် ၄ - စာဖတ်သူ အသင်းဝင် ပေါ်တယ်နှင့် သက်တမ်းတိုးခြင်း (Patron Portal &amp; Self-Renewal)</a></li>
+</ul>
+</li>
+<li><a href="#%E1%80%A1%E1%80%95%E1%80%AD%E1%80%AF%E1%80%84%E1%80%BA%E1%80%B8-%E1%81%82---%E1%80%85%E1%80%AC%E1%80%80%E1%80%BC%E1%80%8A%E1%80%B7%E1%80%BA%E1%80%90%E1%80%AD%E1%80%AF%E1%80%80%E1%80%BA%E1%80%99%E1%80%BE%E1%80%B0%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%9D%E1%80%94%E1%80%BA%E1%80%91%E1%80%99%E1%80%BA%E1%80%B8%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8%E1%80%86%E1%80%AD%E1%80%AF%E1%80%84%E1%80%BA%E1%80%9B%E1%80%AC-%E1%80%85%E1%80%AE%E1%80%99%E1%80%B6%E1%80%81%E1%80%94%E1%80%B7%E1%80%BA%E1%80%81%E1%80%BD%E1%80%B2%E1%80%99%E1%80%BE%E1%80%AF%E1%80%85%E1%80%94%E1%80%85%E1%80%BA-staff-control-panel">အပိုင်း (၂) - စာကြည့်တိုက်မှူးနှင့် ဝန်ထမ်းများဆိုင်ရာ စီမံခန့်ခွဲမှုစနစ် (Staff Control Panel)</a><ul>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%85---%E1%80%85%E1%80%AC%E1%80%80%E1%80%BC%E1%80%8A%E1%80%B7%E1%80%BA%E1%80%90%E1%80%AD%E1%80%AF%E1%80%80%E1%80%BA-%E1%80%80%E1%80%BD%E1%80%95%E1%80%BA%E1%80%80%E1%80%B2%E1%80%99%E1%80%BE%E1%80%AF-%E1%80%92%E1%80%80%E1%80%BA%E1%80%9B%E1%80%BE%E1%80%BA%E1%80%98%E1%80%AF%E1%80%90%E1%80%BA-staff-admin-command-center">လုပ်ဆောင်ချက် ၅ - စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ် (Staff Admin Command Center)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%86---%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%80%E1%80%90%E1%80%BA%E1%80%90%E1%80%9C%E1%80%B1%E1%80%AC%E1%80%80%E1%80%BA-%E1%80%85%E1%80%AE%E1%80%99%E1%80%B6%E1%80%81%E1%80%94%E1%80%B7%E1%80%BA%E1%80%81%E1%80%BD%E1%80%B2%E1%80%99%E1%80%BE%E1%80%AF-catalog-management--inventory">လုပ်ဆောင်ချက် ၆ - စာအုပ်စာရင်းနှင့် ကတ်တလောက် စီမံခန့်ခွဲမှု (Catalog Management &amp; Inventory)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%87---%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%A1%E1%80%9E%E1%80%85%E1%80%BA%E1%80%91%E1%80%8A%E1%80%B7%E1%80%BA%E1%80%9E%E1%80%BD%E1%80%84%E1%80%BA%E1%80%B8%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%92%E1%80%8F%E1%80%BA%E1%80%80%E1%80%BC%E1%80%B1%E1%80%B8%E1%80%94%E1%80%BE%E1%80%AF%E1%80%94%E1%80%BA%E1%80%B8-%E1%80%9E%E1%80%90%E1%80%BA%E1%80%99%E1%80%BE%E1%80%90%E1%80%BA%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-add-book--daily-fine-rate">လုပ်ဆောင်ချက် ၇ - စာအုပ်အသစ်ထည့်သွင်းခြင်းနှင့် ဒဏ်ကြေးနှုန်း သတ်မှတ်ခြင်း (Add Book &amp; Daily Fine Rate)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%88---%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%80%E1%80%8F%E1%80%B9%E1%80%8D%E1%80%81%E1%80%BD%E1%80%B2%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8-%E1%80%85%E1%80%AE%E1%80%99%E1%80%B6%E1%80%81%E1%80%94%E1%80%B7%E1%80%BA%E1%80%81%E1%80%BD%E1%80%B2%E1%80%99%E1%80%BE%E1%80%AF-book-category-crud-management">လုပ်ဆောင်ချက် ၈ - စာအုပ်ကဏ္ဍခွဲများ စီမံခန့်ခွဲမှု (Book Category CRUD Management)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%89---%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%84%E1%80%BE%E1%80%AC%E1%80%B8%E1%80%9B%E1%80%99%E1%80%BA%E1%80%B8%E1%80%A1%E1%80%95%E1%80%BA%E1%80%94%E1%80%BE%E1%80%B6-%E1%80%80%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%90%E1%80%AC%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-vip-%E1%80%A1%E1%80%81%E1%80%BD%E1%80%84%E1%80%B7%E1%80%BA%E1%80%A1%E1%80%9B%E1%80%B1%E1%80%B8-circulation-desk--vip-7-days-rule">လုပ်ဆောင်ချက် ၉ - စာအုပ်ငှားရမ်း/အပ်နှံ ကောင်တာနှင့် VIP အခွင့်အရေး (Circulation Desk &amp; VIP +7 Days Rule)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%80---%E1%80%A6%E1%80%B8%E1%80%85%E1%80%AC%E1%80%B8%E1%80%95%E1%80%B1%E1%80%B8-%E1%80%80%E1%80%BC%E1%80%AD%E1%80%AF%E1%80%90%E1%80%84%E1%80%BA%E1%80%99%E1%80%BE%E1%80%AC%E1%80%9A%E1%80%B0%E1%80%99%E1%80%BE%E1%80%AF-%E1%80%85%E1%80%AE%E1%80%99%E1%80%B6%E1%80%81%E1%80%94%E1%80%B7%E1%80%BA%E1%80%81%E1%80%BD%E1%80%B2%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-priority-holds-queue-management">လုပ်ဆောင်ချက် ၁၀ - ဦးစားပေး ကြိုတင်မှာယူမှု စီမံခန့်ခွဲခြင်း (Priority Holds Queue Management)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%81---%E1%80%A1%E1%80%9E%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9D%E1%80%84%E1%80%BA%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8-%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%99%E1%80%BE%E1%80%90%E1%80%BA%E1%80%95%E1%80%AF%E1%80%B6%E1%80%90%E1%80%84%E1%80%BA%E1%80%85%E1%80%AD%E1%80%85%E1%80%85%E1%80%BA%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-patron-directory--myanmar-nrc-kyc">လုပ်ဆောင်ချက် ၁၁ - အသင်းဝင်များ စာရင်းနှင့် မှတ်ပုံတင်စိစစ်ခြင်း (Patron Directory &amp; Myanmar NRC KYC)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%82---%E1%80%90%E1%80%9B%E1%80%AC%E1%80%B8%E1%80%9D%E1%80%84%E1%80%BA-vip-%E1%80%A1%E1%80%9E%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9D%E1%80%84%E1%80%BA%E1%80%80%E1%80%90%E1%80%BA%E1%80%95%E1%80%BC%E1%80%AC%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%95%E1%80%AF%E1%80%B6%E1%80%91%E1%80%AF%E1%80%90%E1%80%BA%E1%80%9A%E1%80%B0%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-vip-member-card-generation--png-export">လုပ်ဆောင်ချက် ၁၂ - တရားဝင် VIP အသင်းဝင်ကတ်ပြားနှင့် ပုံထုတ်ယူခြင်း (VIP Member Card Generation &amp; PNG Export)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%83---%E1%80%92%E1%80%8F%E1%80%BA%E1%80%80%E1%80%BC%E1%80%B1%E1%80%B8%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%84%E1%80%BD%E1%80%B1%E1%80%95%E1%80%B1%E1%80%B8%E1%80%81%E1%80%BB%E1%80%B1%E1%80%99%E1%80%BE%E1%80%AF-%E1%80%80%E1%80%B1%E1%80%AC%E1%80%80%E1%80%BA%E1%80%81%E1%80%B6%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-fines-ledger--payment-collection">လုပ်ဆောင်ချက် ၁၃ - ဒဏ်ကြေးစာရင်းနှင့် ငွေပေးချေမှု ကောက်ခံခြင်း (Fines Ledger &amp; Payment Collection)</a></li>
+</ul>
+</li>
+<li><a href="#%E1%80%A1%E1%80%95%E1%80%AD%E1%80%AF%E1%80%84%E1%80%BA%E1%80%B8-%E1%81%83---%E1%80%A1%E1%80%86%E1%80%84%E1%80%B7%E1%80%BA%E1%80%99%E1%80%BC%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%A1%E1%80%85%E1%80%AE%E1%80%9B%E1%80%84%E1%80%BA%E1%80%81%E1%80%B6%E1%80%85%E1%80%AC%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8%E1%80%87%E1%80%9A%E1%80%AC%E1%80%B8-%E1%80%85%E1%80%94%E1%80%85%E1%80%BA-reporting--analytics-suite">အပိုင်း (၃) - အဆင့်မြင့် အစီရင်ခံစာနှင့် စာရင်းဇယား စနစ် (Reporting &amp; Analytics Suite)</a><ul>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%84---%E1%80%85%E1%80%BD%E1%80%99%E1%80%BA%E1%80%B8%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%9B%E1%80%8A%E1%80%BA-%E1%80%A1%E1%80%94%E1%80%BE%E1%80%85%E1%80%BA%E1%80%81%E1%80%BB%E1%80%AF%E1%80%95%E1%80%BA%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-date-filter-executive-summary--date-filter">လုပ်ဆောင်ချက် ၁၄ - စွမ်းဆောင်ရည် အနှစ်ချုပ်နှင့် Date Filter (Executive Summary &amp; Date Filter)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%85---%E1%80%84%E1%80%BE%E1%80%AC%E1%80%B8%E1%80%9B%E1%80%99%E1%80%BA%E1%80%B8%E1%80%99%E1%80%BE%E1%80%AF%E1%80%99%E1%80%BE%E1%80%90%E1%80%BA%E1%80%90%E1%80%99%E1%80%BA%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-csv-%E1%80%92%E1%80%B1%E1%80%AB%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9C%E1%80%AF%E1%80%92%E1%80%BA-circulation-loans-ledger--csv-export">လုပ်ဆောင်ချက် ၁၅ - ငှားရမ်းမှုမှတ်တမ်းနှင့် CSV ဒေါင်းလုဒ် (Circulation Loans Ledger &amp; CSV Export)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%86---%E1%80%92%E1%80%8F%E1%80%BA%E1%80%80%E1%80%BC%E1%80%B1%E1%80%B8%E1%80%84%E1%80%BD%E1%80%B1%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-csv-%E1%80%92%E1%80%B1%E1%80%AB%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9C%E1%80%AF%E1%80%92%E1%80%BA-fines--financial-ledger--csv-export">လုပ်ဆောင်ချက် ၁၆ - ဒဏ်ကြေးငွေစာရင်းနှင့် CSV ဒေါင်းလုဒ် (Fines &amp; Financial Ledger &amp; CSV Export)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%87---%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%9C%E1%80%80%E1%80%BA%E1%80%80%E1%80%BB%E1%80%94%E1%80%BA%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-csv-%E1%80%92%E1%80%B1%E1%80%AB%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9C%E1%80%AF%E1%80%92%E1%80%BA-catalog-inventory-status--csv-export">လုပ်ဆောင်ချက် ၁၇ - စာအုပ်လက်ကျန်စာရင်းနှင့် CSV ဒေါင်းလုဒ် (Catalog Inventory Status &amp; CSV Export)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%88---%E1%80%A1%E1%80%9E%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9D%E1%80%84%E1%80%BA%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-vip-%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8-csv-%E1%80%92%E1%80%B1%E1%80%AB%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9C%E1%80%AF%E1%80%92%E1%80%BA-patron--vip-directory--csv-export">လုပ်ဆောင်ချက် ၁၈ - အသင်းဝင်များနှင့် VIP စာရင်း CSV ဒေါင်းလုဒ် (Patron &amp; VIP Directory &amp; CSV Export)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%81%E1%81%89---%E1%80%9B%E1%80%80%E1%80%BA%E1%80%80%E1%80%BB%E1%80%B1%E1%80%AC%E1%80%BA%E1%80%9C%E1%80%BD%E1%80%94%E1%80%BA%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8-%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-csv-%E1%80%92%E1%80%B1%E1%80%AB%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9C%E1%80%AF%E1%80%92%E1%80%BA-overdue-action-list--csv-export">လုပ်ဆောင်ချက် ၁၉ - ရက်ကျော်လွန်စာအုပ်များ စာရင်းနှင့် CSV ဒေါင်းလုဒ် (Overdue Action List &amp; CSV Export)</a></li>
+</ul>
+</li>
+<li><a href="#%E1%80%A1%E1%80%95%E1%80%AD%E1%80%AF%E1%80%84%E1%80%BA%E1%80%B8-%E1%81%84---koha-%E1%80%A1%E1%80%86%E1%80%84%E1%80%B7%E1%80%BA%E1%80%99%E1%80%BC%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%84%E1%80%94%E1%80%BA%E1%80%B8%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%9B%E1%80%BD%E1%80%80%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8-koha-enterprise-library-services">အပိုင်း (၄) - Koha အဆင့်မြင့် လုပ်ငန်းဆောင်ရွက်ချက်များ (Koha Enterprise Library Services)</a><ul>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%82%E1%81%80---%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%9D%E1%80%9A%E1%80%BA%E1%80%9A%E1%80%B0%E1%80%99%E1%80%BE%E1%80%AF-%E1%80%85%E1%80%AE%E1%80%99%E1%80%B6%E1%80%81%E1%80%94%E1%80%B7%E1%80%BA%E1%80%81%E1%80%BD%E1%80%B2%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-acquisitions--purchase-orders">လုပ်ဆောင်ချက် ၂၀ - စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်း (Acquisitions &amp; Purchase Orders)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%82%E1%81%81---%E1%80%82%E1%80%BB%E1%80%AC%E1%80%94%E1%80%9A%E1%80%BA%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%99%E1%80%82%E1%80%B9%E1%80%82%E1%80%87%E1%80%84%E1%80%BA%E1%80%B8-%E1%80%85%E1%80%AC%E1%80%9B%E1%80%84%E1%80%BA%E1%80%B8%E1%80%9E%E1%80%BD%E1%80%84%E1%80%BA%E1%80%B8%E1%80%99%E1%80%BE%E1%80%AF-serials--periodicals">လုပ်ဆောင်ချက် ၂၁ - ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းမှု (Serials &amp; Periodicals)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%82%E1%81%82---%E1%80%85%E1%80%AC%E1%80%80%E1%80%BC%E1%80%8A%E1%80%B7%E1%80%BA%E1%80%90%E1%80%AD%E1%80%AF%E1%80%80%E1%80%BA%E1%80%A1%E1%80%81%E1%80%BB%E1%80%84%E1%80%BA%E1%80%B8%E1%80%81%E1%80%BB%E1%80%84%E1%80%BA%E1%80%B8-%E1%80%81%E1%80%BB%E1%80%AD%E1%80%90%E1%80%BA%E1%80%86%E1%80%80%E1%80%BA%E1%80%84%E1%80%BE%E1%80%AC%E1%80%B8%E1%80%9B%E1%80%99%E1%80%BA%E1%80%B8%E1%80%81%E1%80%BC%E1%80%84%E1%80%BA%E1%80%B8-interlibrary-loan---ill">လုပ်ဆောင်ချက် ၂၂ - စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းခြင်း (Interlibrary Loan - ILL)</a></li>
+<li><a href="#%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%86%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%81%E1%80%BB%E1%80%80%E1%80%BA-%E1%81%82%E1%81%83---%E1%80%90%E1%80%80%E1%80%B9%E1%80%80%E1%80%9E%E1%80%AD%E1%80%AF%E1%80%9C%E1%80%BA-%E1%80%9E%E1%80%84%E1%80%BA%E1%80%9B%E1%80%AD%E1%80%AF%E1%80%B8%E1%80%8A%E1%80%BD%E1%80%BE%E1%80%94%E1%80%BA%E1%80%B8%E1%80%90%E1%80%99%E1%80%BA%E1%80%B8-%E1%80%85%E1%80%AC%E1%80%A1%E1%80%AF%E1%80%95%E1%80%BA%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8-course-reserves">လုပ်ဆောင်ချက် ၂၃ - တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း စာအုပ်များ (Course Reserves)</a></li>
+</ul>
+</li>
+<li><a href="#%E1%80%A1%E1%80%95%E1%80%AD%E1%80%AF%E1%80%84%E1%80%BA%E1%80%B8-%E1%81%85---%E1%80%85%E1%80%B6%E1%80%9E%E1%80%90%E1%80%BA%E1%80%99%E1%80%BE%E1%80%90%E1%80%BA-%E1%80%9C%E1%80%AF%E1%80%95%E1%80%BA%E1%80%84%E1%80%94%E1%80%BA%E1%80%B8%E1%80%9C%E1%80%99%E1%80%BA%E1%80%B8%E1%80%8A%E1%80%BD%E1%80%BE%E1%80%94%E1%80%BA-sop-%E1%80%94%E1%80%BE%E1%80%84%E1%80%B7%E1%80%BA-%E1%80%A1%E1%80%99%E1%80%B1%E1%80%B8%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8%E1%80%9E%E1%80%B1%E1%80%AC-%E1%80%99%E1%80%B1%E1%80%B8%E1%80%81%E1%80%BD%E1%80%94%E1%80%BA%E1%80%B8%E1%80%99%E1%80%BB%E1%80%AC%E1%80%B8-faq">အပိုင်း (၅) - စံသတ်မှတ် လုပ်ငန်းလမ်းညွှန် (SOP) နှင့် အမေးများသော မေးခွန်းများ (FAQ)</a></li>
+</ul>
+<div class="content-divider"></div>
+<h1 id="part-1" class="guide-h1">အပိုင်း (၁) - အများပြည်သူနှင့် စာဖတ်သူ အသင်းဝင်များဆိုင်ရာ စနစ် (Public Patron Portal)</h1><div class="content-divider"></div>
+<h3 id="feature-1" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁ - အများပြည်သူသုံး စာအုပ်ရှာဖွေရေးစနစ် (OPAC Search & Category Filters)</h3><p><strong>ရည်ရွယ်ချက်:</strong> ပြည်သူလူထုနှင့် စာကြည့်တိုက် အသင်းဝင်များအနေဖြင့် စာကြည့်တိုက်တွင် ရှိသော မြန်မာဂန္ထဝင်စာပေများ၊ သမိုင်းစာအုပ်များ၊ နည်းပညာနှင့် ရသစာပေများကို လျင်မြန်လွယ်ကူစွာ ရှာဖွေနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-8" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>လျင်မြန်သော ရှာဖွေမှုစနစ် (Live Search):</strong> စာအုပ်ခေါင်းစဉ်၊ စာရေးဆရာအမည်၊ ထုတ်ဝေသူ သို့မဟုတ် ISBN နံပါတ် ရိုက်ထည့်သည်နှင့် ချက်ချင်း ရှာဖွေဖော်ပြပေးပါသည်။</li>
+<li><strong>စာအုပ်ကဏ္ဍခွဲ ပိုင်းခြားမှု (Category Pills):</strong> <code>လူကြိုက်များ/ရေပန်းစား (Trending)</code>၊ <code>အသစ်ထွက်ရှိမှုများ (Latest release)</code>၊ <code>မြန်မာဂန္ထဝင်စာပေ</code>၊ <code>နည်းပညာနှင့် IT</code> စသည့် ကဏ္ဍခွဲ ခလုတ်များဖြင့် တစ်ချက်နှိပ်ရုံဖြင့် စစ်ထုတ်ကြည့်ရှုနိုင်ပါသည်။</li>
+<li><strong>စာအုပ်လက်ကျန် အခြေအနေ ပြသမှု (Availability Status):</strong> စင်ပေါ်တွင် ငှားရမ်းနိုင်သော စာအုပ်မိတ္တူ အရေအတွက် (Available) သို့မဟုတ် ငှားရမ်းထားဆဲ (Checked Out) အခြေအနေကို အစိမ်း/အပြာရောင် Badge ဖြင့် တိကျစွာ ပြသပေးပါသည်။</li>
+<li><strong>အမျိုးသားစာကြည့်တိုက် E-Book အရင်းအမြစ် ခလုတ်:</strong> အမျိုးသားစာကြည့်တိုက်၏ ဒစ်ဂျစ်တယ် အရင်းအမြစ်များဆီသို့ တိုက်ရိုက်သွားရောက်နိုင်သော လင့်ခ်ခလုတ် ပါဝင်ပါသည်။</li>
+</ol>
+<h4 id="section-9" class="guide-h4">အသုံးပြုနည်း အဆင့်ဆင့်-</h4><ol>
+<li>ပင်မစာမျက်နှာ <a href="http://206.189.47.42:3000/">http://206.189.47.42:3000/</a> သို့ ဝင်ရောက်ပါ။</li>
+<li>ရှာဖွေရေးဘားတွင် မိမိရှာဖွေလိုသော စာအုပ်အမည် သို့မဟုတ် စာရေးဆရာ (ဥပမာ- &quot;ဆရာကြီး ရွှေဥဒေါင်း&quot; သို့မဟုတ် &quot;ချစ်ဦးညို&quot;) ကို ရိုက်ထည့်ပါ။</li>
+<li>မိမိစိတ်ဝင်စားရာ ကဏ္ဍခွဲခလုတ် (ဥပမာ- &quot;🔥 လူကြိုက်များ/ရေပန်းစား&quot;) ကို နှိပ်၍ သီးသန့်ရွေးထုတ်ပါ။</li>
+<li>စာအုပ်ကတ်ပြားပေါ်ရှိ အသေးစိတ် အချက်အလက်များ၊ ISBN နှင့် လက်ကျန်မိတ္တူ အရေအတွက်ကို ကြည့်ရှုပါ။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/01_opac_homepage.png', 'အများပြည်သူသုံး စာအုပ်ရှာဖွေရေးစနစ် (OPAC Homepage)')" title="Click to view full image">
+          <img src="images/01_opac_homepage.png" alt="အများပြည်သူသုံး စာအုပ်ရှာဖွေရေးစနစ် (OPAC Homepage)" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">အများပြည်သူသုံး စာအုပ်ရှာဖွေရေးစနစ် (OPAC Homepage)</figcaption>
+      </figure>
+    
+<em>ပုံ ၁ - OPAC ပင်မစာမျက်နှာတွင် စာအုပ်ရှာဖွေရေးဘား၊ အမျိုးအစား Filter များနှင့် ကဏ္ဍခွဲခလုတ်များ ဖော်ပြထားပုံ</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-2" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၂ - ဝဘ်ဘရောင်ဇာအတွင်း တိုက်ရိုက်ဖတ်ရှုနိုင်သော E-Book PDF ဖတ်စနစ် (In-Browser E-Book PDF Viewer)</h3><p><strong>ရည်ရွယ်ချက်:</strong> ပြင်ပဆော့ဖ်ဝဲလ်များ သီးခြားဒေါင်းလုဒ်ဆွဲစရာမလိုဘဲ ကွန်ပျူတာ သို့မဟုတ် ဖုန်းဘရောင်ဇာပေါ်တွင် တိုက်ရိုက် E-Book PDF များကို ဖတ်ရှုနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-11" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ကလစ်တစ်ချက်ဖြင့် ဖတ်ရှုနိုင်မှု (Instant Reading):</strong> E-Book ရရှိနိုင်သော စာအုပ်များတွင် စိမ်းပြာရောင် <strong>&quot;PDF ဖတ်ရန်&quot;</strong> ခလုတ် ပေါ်နေမည် ဖြစ်ပါသည်။</li>
+<li><strong>ပြည့်စုံသော Reader Controls:</strong> စာမျက်နှာ အကူးအပြောင်း၊ Zoom In / Zoom Out ချဲ့ခြင်း/ချုံ့ခြင်း၊ မျက်နှာပြင်ပြည့် (Fit Width) ကြည့်ရှုခြင်းနှင့် ဒေါင်းလုဒ်ရယူခြင်းများကို စုံလင်စွာ ဆောင်ရွက်နိုင်ပါသည်။</li>
+<li><strong>တရားဝင် E-Book စာအုပ် ၅၀ ကျော်:</strong> ခေတ်ပေါ်နည်းပညာမှသည် မြန်မာ့သမိုင်းနှင့် ရသစာပေအထိ စာအုပ်ပေါင်း ၅၀ ကျော်ကို အပြည့်အစုံ ထည့်သွင်းပေးထားပါသည်။</li>
+</ol>
+<h4 id="section-12" class="guide-h4">အသုံးပြုနည်း အဆင့်ဆင့်-</h4><ol>
+<li>စာအုပ်စာရင်းတွင် <code>FREE E-BOOK</code> အမှတ်အသားပါသော စာအုပ်ကို ရှာပါ။</li>
+<li>စိမ်းပြာရောင် <strong>&quot;PDF ဖတ်ရန်&quot;</strong> ခလုတ်ကို နှိပ်ပါ။</li>
+<li>မျက်နှာပြင်ပေါ်တွင် ပွင့်လာသော Reader Modal ဖြင့် စာအုပ်ကို စတင်ဖတ်ရှုပါ။</li>
+<li>စာဖတ်ပြီးပါက ညာဘက်အပေါ်ထောင့်ရှိ &quot;✕&quot; (Close) ခလုတ်ကို နှိပ်၍ ပိတ်နိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/02_ebook_pdf_reader.png', 'ဝဘ်ဘရောင်ဇာအတွင်း E-Book PDF ဖတ်ရှုခြင်း')" title="Click to view full image">
+          <img src="images/02_ebook_pdf_reader.png" alt="ဝဘ်ဘရောင်ဇာအတွင်း E-Book PDF ဖတ်ရှုခြင်း" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">ဝဘ်ဘရောင်ဇာအတွင်း E-Book PDF ဖတ်ရှုခြင်း</figcaption>
+      </figure>
+    
+<em>ပုံ ၂ - ဝဘ်ဘရောင်ဇာအတွင်း တိုက်ရိုက်ဖတ်ရှုနိုင်သော မြန်မာ E-Book Reader Modal မျက်နှာပြင်</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-3" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၃ - စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း (Member & Staff Authentication)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက် အသင်းဝင်များနှင့် ဝန်ထမ်းများ မိမိတို့၏ သက်ဆိုင်ရာ အခန်းကဏ္ဍ (Role) အလိုက် လုံခြုံစွာ အကောင့်ဝင်ရောက်နိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-14" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>အခန်းကဏ္ဍခွဲခြားမှု (Role-Based Access):</strong> <code>Patron (စာဖတ်သူအသင်းဝင်)</code> နှင့် <code>Staff/Officer (စာကြည့်တိုက်မှူးနှင့် ဝန်ထမ်း)</code> ဟူ၍ နှစ်မျိုး ခွဲခြားထားပါသည်။</li>
+<li><strong>လွယ်ကူသော Demo Login ခလုတ်များ:</strong> စမ်းသပ်လေ့ကျင့်သူများ အဆင်ပြေစေရန် စာကြည့်တိုက်မှူးအကောင့် နှင့် အသင်းဝင်အကောင့်များအတွက် Quick Preset ခလုတ်များ ထည့်သွင်းထားပါသည်။</li>
+<li><strong>ဘားကုဒ် သို့မဟုတ် အီးမေးလ်ဖြင့် ဝင်ရောက်နိုင်မှု:</strong> မိမိ၏ အီးမေးလ် သို့မဟုတ် ကတ်ပြားပေါ်ရှိ ဘားကုဒ်နံပါတ် (ဥပမာ- <code>PAT-90022</code>) ဖြင့် အလွယ်တကူ Login ဝင်နိုင်ပါသည်။</li>
+</ol>
+<h4 id="section-15" class="guide-h4">အသုံးပြုနည်း အဆင့်ဆင့်-</h4><ol>
+<li>အပေါ် Navigation Bar ရှိ <strong>&quot;အကောင့်ဝင်ရန် (Login)&quot;</strong> ကို နှိပ်ပါ။</li>
+<li>မိမိဝင်ရောက်လိုသည့် အကောင့်အမျိုးအစား (Patron သို့မဟုတ် Staff) ကို ရွေးချယ်ပါ။</li>
+<li>အီးမေးလ်နှင့် စကားဝှက် ရိုက်ထည့်ပြီး <strong>&quot;Sign In&quot;</strong> နှိပ်ပါ။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/03_login_screen.png', 'စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း မျက်နှာပြင်')" title="Click to view full image">
+          <img src="images/03_login_screen.png" alt="စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း မျက်နှာပြင်" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း မျက်နှာပြင်</figcaption>
+      </figure>
+    
+<em>ပုံ ၃ - အသင်းဝင်နှင့် ဝန်ထမ်းများ လုံခြုံစွာ အကောင့်ဝင်ရောက်နိုင်သော Login Portal</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-4" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၄ - စာဖတ်သူ အသင်းဝင် ပေါ်တယ်နှင့် သက်တမ်းတိုးခြင်း (Patron Portal & Self-Renewal)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာဖတ်သူများ မိမိငှားရမ်းထားသော စာအုပ်စာရင်းများ၊ ပြန်အပ်ရမည့် ရက်စွဲများကို အချိန်နှင့်တစ်ပြေးညီ စစ်ဆေးနိုင်ပြီး အွန်လိုင်းမှတစ်ဆင့် စာအုပ်သက်တမ်းတိုးနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-17" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>လက်ရှိငှားရမ်းထားမှု အနှစ်ချုပ် (Current Checkouts):</strong> ငှားရမ်းထားသည့် စာအုပ်အမည်၊ ငှားသည့်ရက်၊ ပြန်အပ်ရမည့်ရက်နှင့် ရက်လွန်ရန် ကျန်ရှိသည့် ရက်အရေအတွက်ကို ဖော်ပြပေးပါသည်။</li>
+<li><strong>အွန်လိုင်းမှ စာအုပ်သက်တမ်းတိုးခြင်း (One-Click Self-Renewal):</strong> စာကြည့်တိုက်သို့ လူကိုယ်တိုင် လာရောက်စရာမလိုဘဲ စာအုပ်ဘေးရှိ <strong>&quot;သက်တမ်းတိုးရန် (Renew Loan)&quot;</strong> ခလုတ်ကို နှိပ်၍ သတ်မှတ်ရက်အတိုင်း သက်တမ်းတိုးနိုင်ပါသည်။</li>
+<li><strong>ကြိုတင်မှာယူမှု အခြေအနေ (Hold Tracking):</strong> မိမိ ကြိုတင်မှာယူထားသော စာအုပ်များ၏ Queue အဆင့်နှင့် စာကြည့်တိုက်တွင် လာရောက်ထုတ်ယူနိုင်သည့် အခြေအနေကို စစ်ဆေးနိုင်ပါသည်။</li>
+</ol>
+<h4 id="section-18" class="guide-h4">အသုံးပြုနည်း အဆင့်ဆင့်-</h4><ol>
+<li>အသင်းဝင်အကောင့်ဖြင့် Login ဝင်ပြီးနောက် <strong>&quot;အသင်းဝင် ပေါ်တယ် (Member Portal)&quot;</strong> သို့ သွားပါ။</li>
+<li>&quot;လက်ရှိငှားရမ်းထားသော စာအုပ်များ&quot; စာရင်းတွင် ပြန်အပ်ရမည့်ရက်ကို ကြည့်ရှုပါ။</li>
+<li>သက်တမ်းတိုးလိုပါက စိမ်းပြာရောင် <strong>&quot;သက်တမ်းတိုးရန်&quot;</strong> ခလုတ်ကို နှိပ်ပါ။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/04_patron_self_service.png', 'စာဖတ်သူ အသင်းဝင် ပေါ်တယ်')" title="Click to view full image">
+          <img src="images/04_patron_self_service.png" alt="စာဖတ်သူ အသင်းဝင် ပေါ်တယ်" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာဖတ်သူ အသင်းဝင် ပေါ်တယ်</figcaption>
+      </figure>
+    
+<em>ပုံ ၄ - စာဖတ်သူ အသင်းဝင် ပေါ်တယ်တွင် လက်ရှိငှားထားသော စာအုပ်များနှင့် သက်တမ်းတိုး ခလုတ်များ ဖော်ပြထားပုံ</em></p>
+<div class="content-divider"></div>
+<h1 id="part-2" class="guide-h1">အပိုင်း (၂) - စာကြည့်တိုက်မှူးနှင့် ဝန်ထမ်းများဆိုင်ရာ စီမံခန့်ခွဲမှုစနစ် (Staff Control Panel)</h1><div class="content-divider"></div>
+<h3 id="feature-5" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၅ - စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ် (Staff Admin Command Center)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက်မှူးများအတွက် စာကြည့်တိုက်တစ်ခုလုံး၏ လည်ပတ်မှုအခြေအနေ (စုစုပေါင်းစာအုပ်၊ ငှားရမ်းဆဲစာအုပ်၊ အသင်းဝင်ဦးရေ၊ ရရန်ကျန်ဒဏ်ကြေး) ကို မျက်ခြည်မပြတ် စောင့်ကြည့်ထိန်းချုပ်နိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-21" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>အချိန်နှင့်တစ်ပြေးညီ KPI ကတ်ပြားများ:</strong> စုစုပေါင်း စာအုပ်ခေါင်းစဉ်၊ လက်ရှိငှားထားသော စာအုပ်များ၊ မှတ်ပုံတင်ထားသော အသင်းဝင်ဦးရေနှင့် ကြိုတင်မှာယူမှု စာရင်းများ။</li>
+<li><strong>အမြန်လုပ်ငန်းခလုတ်များ (Quick Shortcuts):</strong> စာအုပ်ကတ်တလောက်သွင်းခြင်း၊ ငှား/ပြန်ကောင်တာ၊ အသင်းဝင်စာရင်း၊ ဒဏ်ကြေးစာရင်းနှင့် အစီရင်ခံစာများဆီသို့ တိုက်ရိုက်သွားရောက်နိုင်သော ခလုတ်များ။</li>
+<li><strong>လတ်တလော လှုပ်ရှားမှု မှတ်တမ်း (Recent Activity Feed):</strong> ယနေ့ စာအုပ်ငှားရမ်းမှု၊ ပြန်အပ်မှုနှင့် ဒဏ်ကြေးပေးသွင်းမှုများကို အချိန်မှတ်တမ်းနှင့်တကွ ပြသပေးပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/05_admin_dashboard.png', 'စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ်')" title="Click to view full image">
+          <img src="images/05_admin_dashboard.png" alt="စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ်" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ်</figcaption>
+      </figure>
+    
+<em>ပုံ ၅ - စာကြည့်တိုက်မှူးများအတွက် အဓိက လုပ်ငန်းကွပ်ကဲမှု စင်တာ (Admin Dashboard)</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-6" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၆ - စာအုပ်စာရင်းနှင့် ကတ်တလောက် စီမံခန့်ခွဲမှု (Catalog Management & Inventory)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက်ရှိ စာအုပ်အသစ်များ ထည့်သွင်းခြင်း၊ ပြင်ဆင်ခြင်း၊ စာအုပ်မိတ္တူ (Physical Copies) များနှင့် စင်နံပါတ် (Shelf Location) များကို စနစ်တကျ စီမံခန့်ခွဲနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-23" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ပြည့်စုံသော စာအုပ်ဇယား (Bibliographic Table):</strong> စာအုပ်မျက်နှာဖုံး၊ ခေါင်းစဉ်၊ စာရေးဆရာ၊ ISBN၊ အမျိုးအစား၊ ကဏ္ဍခွဲ၊ မိတ္တူအရေအတွက်နှင့် ငှားရမ်းမှုကာလများကို တစ်နေရာတည်းတွင် ကြည့်ရှုနိုင်ပါသည်။</li>
+<li><strong>စာအုပ်ကဏ္ဍ Filter များ (Category Tabs):</strong> စာအုပ်များကို Trending၊ Latest Release စသည့် သတ်မှတ်ကဏ္ဍများအလိုက် စစ်ထုတ်ကြည့်ရှုနိုင်ပါသည်။</li>
+<li><strong>မိတ္တူစီမံခန့်ခွဲမှု (Manage Copies):</strong> စာအုပ်တစ်အုပ်ချင်းစီအတွက် ဘားကုဒ်နံပါတ်၊ ထားရှိရာ စင်နေရာ (ဥပမာ- Shelf B-12) နှင့် စာအုပ်အခြေအနေ (Available, On Loan, Maintenance, Lost) တို့ကို သီးခြားစီမံနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/06_catalog_management.png', 'စာအုပ်စာရင်းနှင့် ကတ်တလောက် စီမံခန့်ခွဲမှု')" title="Click to view full image">
+          <img src="images/06_catalog_management.png" alt="စာအုပ်စာရင်းနှင့် ကတ်တလောက် စီမံခန့်ခွဲမှု" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာအုပ်စာရင်းနှင့် ကတ်တလောက် စီမံခန့်ခွဲမှု</figcaption>
+      </figure>
+    
+<em>ပုံ ၆ - စာအုပ်ကတ်တလောက် စာရင်းဇယားနှင့် ရှာဖွေစစ်ထုတ်မှု မျက်နှာပြင်</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-7" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၇ - စာအုပ်အသစ်ထည့်သွင်းခြင်းနှင့် ဒဏ်ကြေးနှုန်း သတ်မှတ်ခြင်း (Add Book & Daily Fine Rate)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာအုပ်အသစ်တစ်အုပ် စနစ်ထဲသို့ ထည့်သွင်းရာတွင် သက်ဆိုင်ရာ ကဏ္ဍခွဲ (Category)၊ အများဆုံးငှားရမ်းနိုင်သော ရက်အရေအတွက်နှင့် ရက်လွန်ဒဏ်ကြေးနှုန်း (MMK/Day) တို့ကို စိတ်ကြိုက် သတ်မှတ်နိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-25" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>စာအုပ်ကဏ္ဍခွဲ ရွေးချယ်မှု (Book Category Selection):</strong> စာအုပ်ထည့်သွင်းချိန်တွင် သက်ဆိုင်ရာ Category (ဥပမာ- Trending, Latest release, Computer Science) ကို Dropdown မှ အလွယ်တကူ ရွေးချယ်နိုင်ပါသည်။</li>
+<li><strong>အများဆုံးငှားရမ်းခွင့် ကာလ (Max Rent Days):</strong> စံသတ်မှတ်ချက် ၇ ရက်အပြင် စာအုပ်အမျိုးအစားအလိုက် ၁၄ ရက်၊ ၂၁ ရက် စသဖြင့် ပြင်ဆင်သတ်မှတ်နိုင်ပါသည်။</li>
+<li><strong>စာအုပ်အလိုက် သီးခြား ဒဏ်ကြေးနှုန်း (Daily Overdue Fine Rate in MMK):</strong> တစ်ရက်လျှင် ကျသင့်မည့် ဒဏ်ကြေးငွေ (ဥပမာ- ၅၀၀ ကျပ်၊ ၁,၀၀၀ ကျပ်) ကို စာအုပ်တန်ဖိုးအလိုက် စိတ်ကြိုက်သတ်မှတ်နိုင်ပါသည်။</li>
+</ol>
+<h4 id="section-26" class="guide-h4">အသုံးပြုနည်း အဆင့်ဆင့်-</h4><ol>
+<li>စာအုပ်စာရင်း စာမျက်နှာတွင် အစိမ်းရောင် <strong>&quot;+ စာအုပ်အသစ်ထည့်ရန်&quot;</strong> ခလုတ်ကို နှိပ်ပါ။</li>
+<li>စာအုပ်ခေါင်းစဉ်၊ စာရေးဆရာ၊ ISBN၊ ထုတ်ဝေသူနှင့် အမျိုးအစားများကို ဖြည့်သွင်းပါ။</li>
+<li><strong>Book Category</strong> Dropdown တွင် သင့်လျော်သော ကဏ္ဍခွဲကို ရွေးပါ။</li>
+<li><strong>အများဆုံး ငှားရမ်းနိုင်သည့်ရက် (Max Rent Days)</strong> နှင့် <strong>တစ်ရက် ဒဏ်ကြေးနှုန်း (Daily Fine Rate in MMK)</strong> တို့ကို သတ်မှတ်ပါ။</li>
+<li><strong>&quot;သိမ်းဆည်းမည် (Save Book)&quot;</strong> ကို နှိပ်ပါ။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/07_add_book_modal.png', 'စာအုပ်အသစ် ထည့်သွင်းခြင်း Modal')" title="Click to view full image">
+          <img src="images/07_add_book_modal.png" alt="စာအုပ်အသစ် ထည့်သွင်းခြင်း Modal" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာအုပ်အသစ် ထည့်သွင်းခြင်း Modal</figcaption>
+      </figure>
+    
+<em>ပုံ ၇ - စာအုပ်အသစ် ထည့်သွင်းခြင်းနှင့် ကဏ္ဍခွဲ၊ ဒဏ်ကြေးနှုန်း သတ်မှတ်သည့် ပုံစံ</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-8" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၈ - စာအုပ်ကဏ္ဍခွဲများ စီမံခန့်ခွဲမှု (Book Category CRUD Management)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက်မှူးများအနေဖြင့် စာအုပ်ကဏ္ဍခွဲအသစ်များ (Categories) ကို လိုအပ်သလို အသစ်ထည့်သွင်းခြင်း၊ အမည်ပြင်ဆင်ခြင်းနှင့် ဖျက်ပစ်ခြင်းများကို လွတ်လပ်စွာ ဆောင်ရွက်နိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-28" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>လွတ်လပ်စွာ စီမံခန့်ခွဲနိုင်မှု (Full CRUD):</strong> Create, Read, Update, Delete လုပ်ငန်းအားလုံးကို အလွယ်တကူ ဆောင်ရွက်နိုင်ပါသည်။</li>
+<li><strong>ကဏ္ဍကုဒ်နှင့် ဖော်ပြချက် (Code &amp; Description):</strong> ကဏ္ဍအမည်အပြင် အတိုကောက်ကုဒ် (ဥပမာ- <code>TRENDING</code>, <code>LATEST</code>, <code>CS</code>) များကိုပါ စနစ်တကျ ထည့်သွင်းနိုင်ပါသည်။</li>
+<li><strong>အလိုအလျောက် ချိတ်ဆက်မှု (Auto Integration):</strong> ဤနေရာတွင် ထည့်သွင်းလိုက်သော Category များသည် ပင်မ OPAC ရှာဖွေရေးစာမျက်နှာနှင့် စာအုပ်ထည့်သွင်းသည့် Modal များတွင် ချက်ချင်း အလိုအလျောက် ပေါ်လာမည် ဖြစ်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/08_book_categories_crud.png', 'စာအုပ်ကဏ္ဍခွဲများ စီမံခန့်ခွဲမှု မျက်နှာပြင်')" title="Click to view full image">
+          <img src="images/08_book_categories_crud.png" alt="စာအုပ်ကဏ္ဍခွဲများ စီမံခန့်ခွဲမှု မျက်နှာပြင်" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာအုပ်ကဏ္ဍခွဲများ စီမံခန့်ခွဲမှု မျက်နှာပြင်</figcaption>
+      </figure>
+    
+<em>ပုံ ၈ - စာအုပ်ကဏ္ဍခွဲများ အသစ်ထည့်သွင်းခြင်းနှင့် စီမံခန့်ခွဲသည့် မျက်နှာပြင်</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-9" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၉ - စာအုပ်ငှားရမ်း/အပ်နှံ ကောင်တာနှင့် VIP အခွင့်အရေး (Circulation Desk & VIP +7 Days Rule)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက် ကောင်တာတွင် စာအုပ်ငှားရမ်းခြင်းနှင့် ပြန်လည်အပ်နှံခြင်းများကို ဘားကုဒ် စကင်နာဖြင့် လျင်မြန်စွာ ဆောင်ရွက်နိုင်စေရန်နှင့် VIP အသင်းဝင်များအတွက် အထူးရက်ပို ခံစားခွင့်များ အလိုအလျောက် တွက်ချက်ပေးရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-30" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ဘားကုဒ်စကင်ဖတ်စနစ် (Barcode Scanner Ready):</strong> အသင်းဝင်ကတ် ဘားကုဒ် (Patron Barcode) နှင့် စာအုပ်ဘားကုဒ် (Book Copy Barcode) တို့ကို စကင်ဖတ်ရုံဖြင့် စက္ကန့်ပိုင်းအတွင်း အချက်အလက်များ ကျရောက်လာပါသည်။</li>
+<li><strong>VIP အသင်းဝင် အထူးရက်ပို စည်းမျဉ်း (+7 Days Loan Rule):</strong><ul>
+<li>စာဖတ်သူသည် <strong>VIP အသင်းဝင်</strong> ဖြစ်ပါက စာအုပ်ငှားရမ်းချိန်တွင် စံသတ်မှတ်ငှားရမ်းရက်ထက် <strong>+7 ရက် ပိုမိုခံစားခွင့်</strong> ရရှိမည် ဖြစ်ပါသည်။</li>
+<li>ဥပမာ - သာမန်အသင်းဝင်အတွက် ၇ ရက်ငှားရမ်းခွင့်ရှိသော စာအုပ်ကို VIP အသင်းဝင် ငှားပါက <strong>၁၄ ရက်</strong> အလိုအလျောက် သတ်မှတ်ပေးပါသည်။</li>
+</ul>
+</li>
+<li><strong>အချိန်မှီ ဒဏ်ကြေးတွက်ချက်မှု (Real-Time Fine Calculation):</strong> စာအုပ်ပြန်အပ်ချိန်တွင် သတ်မှတ်ရက် ကျော်လွန်နေပါက ရက်ကျော်လွန်သည့် ရက်အရေအတွက်နှင့် စာအုပ်၏ တစ်ရက်ဒဏ်ကြေးနှုန်းကို မြှောက်၍ ကျသင့်ဒဏ်ကြေးငွေ (MMK) ကို အလိုအလျောက် စာရင်းသွင်းပေးပါသည်။</li>
+</ol>
+<h4 id="section-31" class="guide-h4">အသုံးပြုနည်း အဆင့်ဆင့်-</h4><ol>
+<li><strong>&quot;စာအုပ် ငှား/ပြန် ကောင်တာ (Circulation Desk)&quot;</strong> သို့ သွားပါ။</li>
+<li><strong>အသင်းဝင် ဘားကုဒ် (Patron Barcode)</strong> ရိုက်ထည့်ပါ (ဥပမာ- <code>PAT-VIP-001</code>)။ အသင်းဝင်၏ VIP အဆင့်နှင့် လက်ရှိငှားထားသော စာအုပ်များကို ပြသပေးပါမည်။</li>
+<li><strong>စာအုပ် မိတ္တူ ဘားကုဒ် (Copy Barcode)</strong> ရိုက်ထည့်ပါ (ဥပမာ- <code>BK-001-C1</code>)။</li>
+<li>စနစ်မှ စာအုပ်ငှားရမ်းခွင့် ရက်စွဲ (VIP ဖြစ်ပါက +7 ရက် ပေါင်းပြီးသား Due Date) ကို အစမ်းဖော်ပြပေးမည် ဖြစ်ပါသည်။</li>
+<li>စိမ်းပြာရောင် <strong>&quot;စာအုပ်ငှားရမ်းမည် (Issue Loan)&quot;</strong> ခလုတ်ကို နှိပ်ပါ။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/09_circulation_checkout.png', 'စာအုပ်ငှားရမ်း/အပ်နှံ ကောင်တာ မျက်နှာပြင်')" title="Click to view full image">
+          <img src="images/09_circulation_checkout.png" alt="စာအုပ်ငှားရမ်း/အပ်နှံ ကောင်တာ မျက်နှာပြင်" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာအုပ်ငှားရမ်း/အပ်နှံ ကောင်တာ မျက်နှာပြင်</figcaption>
+      </figure>
+    
+<em>ပုံ ၉ - စာအုပ် ငှား/ပြန် ကောင်တာတွင် VIP အသင်းဝင် အချက်အလက်နှင့် +7 ရက် ပေါင်းစပ်တွက်ချက်မှု မျက်နှာပြင်</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-10" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၀ - ဦးစားပေး ကြိုတင်မှာယူမှု စီမံခန့်ခွဲခြင်း (Priority Holds Queue Management)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာအုပ်လက်ကျန်မရှိချိန်တွင် စာဖတ်သူများ ကြိုတင်မှာယူထားသော စာရင်းများကို Koha စံနှုန်းအတိုင်း ဦးစားပေးအဆင့် (Queue Priority) ဖြင့် ထိန်းချုပ်စီမံနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-33" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ဦးစားပေး တန်းစီဇယား (Priority Ranking):</strong> စောစီးစွာ မှာယူထားသူများကို ဦးစားပေးအဆင့် #1, #2 စသဖြင့် အစဉ်လိုက် သတ်မှတ်ပေးထားပါသည်။</li>
+<li><strong>စာအုပ်ပြန်ရောက်ချိန် အသိပေးမှု:</strong> ငှားရမ်းထားသော စာအုပ် ပြန်လည်အပ်နှံလိုက်သည်နှင့် အဆိုပါ စာအုပ်ကို နောက်ထပ်မှာယူထားသူထံ အလိုအလျောက် သီးသန့်ဖယ်ထားပေး (Reserved) ပါသည်။</li>
+<li><strong>ထုတ်ပေးခြင်းနှင့် ပယ်ဖျက်ခြင်း (Fulfill &amp; Cancel):</strong> စာဖတ်သူ လာရောက်ထုတ်ယူပါက <strong>&quot;ထုတ်ပေးပြီး (Fulfill)&quot;</strong> နှိပ်နိုင်ပြီး လိုအပ်ပါက ပယ်ဖျက်နိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/10_priority_holds_queue.png', 'ဦးစားပေး ကြိုတင်မှာယူမှု စီမံခန့်ခွဲခြင်း')" title="Click to view full image">
+          <img src="images/10_priority_holds_queue.png" alt="ဦးစားပေး ကြိုတင်မှာယူမှု စီမံခန့်ခွဲခြင်း" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">ဦးစားပေး ကြိုတင်မှာယူမှု စီမံခန့်ခွဲခြင်း</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၀ - ဦးစားပေး ကြိုတင်မှာယူမှု တန်းစီဇယား (Holds Queue)</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-11" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၁ - အသင်းဝင်များ စာရင်းနှင့် မှတ်ပုံတင်စိစစ်ခြင်း (Patron Directory & Myanmar NRC KYC)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက် အသင်းဝင်များ၏ အချက်အလက်များ၊ ဆက်သွယ်ရန်ဖုန်း၊ နိုင်ငံသားစိစစ်ရေးကတ်ပြား (NRC) နှင့် VIP အဆင့်အတန်းများကို စိစစ်အတည်ပြု စီမံခန့်ခွဲနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-35" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>မြန်မာနိုင်ငံသား မှတ်ပုံတင် စိစစ်မှု (Myanmar NRC Format):</strong> ဥပမာ- <code>၁၂/လမန(နိုင်)၁၂၃၄၅၆</code> စသည့် မြန်မာနိုင်ငံသား မှတ်ပုံတင် ပုံစံဖြင့် စနစ်တကျ မှတ်တမ်းတင် စိစစ်နိုင်ပါသည်။</li>
+<li><strong>VIP အသင်းဝင် အဆင့် သတ်မှတ်ခြင်း (VIP Status Toggle):</strong> အသင်းဝင်တစ်ဦးချင်းစီကို သာမန်အသင်းဝင် (Standard) သို့မဟုတ် <strong>VIP အသင်းဝင်</strong> အဖြစ် Switch ခလုတ်လေးဖြင့် ချက်ချင်း ပြောင်းလဲသတ်မှတ်နိုင်ပါသည်။</li>
+<li><strong>အကောင့်ပိတ်ပင်ခြင်း (Suspend/Block):</strong> စာအုပ်ရက်လွန် ဒဏ်ကြေးများ ပေးဆောင်ရန် ပျက်ကွက်နေသူများကို အငှားရပ်ဆိုင်းထားနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/11_patron_directory_kyc.png', 'အသင်းဝင်များ စာရင်းနှင့် မှတ်ပုံတင်စိစစ်ခြင်း')" title="Click to view full image">
+          <img src="images/11_patron_directory_kyc.png" alt="အသင်းဝင်များ စာရင်းနှင့် မှတ်ပုံတင်စိစစ်ခြင်း" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">အသင်းဝင်များ စာရင်းနှင့် မှတ်ပုံတင်စိစစ်ခြင်း</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၁ - အသင်းဝင်များ စာရင်း၊ VIP Badge များနှင့် NRC မှတ်ပုံတင် စိစစ်မှု မျက်နှာပြင်</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-12" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၂ - တရားဝင် VIP အသင်းဝင်ကတ်ပြားနှင့် ပုံထုတ်ယူခြင်း (VIP Member Card Generation & PNG Export)</h3><p><strong>ရည်ရွယ်ချက်:</strong> အသင်းဝင်များအတွက် တရားဝင် နိုင်ငံတော်အဆင့် အသင်းဝင်ကတ်ပြားကို HTML5 Canvas နည်းပညာဖြင့် ဖန်တီးပေးပြီး ပုံနှိပ်ထုတ်ဝေနိုင်ရန် အရည်အသွေးမြင့် PNG ဖိုင်အဖြစ် ဒေါင်းလုဒ်ရယူနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-37" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>နိုင်ငံတော်အဆင့် ဇိမ်ခံဒီဇိုင်း (Luxury MOCHT Official Pass):</strong> အစိမ်းရင့်ရောင်နှင့် ရွှေရောင်ပေါင်းစပ်ထားသော ဒီဇိုင်း၊ နိုင်ငံတော်အမှတ်တံဆိပ်၊ အသင်းဝင်ဘားကုဒ်၊ NRC နံပါတ်နှင့် သက်တမ်းကုန်ဆုံးရက်တို့ ပါဝင်ပါသည်။</li>
+<li><strong>VIP သီးသန့် ရွှေရောင်ဘားနှင့် တံဆိပ် (VIP Gold Header &amp; Crown):</strong> VIP အသင်းဝင်များအတွက် ရွှေရောင်သရဖူတံဆိပ် (<code>👑 VIP MEMBER PASS</code>) နှင့် <strong>&quot;+7 Days Extended Loan Privilege&quot;</strong> ဟူသော စာတန်းကို အထူးထည့်သွင်းဖော်ပြပေးပါသည်။</li>
+<li><strong>အရည်အသွေးမြင့် PNG ပုံထုတ်ယူခြင်း (High-Res 1050x660 PNG Export):</strong> ကွန်ပျူတာ သို့မဟုတ် ပရင်တာဖြင့် PVC Card ရိုက်နှိပ်နိုင်ရန် ကြည်လင်ပြတ်သားသော PNG ဓာတ်ပုံဖိုင်အဖြစ် ကလစ်တစ်ချက်ဖြင့် ဒေါင်းလုဒ်ဆွဲနိုင်ပါသည်။</li>
+</ol>
+<h4 id="section-38" class="guide-h4">အသုံးပြုနည်း အဆင့်ဆင့်-</h4><ol>
+<li>အသင်းဝင်စာရင်း စာမျက်နှာတွင် မိမိကတ်ထုတ်ယူလိုသော အသင်းဝင်၏ ဘေးရှိ အစိမ်းရောင် <strong>&quot;ကတ်ကြည့်ရန် (View Card)&quot;</strong> ကို နှိပ်ပါ။</li>
+<li>မျက်နှာပြင်ပေါ်တွင် တရားဝင် MOCHT Member Pass Modal ပွင့်လာမည် ဖြစ်ပါသည်။</li>
+<li>အပြာရောင် <strong>&quot;PNG ပုံထုတ်ယူရန် (Export as Image)&quot;</strong> ခလုတ်ကို နှိပ်ပါ။</li>
+<li>ကွန်ပျူတာထဲသို့ <code>MemberCard_PAT-VIP-001_U_Thein_Win.png</code> ဟူသော ဖိုင်အမည်ဖြင့် ချက်ချင်း ဒေါင်းလုဒ်ကျရောက်လာမည် ဖြစ်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/12_vip_member_card.png', 'တရားဝင် VIP အသင်းဝင်ကတ်ပြားနှင့် PNG ထုတ်ယူခြင်း')" title="Click to view full image">
+          <img src="images/12_vip_member_card.png" alt="တရားဝင် VIP အသင်းဝင်ကတ်ပြားနှင့် PNG ထုတ်ယူခြင်း" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">တရားဝင် VIP အသင်းဝင်ကတ်ပြားနှင့် PNG ထုတ်ယူခြင်း</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၂ - တရားဝင် VIP အသင်းဝင်ကတ်ပြား Modal နှင့် PNG ပုံထုတ်ယူသည့် ခလုတ်</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-13" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၃ - ဒဏ်ကြေးစာရင်းနှင့် ငွေပေးချေမှု ကောက်ခံခြင်း (Fines Ledger & Payment Collection)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာအုပ်ရက်လွန်ဒဏ်ကြေးများ၊ စာအုပ်ပျောက်ဆုံး/ပျက်စီး ဒဏ်ကြေးများကို စာရင်းဇယားဖြင့် တိကျစွာ မှတ်တမ်းတင်ပြီး ကောင်တာတွင် ငွေကောက်ခံရှင်းလင်းနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-40" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ဒဏ်ကြေးငွေ စာရင်းဇယား (Ledger Breakdown):</strong> အသင်းဝင်အမည်၊ ဘားကုဒ်၊ သက်ဆိုင်ရာ စာအုပ်ခေါင်းစဉ်၊ ကျသင့်ငွေ (Amount in MMK)၊ ပေးပြီးငွေ (Paid)၊ ရရန်ကျန်ငွေ (Balance) နှင့် ဒဏ်ကြေးအခြေအနေ (UNPAID, PAID, WAIVED) တို့ကို ပြသပေးပါသည်။</li>
+<li><strong>ငွေပေးချေမှု ကောက်ခံခြင်း (Collect Payment):</strong> အပြည့်အဝ ပေးချေခြင်း သို့မဟုတ် အပိုင်းလိုက် ခွဲပေးခြင်း (Partial Payment) များကို လက်ခံဆောင်ရွက်နိုင်ပါသည်။</li>
+<li><strong>ဒဏ်ကြေး ကင်းလွတ်ခွင့်ပြုခြင်း (Waive Fine):</strong> အထူးကိစ္စရပ်များ သို့မဟုတ် ခိုင်လုံသောအကြောင်းပြချက်များအတွက် စာကြည့်တိုက်မှူး ခွင့်ပြုချက်ဖြင့် ဒဏ်ကြေးငွေ ကင်းလွတ်ခွင့် ပေးနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/13_fines_ledger.png', 'ဒဏ်ကြေးစာရင်းနှင့် ငွေပေးချေမှု ကောက်ခံခြင်း')" title="Click to view full image">
+          <img src="images/13_fines_ledger.png" alt="ဒဏ်ကြေးစာရင်းနှင့် ငွေပေးချေမှု ကောက်ခံခြင်း" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">ဒဏ်ကြေးစာရင်းနှင့် ငွေပေးချေမှု ကောက်ခံခြင်း</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၃ - ဒဏ်ကြေးစာရင်းဇယားနှင့် ငွေကောက်ခံခြင်း မျက်နှာပြင်</em></p>
+<div class="content-divider"></div>
+<h1 id="part-3" class="guide-h1">အပိုင်း (၃) - အဆင့်မြင့် အစီရင်ခံစာနှင့် စာရင်းဇယား စနစ် (Reporting & Analytics Suite)</h1><div class="content-divider"></div>
+<h3 id="feature-14" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၄ - စွမ်းဆောင်ရည် အနှစ်ချုပ်နှင့် Date Filter (Executive Summary & Date Filter)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက်၏ လုပ်ငန်းစွမ်းဆောင်ရည် အခြေအနေများကို ရက်စွဲကာလအလိုက် စစ်ထုတ်ကြည့်ရှုနိုင်ပြီး အနှစ်ချုပ် စာရင်းဇယားများကို လေ့လာဆန်းစစ်နိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-43" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ရက်စွဲ စစ်ထုတ်သည့် ကိရိယာ (Date Filter Presets &amp; Custom Range):</strong><ul>
+<li>အမြန်ရွေးချယ်မှုများ: <code>၁၄ ရက်</code>၊ <code>၇ ရက်</code>၊ <code>၃၀ ရက်</code>၊ <code>ဒီလ</code>၊ <code>၃ လ</code>၊ <code>ယနေ့</code>၊ <code>မှတ်တမ်းအားလုံး</code>။</li>
+<li>စိတ်ကြိုက်ရက်စွဲ: <strong>&quot;ရက်စွဲရွေးမည် (Custom)&quot;</strong> တွင် စတင်မည့်ရက် (From) နှင့် ပြီးဆုံးမည့်ရက် (To) ကို Date Picker ဖြင့် ရွေးချယ်ပြီး <strong>Apply Range</strong> နှိပ်နိုင်ပါသည်။</li>
+</ul>
+</li>
+<li><strong>အဓိက KPI ကတ်ပြား ၆ ခု (Fixed KPIs):</strong> Total Titles, E-Resources, Active Members (VIP အပါအဝင်), Period Loans, Pending Holds, Outstanding Fines (NaN ပြဿနာ ကင်းစင်ပြီး တိကျသော MMK ဖော်ပြချက်)။</li>
+<li><strong>ငှားရမ်းမှု ပြောင်းလဲချက်ဇယား (Dynamic Loan Trend Chart):</strong> ရွေးချယ်ထားသော ရက်စွဲကာလအတွင်း တစ်ရက်ချင်းစီအလိုက် စာအုပ်ငှားရမ်းမှု အရေအတွက်ကို Bar Chart ဖြင့် ပုံဖော်ပေးပါသည်။</li>
+<li><strong>စွမ်းဆောင်ရည် နှုန်းထားများ (Performance Rings):</strong> စာအုပ်အသုံးချမှုနှုန်း (Utilization Rate)၊ ပြန်အပ်မှုနှုန်း (Return Rate)၊ ဒဏ်ကြေးကောက်ခံနှုန်း (Collection Rate) နှင့် ရက်ကျော်မှုနှုန်း (Overdue Rate)။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/14_reports_executive_overview.png', 'စွမ်းဆောင်ရည် အနှစ်ချုပ်နှင့် Date Filter')" title="Click to view full image">
+          <img src="images/14_reports_executive_overview.png" alt="စွမ်းဆောင်ရည် အနှစ်ချုပ်နှင့် Date Filter" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စွမ်းဆောင်ရည် အနှစ်ချုပ်နှင့် Date Filter</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၄ - Reporting &amp; Analytics ပင်မစာမျက်နှာ၊ Date Filter Bar နှင့် CSV ဒေါင်းလုဒ် Dropdown Menu</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-15" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၅ - ငှားရမ်းမှုမှတ်တမ်းနှင့် CSV ဒေါင်းလုဒ် (Circulation Loans Ledger & CSV Export)</h3><p><strong>ရည်ရွယ်ချက်:</strong> ရွေးချယ်ထားသော ရက်စွဲကာလအတွင်း ငှားရမ်းခဲ့သော မှတ်တမ်းအသေးစိတ်များကို ဇယားဖြင့် ကြည့်ရှုစစ်ဆေးနိုင်ပြီး Excel စာရင်းဇယားအဖြစ် ဒေါင်းလုဒ်ဆွဲနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-45" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>အသေးစိတ် စာရင်းဇယား:</strong> အသင်းဝင်အမည်၊ VIP အဆင့်၊ ဘားကုဒ်၊ စာအုပ်ခေါင်းစဉ်၊ စာရေးဆရာ၊ မိတ္တူဘားကုဒ်၊ ငှားသည့်ရက်၊ ပြန်အပ်ရမည့်ရက်၊ အပ်နှံသည့်ရက်၊ အခြေအနေနှင့် သက်တမ်းတိုးကြိမ်ရေ။</li>
+<li><strong>ရှာဖွေစစ်ထုတ်မှုစနစ်:</strong> စာအုပ်အမည်၊ အသင်းဝင်အမည်ဖြင့် ရှာဖွေနိုင်ပြီး အခြေအနေအလိုက် (ISSUED, OVERDUE, RETURNED) စစ်ထုတ်နိုင်ပါသည်။</li>
+<li><strong>တိုက်ရိုက် CSV ဒေါင်းလုဒ်:</strong> ဇယားအပေါ်ရှိ <strong>&quot;ငှားရမ်းမှုမှတ်တမ်း CSV ဒေါင်းလုဒ်&quot;</strong> ခလုတ်ကို နှိပ်လိုက်သည်နှင့် UTF-8 BOM ပါဝင်သော CSV ဖိုင်အဖြစ် ချက်ချင်း ရရှိပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/15_reports_circulation_tab.png', 'ငှားရမ်းမှုမှတ်တမ်း Tab နှင့် CSV ဒေါင်းလုဒ်')" title="Click to view full image">
+          <img src="images/15_reports_circulation_tab.png" alt="ငှားရမ်းမှုမှတ်တမ်း Tab နှင့် CSV ဒေါင်းလုဒ်" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">ငှားရမ်းမှုမှတ်တမ်း Tab နှင့် CSV ဒေါင်းလုဒ်</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၅ - စာအုပ်ငှားရမ်းမှု မှတ်တမ်းဇယားနှင့် သီးသန့် CSV ဒေါင်းလုဒ် ခလုတ်</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-16" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၆ - ဒဏ်ကြေးငွေစာရင်းနှင့် CSV ဒေါင်းလုဒ် (Fines & Financial Ledger & CSV Export)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက်မှ ကောက်ခံရရှိသော ငွေကြေးများနှင့် ရရန်ကျန် ဒဏ်ကြေးစာရင်းများကို ဘဏ္ဍာရေး အစီရင်ခံစာအဖြစ် စိစစ်ထုတ်ယူနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-47" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ဘဏ္ဍာရေး အနှစ်ချုပ် ကတ်ပြားများ:</strong> ကျသင့်ဒဏ်ကြေးစုစုပေါင်း (Total Incurred)၊ ကောက်ခံရရှိငွေ (Total Collected)၊ ရရန်ကျန်ဒဏ်ကြေး (Outstanding Balance)။</li>
+<li><strong>ဒဏ်ကြေးစာရင်း အသေးစိတ်ဇယား:</strong> အသင်းဝင်အချက်အလက်၊ စာအုပ်အမည်၊ ဒဏ်ကြေးဖြစ်ရသည့် အကြောင်းရင်း (Overdue, Lost Book, Damage)၊ ကျသင့်ငွေ၊ ပေးပြီးငွေ၊ ကျန်ငွေနှင့် ရက်စွဲ။</li>
+<li><strong>တိုက်ရိုက် CSV ဒေါင်းလုဒ်:</strong> <strong>&quot;ဒဏ်ကြေးစာရင်း CSV ဒေါင်းလုဒ်&quot;</strong> ခလုတ်ဖြင့် စာရင်းအင်းဌာနသို့ တင်ပြနိုင်သည့် Excel CSV ဖိုင်ကို ဒေါင်းလုဒ်ဆွဲနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/16_reports_fines_tab.png', 'ဒဏ်ကြေးငွေစာရင်း Tab နှင့် CSV ဒေါင်းလုဒ်')" title="Click to view full image">
+          <img src="images/16_reports_fines_tab.png" alt="ဒဏ်ကြေးငွေစာရင်း Tab နှင့် CSV ဒေါင်းလုဒ်" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">ဒဏ်ကြေးငွေစာရင်း Tab နှင့် CSV ဒေါင်းလုဒ်</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၆ - ဒဏ်ကြေးနှင့် ဘဏ္ဍာရေး စာရင်းဇယား Tab</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-17" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၇ - စာအုပ်လက်ကျန်စာရင်းနှင့် CSV ဒေါင်းလုဒ် (Catalog Inventory Status & CSV Export)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက်ရှိ စာအုပ်ခေါင်းစဉ်များ၊ ရုပ်ပိုင်းဆိုင်ရာ မိတ္တူများ၊ စင်ပေါ်ရှိ/ငှားထားဆဲ အခြေအနေများကို စာရင်းစစ်ဆေးနိုင်ရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-49" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>စာအုပ်လက်ကျန် အချက်အလက်များ:</strong> စာအုပ်ခေါင်းစဉ်၊ စာရေးဆရာ၊ ISBN၊ အမျိုးအစား၊ စုစုပေါင်းမိတ္တူ (Total Copies)၊ စင်ပေါ်ရှိမိတ္တူ (Available)၊ ငှားထားဆဲမိတ္တူ (On Loan)၊ ငှားရမ်းခွင့်ရက်နှင့် တစ်ရက်ဒဏ်ကြေးနှုန်း။</li>
+<li><strong>တိုက်ရိုက် CSV ဒေါင်းလုဒ်:</strong> <strong>&quot;စာအုပ်စာရင်း CSV ဒေါင်းလုဒ်&quot;</strong> ခလုတ်ဖြင့် စာကြည့်တိုက် စာရင်းစစ် (Audit) အတွက် အသင့်သုံးနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/17_reports_inventory_tab.png', 'စာအုပ်လက်ကျန်စာရင်း Tab')" title="Click to view full image">
+          <img src="images/17_reports_inventory_tab.png" alt="စာအုပ်လက်ကျန်စာရင်း Tab" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာအုပ်လက်ကျန်စာရင်း Tab</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၇ - စာအုပ်လက်ကျန်စာရင်း အခြေအနေနှင့် CSV ဒေါင်းလုဒ်</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-18" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၈ - အသင်းဝင်များနှင့် VIP စာရင်း CSV ဒေါင်းလုဒ် (Patron & VIP Directory & CSV Export)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက်တွင် မှတ်ပုံတင်ထားသော အသင်းဝင်အားလုံး၏ စာရင်း၊ VIP အဆင့်အတန်း၊ ဆက်သွယ်ရန်ဖုန်း၊ လက်ရှိငှားထားသော စာအုပ်များနှင့် ဒဏ်ကြေးကျန်ငွေများကို တစ်စုတစ်စည်းတည်း စစ်ဆေးနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-51" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>အသင်းဝင် အချက်အလက်ဇယား:</strong> အသင်းဝင်အမည်၊ ဘားကုဒ်၊ အဆင့် (Standard သို့မဟုတ် VIP +7d)၊ အီးမေးလ်/ဖုန်း၊ စုစုပေါင်းငှားဖူးသည့် အကြိမ်ရေ၊ လက်ရှိငှားထားသော စာအုပ်အရေအတွက်၊ ရက်ကျော်စာအုပ်အရေအတွက်နှင့် အကောင့်အခြေအနေ (Active / Suspended)။</li>
+<li><strong>တိုက်ရိုက် CSV ဒေါင်းလုဒ်:</strong> <strong>&quot;အသင်းဝင်များ CSV ဒေါင်းလုဒ်&quot;</strong> ခလုတ်ဖြင့် အသင်းဝင်မှတ်ပုံတင် စာရင်းဇယားကို Excel သို့ ထုတ်ယူနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/18_reports_patrons_tab.png', 'အသင်းဝင်များနှင့် VIP စာရင်း Tab')" title="Click to view full image">
+          <img src="images/18_reports_patrons_tab.png" alt="အသင်းဝင်များနှင့် VIP စာရင်း Tab" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">အသင်းဝင်များနှင့် VIP စာရင်း Tab</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၈ - အသင်းဝင်များနှင့် VIP စာရင်းဇယား Tab</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-19" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၁၉ - ရက်ကျော်လွန်စာအုပ်များ စာရင်းနှင့် CSV ဒေါင်းလုဒ် (Overdue Action List & CSV Export)</h3><p><strong>ရည်ရွယ်ချက်:</strong> သတ်မှတ်ရက် ကျော်လွန်နေသော စာအုပ်များကို ချက်ချင်းဖော်ထုတ်ပြီး စာဖတ်သူထံ ဖုန်းဆက်၍ အမြန်ဆုံး ပြန်လည်အပ်နှံစေရန် ဆက်သွယ်ဆောင်ရွက်နိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-53" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>လုပ်ဆောင်ရန် လိုအပ်သော ရက်လွန်စာရင်း (Action List):</strong> အသင်းဝင်အမည်၊ ဘားကုဒ်၊ စာအုပ်ခေါင်းစဉ်၊ မိတ္တူဘားကုဒ်၊ ပြန်အပ်ရမည့်ရက်၊ ရက်လွန်နေသော ရက်အရေအတွက် (<code>7d</code>, <code>14d</code>+ အရောင်ကုဒ်များ)၊ ကျသင့်ဒဏ်ကြေးငွေနှင့် <strong>ဆက်သွယ်ရန် ဖုန်းနံပါတ်</strong>။</li>
+<li><strong>တိုက်ရိုက် CSV ဒေါင်းလုဒ်:</strong> <strong>&quot;ရက်ကျော်စာရင်း CSV ဒေါင်းလုဒ်&quot;</strong> ခလုတ်ဖြင့် စာအုပ်ပြန်လည်တောင်းခံရေး အဖွဲ့သားများ အသုံးပြုရန် Print ထုတ်ယူနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/19_reports_overdue_tab.png', 'ရက်ကျော်လွန်စာအုပ်များ စာရင်း Tab')" title="Click to view full image">
+          <img src="images/19_reports_overdue_tab.png" alt="ရက်ကျော်လွန်စာအုပ်များ စာရင်း Tab" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">ရက်ကျော်လွန်စာအုပ်များ စာရင်း Tab</figcaption>
+      </figure>
+    
+<em>ပုံ ၁၉ - ရက်ကျော်လွန်စာအုပ်များနှင့် ဆက်သွယ်ရန်ဖုန်းနံပါတ်ပါဝင်သော Overdue Action List</em></p>
+<div class="content-divider"></div>
+<h1 id="part-4" class="guide-h1">အပိုင်း (၄) - Koha အဆင့်မြင့် လုပ်ငန်းဆောင်ရွက်ချက်များ (Koha Enterprise Library Services)</h1><div class="content-divider"></div>
+<h3 id="feature-20" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၂၀ - စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်း (Acquisitions & Purchase Orders)</h3><p><strong>ရည်ရွယ်ချက်:</strong> စာကြည့်တိုက်အတွက် စာအုပ်အသစ်များ ဝယ်ယူရန် ဘတ်ဂျက်လျာထားခြင်း၊ ကုန်သည်များထံ အမှာစာ (Purchase Orders) တင်သွင်းခြင်းနှင့် စာအုပ်လက်ခံရရှိမှုများကို စနစ်တကျ မှတ်တမ်းတင်ရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-56" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ဘတ်ဂျက်ခြေရာခံမှု (Budget Tracking):</strong> စုစုပေါင်းခွင့်ပြုဘတ်ဂျက်၊ သုံးစွဲပြီးငွေနှင့် လက်ကျန်ငွေများကို တိကျစွာ ပြသပေးပါသည်။</li>
+<li><strong>အမှာစာ စီမံခန့်ခွဲမှု (PO Management):</strong> အမှာစာတင်ခြင်း (Order Placed)၊ စာအုပ်လက်ခံရရှိခြင်း (Received) နှင့် ငွေပေးချေပြီးစီးခြင်း (Invoiced) အခြေအနေများကို အဆင့်လိုက် ထိန်းချုပ်နိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/20_koha_acquisitions.png', 'စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်း')" title="Click to view full image">
+          <img src="images/20_koha_acquisitions.png" alt="စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်း" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်း</figcaption>
+      </figure>
+    
+<em>ပုံ ၂၀ - စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်းနှင့် ဘတ်ဂျက်ဇယား (Acquisitions)</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-21" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၂၁ - ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းမှု (Serials & Periodicals)</h3><p><strong>ရည်ရွယ်ချက်:</strong> နေ့စဉ်ထုတ် သတင်းစာများ၊ အပတ်စဉ်ဂျာနယ်များနှင့် လစဉ်ထုတ် မဂ္ဂဇင်းများကို စာရင်းသွင်း စီမံခန့်ခွဲနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-58" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ထုတ်ဝေမှု အကြိမ်ရေ သတ်မှတ်ခြင်း (Frequency):</strong> နေ့စဉ် (Daily)၊ အပတ်စဉ် (Weekly)၊ လစဉ် (Monthly)၊ နှစ်စဉ် (Annually) စသဖြင့် သတ်မှတ်နိုင်ပါသည်။</li>
+<li><strong>ISSN နံပါတ် မှတ်တမ်းတင်ခြင်း:</strong> အပြည်ပြည်ဆိုင်ရာ ဂျာနယ်စံသတ်မှတ်ကုဒ် (ISSN) ဖြင့် တိကျစွာ ရှာဖွေနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/21_koha_serials.png', 'ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းမှု')" title="Click to view full image">
+          <img src="images/21_koha_serials.png" alt="ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းမှု" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းမှု</figcaption>
+      </figure>
+    
+<em>ပုံ ၂၁ - ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းခြင်း မျက်နှာပြင် (Serials)</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-22" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၂၂ - စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းခြင်း (Interlibrary Loan - ILL)</h3><p><strong>ရည်ရွယ်ချက်:</strong> မိမိစာကြည့်တိုက်တွင် မရှိသော ရှားပါးစာအုပ်များကို အခြားမိတ်ဖက် တက္ကသိုလ်များနှင့် နိုင်ငံတော်စာကြည့်တိုက်များထံမှ တောင်းခံငှားရမ်းနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-60" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>မိတ်ဖက်စာကြည့်တိုက် ကွန်ရက် (Partner Libraries):</strong> ရန်ကုန်တက္ကသိုလ်၊ မန္တလေးတက္ကသိုလ်၊ အမျိုးသားစာကြည့်တိုက် စသည့် မိတ်ဖက်အဖွဲ့အစည်းများနှင့် ချိတ်ဆက်တောင်းခံနိုင်ပါသည်။</li>
+<li><strong>တောင်းခံမှု အခြေအနေ (Request Lifecycle):</strong> တောင်းခံထားဆဲ (PENDING)၊ ပို့ဆောင်ဆဲ (IN_TRANSIT)၊ ရောက်ရှိလက်ခံရရှိ (RECEIVED) စသည့် အဆင့်များဖြင့် စောင့်ကြည့်နိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/22_koha_ill.png', 'စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းခြင်း')" title="Click to view full image">
+          <img src="images/22_koha_ill.png" alt="စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းခြင်း" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းခြင်း</figcaption>
+      </figure>
+    
+<em>ပုံ ၂၂ - စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းမှု စီမံခန့်ခွဲခြင်း (ILL)</em></p>
+<div class="content-divider"></div>
+<h3 id="feature-23" class="guide-h3"><span class="h3-anchor"></span>လုပ်ဆောင်ချက် ၂၃ - တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း စာအုပ်များ (Course Reserves)</h3><p><strong>ရည်ရွယ်ချက်:</strong> တက္ကသိုလ်နှင့် ကောလိပ် သင်တန်းများအတွက် သက်ဆိုင်ရာ ကထိက/ပါမောက္ခများ ညွှန်းဆိုထားသော မဖြစ်မနေဖတ်ရှုရမည့် စာအုပ်များကို သီးသန့်ဖယ်ထားပေးနိုင်စေရန် ဖြစ်ပါသည်။</p>
+<h4 id="section-62" class="guide-h4">အဓိက အချက်များ-</h4><ol>
+<li><strong>ဘာသာရပ်ကုဒ်နှင့် ဆရာအမည် (Course Code &amp; Instructor):</strong> ဥပမာ- <code>CS-301: Advanced Algorithms (Dr. Win Maw)</code> စသဖြင့် ဘာသာရပ်အလိုက် စာရင်းသွင်းနိုင်ပါသည်။</li>
+<li><strong>ကျောင်းသားများ ဦးစားပေး ဖတ်ရှုခွင့်:</strong> သာမန်စာဖတ်သူများ ငှားရမ်းခွင့်ကို ကန့်သတ်ထားပြီး သက်ဆိုင်ရာ ဘာသာရပ်သင် ကျောင်းသားများသာ အဓိက ဖတ်ရှုနိုင်စေရန် ထိန်းချုပ်ထားနိုင်ပါသည်။</li>
+</ol>
+<p>
+      <figure class="feature-image-figure">
+        <div class="image-card" onclick="openLightbox('images/23_koha_course_reserves.png', 'တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း စာအုပ်များ')" title="Click to view full image">
+          <img src="images/23_koha_course_reserves.png" alt="တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း စာအုပ်များ" loading="lazy" />
+          <div class="image-overlay">
+            <span class="zoom-badge">🔍 ပုံကြီးချဲ့ကြည့်ရန် (Click to Zoom)</span>
+          </div>
+        </div>
+        <figcaption class="image-caption">တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း စာအုပ်များ</figcaption>
+      </figure>
+    
+<em>ပုံ ၂၃ - တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း သီးသန့်စာအုပ်များ စီမံခန့်ခွဲခြင်း (Course Reserves)</em></p>
+<div class="content-divider"></div>
+<h1 id="part-5" class="guide-h1">အပိုင်း (၅) - စံသတ်မှတ် လုပ်ငန်းလမ်းညွှန် (SOP) နှင့် အမေးများသော မေးခွန်းများ (FAQ)</h1><div class="content-divider"></div>
+<h3 id="section-64" class="guide-h3"><span class="h3-anchor"></span>စာကြည့်တိုက်မှူးများအတွက် နေ့စဉ် လုပ်ငန်းလမ်းညွှန် (Daily SOP)</h3><ol>
+<li><strong>နံနက်ခင်း လုပ်ငန်းစတင်ချိန် (Morning Opening Routine):</strong><ul>
+<li>စနစ်သို့ Staff အကောင့်ဖြင့် Login ဝင်ပါ။</li>
+<li>Dashboard ပေါ်ရှိ <strong>Pending Holds (စောင့်ဆိုင်းစာရင်း)</strong> ကို စစ်ဆေးပြီး စင်ပေါ်မှ စာအုပ်များကို ထုတ်ယူကာ Reserved Shelf တွင် ထားရှိပါ။</li>
+<li><strong>Reports ➔ ရက်ကျော်စာရင်း (Overdue Tab)</strong> သို့ သွားရောက်၍ ၁၄ ရက်ထက်ကျော်လွန်နေသော အသင်းဝင်များထံ ဖုန်းဖြင့် ဆက်သွယ်အသိပေးပါ။</li>
+</ul>
+</li>
+<li><strong>နေ့လယ်ပိုင်း ကောင်တာလုပ်ငန်းများ (Circulation Desk Operations):</strong><ul>
+<li>စာအုပ်လာငှားသူတိုင်း၏ အသင်းဝင်ကတ် ဘားကုဒ်ကို အရင်စကင်ဖတ်ပါ။</li>
+<li>VIP အသင်းဝင်ဖြစ်ပါက +7 ရက် ပိုမိုရရှိမည့် ရက်စွဲကို အသင်းဝင်အား ပြောကြားပေးပါ။</li>
+<li>စာအုပ်ပြန်အပ်သူများထံမှ ရက်လွန်ဒဏ်ကြေးငွေ (ရှိပါက) ကောက်ခံပြီး ပြေစာမှတ်တမ်း ရယူပါ။</li>
+</ul>
+</li>
+<li><strong>ညနေခင်း လုပ်ငန်းသိမ်းချိန် (Evening Closing Routine):</strong><ul>
+<li><strong>Reports &amp; Analytics</strong> သို့ သွားပါ။</li>
+<li>ရက်စွဲတွင် <strong>&quot;ယနေ့ (Today)&quot;</strong> ကို ရွေးချယ်ပါ။</li>
+<li><strong>&quot;Executive Summary (CSV)&quot;</strong> နှင့် <strong>&quot;Fines &amp; Revenue Ledger (CSV)&quot;</strong> ကို ဒေါင်းလုဒ်ရယူ၍ နေ့စဉ်ငွေစာရင်းနှင့် ငှားရမ်းမှုစာရင်းကို စာရင်းကိုင်ဌာနသို့ တင်ပြပါ။</li>
+</ul>
+</li>
+</ol>
+<div class="content-divider"></div>
+<h3 id="section-65" class="guide-h3"><span class="h3-anchor"></span>အမေးများသော မေးခွန်းများ (Frequently Asked Questions - FAQ)</h3><p><strong>မေး။ VIP အသင်းဝင်တစ်ဦးသည် စာအုပ်ငှားရမ်းပါက မည်မျှ ရက်ပိုရရှိပါသနည်း။</strong><br>ဖြေ။ သာမန်အသင်းဝင်များထက် <strong>+7 ရက်</strong> ပိုမိုရရှိပါသည်။ ဥပမာ သာမန်စာအုပ်တစ်အုပ်၏ စံငှားရမ်းခွင့်သည် ၇ ရက်ဖြစ်ပါက VIP အသင်းဝင်အတွက် စနစ်မှ အလိုအလျောက် <strong>၁၄ ရက်</strong> ဟု သတ်မှတ်ပေးပါသည်။</p>
+<p><strong>မေး။ ရက်လွန်ဒဏ်ကြေးငွေကို မည်သို့ တွက်ချက်ပါသနည်း။</strong><br>ဖြေ။ စာအုပ်ပြန်အပ်ရမည့်ရက် (Due Date) ကျော်လွန်သွားသော ရက်အရေအတွက်နှင့် စာအုပ်ထည့်သွင်းစဉ်က သတ်မှတ်ထားသော တစ်ရက်ဒဏ်ကြေးနှုန်း (ဥပမာ- ၅၀၀ ကျပ်) ကို မြှောက်၍ အလိုအလျောက် တိကျစွာ တွက်ချက်ပေးပါသည်။ (စုစုပေါင်းဒဏ်ကြေး = ရက်လွန်ရက် × တစ်ရက်ဒဏ်ကြေးနှုန်း)။</p>
+<p><strong>မေး။ CSV ဒေါင်းလုဒ်ဆွဲရာတွင် မြန်မာစာများ မှန်ကန်စွာ ပေါ်ပါသလား။</strong><br>ဖြေ။ မှန်ကန်စွာ ပေါ်ပါသည်။ CSV ထုတ်ယူသည့် စနစ်တွင် <strong>UTF-8 BOM (Byte Order Mark)</strong> ပါဝင်အောင် တည်ဆောက်ထားသောကြောင့် Microsoft Excel, Google Sheets နှင့် LibreOffice တို့တွင် မြန်မာစာများ မပျက်မစီးဘဲ ရှင်းလင်းစွာ မြင်တွေ့နိုင်ပါသည်။</p>
+<p><strong>မေး။ အသင်းဝင်ကတ်ပြားကို ပလတ်စတစ်ကတ် (PVC Card) ဖြင့် ပုံနှိပ်လိုပါက မည်သို့လုပ်ဆောင်ရမည်နည်း။</strong><br>ဖြေ။ အသင်းဝင်စာရင်း (<code>/admin/patrons</code>) တွင် သက်ဆိုင်ရာ အသင်းဝင်၏ <strong>&quot;ကတ်ကြည့်ရန် (View Card)&quot;</strong> ကို နှိပ်ပြီး <strong>&quot;PNG ပုံထုတ်ယူရန် (Export as Image)&quot;</strong> ခလုတ်ကို နှိပ်ပါ။ စနစ်မှ $1050 \times 660$ pixel ရှိသော ကြည်လင်ပြတ်သားသည့် ဓာတ်ပုံဖိုင်ကို ထုတ်ပေးမည်ဖြစ်ပြီး မည်သည့် PVC Card Printer ဖြင့်မဆို တိုက်ရိုက် ပုံနှိပ်အသုံးပြုနိုင်ပါသည်။</p>
+<div class="content-divider"></div>
+<p><em>ဤလမ်းညွှန်စာအုပ်ကို ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန၊ အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ်အတွက် အပြည့်အစုံ ရေးသားပြုစုထားပါသည်။</em></p>
+
+      </article>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <p><strong>ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန (MOCHT)</strong> · အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ်</p>
+        <p style="margin-top: 6px; font-size: 0.78rem;">National Library Management System · Comprehensive User Training Guide</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox(event)">
+    <div class="lightbox-content">
+      <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+      <img src="" alt="" class="lightbox-img" id="lightboxImg" />
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+
+  <script>
+    // Theme toggle (Dark / Light)
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlElem = document.documentElement;
+    const savedTheme = localStorage.getItem('mocht_doc_theme') || 'light';
+    htmlElem.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+    themeToggle.addEventListener('click', () => {
+      const current = htmlElem.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      htmlElem.setAttribute('data-theme', next);
+      localStorage.setItem('mocht_doc_theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+
+    // Mobile sidebar toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('active');
+    }
+
+    menuToggle.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    // Lightbox functions
+    const lightboxModal = document.getElementById('lightboxModal');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+
+    function openLightbox(src, caption) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption || '';
+      lightboxModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox(e) {
+      if (e.target === lightboxModal || e.target.classList.contains('lightbox-close')) {
+        lightboxModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightboxModal.classList.contains('active')) {
+        lightboxModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Scrollspy navigation
+    const navLinks = document.querySelectorAll('.nav-item-link');
+    const sections = Array.from(navLinks).map(link => {
+      const id = link.getAttribute('data-target');
+      return document.getElementById(id);
+    }).filter(Boolean);
+
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY + 100;
+      let currentSection = sections[0];
+
+      for (let s of sections) {
+        if (s.offsetTop <= scrollPos) {
+          currentSection = s;
+        }
+      }
+
+      if (currentSection) {
+        navLinks.forEach(l => {
+          if (l.getAttribute('data-target') === currentSection.id) {
+            l.classList.add('active');
+          } else {
+            l.classList.remove('active');
+          }
+        });
+      }
+
+      // Back to top visibility
+      const backToTop = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+    });
+
+    document.getElementById('backToTop').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Client-side quick filter
+    const topicSearch = document.getElementById('topicSearch');
+    topicSearch.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const allLinks = document.querySelectorAll('.nav-item-link');
+      allLinks.forEach(link => {
+        const text = link.textContent.toLowerCase();
+        if (!q || text.includes(q)) {
+          link.style.display = 'flex';
+        } else {
+          link.style.display = 'none';
+        }
+      });
+    });
+
+    // Close sidebar on mobile when nav link clicked
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) {
+          sidebar.classList.remove('open');
+          sidebarOverlay.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
