@@ -1,590 +1,465 @@
-# MOCHT Digital Library Access & Management System (LMS)
-## Comprehensive User Training & System Walkthrough Guide
-**Optimized for NotebookLM Presentation, Audio Briefing, and Study Guide Generation**
+# ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန (MOCHT)
+# အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ် (LMS)
+## အသုံးပြုသူ လေ့ကျင့်ရေးနှင့် စနစ်အသုံးပြုနည်း ပြည့်စုံသော လမ်းညွှန်စာအုပ်
+**National Library Management System — Comprehensive User & Admin Training Manual**
 
 ---
 
-## 📌 Document Overview & NotebookLM Metadata
+## 📌 စနစ်ဆိုင်ရာ အချက်အလက်များနှင့် မိတ်ဆက် (System Overview)
 
-- **System Name:** Ministry of Culture, Hotels and Tourism (MOCHT) National Library Management System / ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စနစ်
-- **Live Production URL:** [http://206.189.47.42:3000](http://206.189.47.42:3000) (Alternative Nginx Gateway: [http://206.189.47.42:8080](http://206.189.47.42:8080))
-- **Primary Technology Stack:** Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Prisma ORM, SQLite DB, Canvas 2D Barcode Engine.
-- **Core Purpose:** To provide a state-of-the-art, Koha-aligned national digital and physical library platform that bridges public readers (Members/Renters) with enterprise library administrators (Staff/Librarians). It integrates a searchable Online Public Access Catalog (OPAC), in-browser readable e-book PDFs, barcode circulation, customizable per-book overdue fines in Myanmar Kyats (MMK), priority hold queues, and official high-resolution Member ID card issuance with image export.
-- **Target Audiences:**
-  1. **General Members / Patrons (စာကြည့်တိုက် အသင်းဝင်များ):** Citizens, researchers, students, and guests accessing the OPAC, borrowing books, reading digital e-books, checking loan deadlines, and self-managing holds.
-  2. **Library Officers & Administrators (စာကြည့်တိုက်မှူးများနှင့် ဝန်ထမ်းများ):** Professional library officers responsible for cataloging bibliographic records, barcode inventory management, circulation desk counter operations, KYC patron verification, fine collection, and strategic reporting.
+- **စနစ်အမည် (System Name):** ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန၊ အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ် (MOCHT National Digital Library Access & Management System)
+- **တရားဝင် လွှင့်တင်ထားသော လိပ်စာ (Live URL):** [http://206.189.47.42:3000](http://206.189.47.42:3000) (သို့မဟုတ် Nginx Gateway: [http://206.189.47.42:8080](http://206.189.47.42:8080))
+- **အသုံးပြုထားသော နည်းပညာများ (Tech Stack):** Next.js 16 (App Router), TypeScript, Tailwind CSS, Prisma ORM, SQLite DB, Canvas 2D Barcode Engine, UTF-8 BOM CSV Export Engine
+- **ရည်ရွယ်ချက် (Objective):** အပြည်ပြည်ဆိုင်ရာ Koha စံနှုန်းများနှင့်အညီ ပြည်သူလူထု (စာဖတ်သူအသင်းဝင်များ) နှင့် စာကြည့်တိုက်ဝန်ထမ်းများ (စာကြည့်တိုက်မှူးများ) အကြား ချောမွေ့စွာ ချိတ်ဆက်ဆောင်ရွက်နိုင်စေရန်၊ အွန်လိုင်းမှ စာအုပ်များ ရှာဖွေဖတ်ရှုနိုင်ရန် (OPAC & E-Book Viewer)၊ စာအုပ်ငှားရမ်း/အပ်နှံမှုနှင့် ဘားကုဒ်စနစ်များ ထိန်းချုပ်ရန်၊ စာအုပ်တစ်အုပ်ချင်းအလိုက် သီးခြား ဒဏ်ကြေးငွေ (MMK) တွက်ချက်ရန်၊ VIP အသင်းဝင် အထူးအခွင့်အရေးများနှင့် တရားဝင် အသင်းဝင်ကတ်ပြား (Member ID Pass) ထုတ်ယူနိုင်ရန် ပြည့်စုံစွာ ဖန်တီးထားသော စနစ်ဖြစ်ပါသည်။
 
 ---
 
-# 📑 Table of Contents
+# 📑 မာတိကာ (Table of Contents)
 
-- [Part 1: Member & Public Patron Portal Showcase](#part-1-member--public-patron-portal-showcase)
-  - [Slide 1: Public Catalog (OPAC) Search & Multi-Genre Filters](#slide-1-public-catalog-opac-search--multi-genre-filters)
-  - [Slide 2: Instant E-Book Reading in Browser (Full PDF Viewer)](#slide-2-instant-e-book-reading-in-browser-full-pdf-viewer)
-  - [Slide 3: Physical Book Hold & Reservation Request](#slide-3-physical-book-hold--reservation-request)
-  - [Slide 4: Member Authentication & Secure Login](#slide-4-member-authentication--secure-login)
-  - [Slide 5: Member Self-Service Portal – Active Loans & Self-Renewal](#slide-5-member-self-service-portal--active-loans--self-renewal)
-  - [Slide 6: Hold Tracking, Reading History & Saved Virtual Lists](#slide-6-hold-tracking-reading-history--saved-virtual-lists)
-  - [Slide 7: Dual-Language Toggle (English / မြန်မာဘာသာ)](#slide-7-dual-language-toggle-english--မြန်မာဘာသာ)
-- [Part 2: Staff & Administration Control Panel Showcase](#part-2-staff--administration-control-panel-showcase)
-  - [Slide 8: Staff Command Center & Dashboard Overview](#slide-8-staff-command-center--dashboard-overview)
-  - [Slide 9: Cataloging Module – Adding Books & Custom Overdue Fine Rates (MMK/Day)](#slide-9-cataloging-module--adding-books--custom-overdue-fine-rates-mmkday)
-  - [Slide 10: Inventory Control – Barcodes, Physical Copies & Shelf Locations](#slide-10-inventory-control--barcodes-physical-copies--shelf-locations)
-  - [Slide 11: Circulation Desk – Fast Check-Out (Loan Issuance)](#slide-11-circulation-desk--fast-check-out-loan-issuance)
-  - [Slide 12: Circulation Desk – Fast Check-In & Automated Dynamic Fine Calculation](#slide-12-circulation-desk--fast-check-in--automated-dynamic-fine-calculation)
-  - [Slide 13: Priority Hold Queue Management – Approval & Fulfillment](#slide-13-priority-hold-queue-management--approval--fulfillment)
-  - [Slide 14: Member Management & Myanmar KYC Verification (NRC)](#slide-14-member-management--myanmar-kyc-verification-nrc)
-  - [Slide 15: Member ID Card Generation & High-Resolution PNG Image Export](#slide-15-member-id-card-generation--high-resolution-png-image-export)
-  - [Slide 16: Fine Ledger & POS Cashier Payment Collection](#slide-16-fine-ledger--pos-cashier-payment-collection)
-  - [Slide 17: Reports & Analytics – Loan Velocity, Utilization Gauges & Overdue Alert Table](#slide-17-reports--analytics--loan-velocity-utilization-gauges--overdue-alert-table)
-  - [Slide 18: Koha Enterprise Services – Acquisitions, Serials & Interlibrary Loan (ILL)](#slide-18-koha-enterprise-services--acquisitions-serials--interlibrary-loan-ill)
-  - [Slide 19: Comprehensive Standard Operating Procedures (SOP) & FAQ](#slide-19-comprehensive-standard-operating-procedures-sop--faq)
-
----
-
-# PART 1: Member & Public Patron Portal Showcase
-
----
-
-### Slide 1: Public Catalog (OPAC) Search & Multi-Genre Filters
-
-**Objective:** Teach general users and members how to search, discover, and filter books across authentic Burmese literature, history, fiction, and open-access resources.
-
-#### Key Talking Points:
-1. **Unified Search Engine:** Real-time search across Title, Author, Publisher, or ISBN.
-2. **Category Badges & Format Badges:** Filter by format (`Hardcopy` vs. `E-Book`) and genre (`History`, `Literature`, `Fiction`, `Dhamma`, `Biography`, `Technology`, etc.).
-3. **Availability Indicator:** Instant visual cue showing whether physical copies are available on shelf or currently on loan.
-
-#### Step-by-Step User Instructions:
-1. Navigate to the homepage at `http://206.189.47.42:3000/`.
-2. Enter a keyword in the central search bar (e.g., "ချစ်ဦးညို" or "မွန်ဘုရင်မကြီး ရှင်စောပု").
-3. Click any Genre pill to filter down to specific collections.
-4. Review book cards displaying Author, Genre, Publication Year, and Availability status.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 01: OPAC Public Catalog Homepage                        |
-| Recommended View: http://206.189.47.42:3000/                                     |
-| Caption: "Public Catalog Homepage displaying MOCHT national banner, search bar,   |
-| genre filters, and 50 authentic Burmese books with format badges."                |
-+-----------------------------------------------------------------------------------+
-```
+- [အပိုင်း (၁) - အများပြည်သူနှင့် စာဖတ်သူ အသင်းဝင်များဆိုင်ရာ စနစ် (Public Patron Portal)](#အပိုင်း-၁---အများပြည်သူနှင့်-စာဖတ်သူ-အသင်းဝင်များဆိုင်ရာ-စနစ်-public-patron-portal)
+  - [လုပ်ဆောင်ချက် ၁ - အများပြည်သူသုံး စာအုပ်ရှာဖွေရေးစနစ် (OPAC Search & Category Filters)](#လုပ်ဆောင်ချက်-၁---အများပြည်သူသုံး-စာအုပ်ရှာဖွေရေးစနစ်-opac-search--category-filters)
+  - [လုပ်ဆောင်ချက် ၂ - ဝဘ်ဘရောင်ဇာအတွင်း တိုက်ရိုက်ဖတ်ရှုနိုင်သော E-Book PDF ဖတ်စနစ် (In-Browser E-Book PDF Viewer)](#လုပ်ဆောင်ချက်-၂---ဝဘ်ဘရောင်ဇာအတွင်း-တိုက်ရိုက်ဖတ်ရှုနိုင်သော-e-book-pdf-ဖတ်စနစ်-in-browser-e-book-pdf-viewer)
+  - [လုပ်ဆောင်ချက် ၃ - စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း (Member & Staff Authentication)](#လုပ်ဆောင်ချက်-၃---စနစ်သို့-အကောင့်ဝင်ရောက်ခြင်း-member--staff-authentication)
+  - [လုပ်ဆောင်ချက် ၄ - စာဖတ်သူ အသင်းဝင် ပေါ်တယ်နှင့် သက်တမ်းတိုးခြင်း (Patron Portal & Self-Renewal)](#လုပ်ဆောင်ချက်-၄---စာဖတ်သူ-အသင်းဝင်-ပေါ်တယ်နှင့်-သက်တမ်းတိုးခြင်း-patron-portal--self-renewal)
+- [အပိုင်း (၂) - စာကြည့်တိုက်မှူးနှင့် ဝန်ထမ်းများဆိုင်ရာ စီမံခန့်ခွဲမှုစနစ် (Staff Control Panel)](#အပိုင်း-၂---စာကြည့်တိုက်မှူးနှင့်-ဝန်ထမ်းများဆိုင်ရာ-စီမံခန့်ခွဲမှုစနစ်-staff-control-panel)
+  - [လုပ်ဆောင်ချက် ၅ - စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ် (Staff Admin Command Center)](#လုပ်ဆောင်ချက်-၅---စာကြည့်တိုက်-ကွပ်ကဲမှု-ဒက်ရှ်ဘုတ်-staff-admin-command-center)
+  - [လုပ်ဆောင်ချက် ၆ - စာအုပ်စာရင်းနှင့် ကတ်တလောက် စီမံခန့်ခွဲမှု (Catalog Management & Inventory)](#လုပ်ဆောင်ချက်-၆---စာအုပ်စာရင်းနှင့်-ကတ်တလောက်-စီမံခန့်ခွဲမှု-catalog-management--inventory)
+  - [လုပ်ဆောင်ချက် ၇ - စာအုပ်အသစ်ထည့်သွင်းခြင်းနှင့် ဒဏ်ကြေးနှုန်း သတ်မှတ်ခြင်း (Add Book & Daily Fine Rate)](#လုပ်ဆောင်ချက်-၇---စာအုပ်အသစ်ထည့်သွင်းခြင်းနှင့်-ဒဏ်ကြေးနှုန်း-သတ်မှတ်ခြင်း-add-book--daily-fine-rate)
+  - [လုပ်ဆောင်ချက် ၈ - စာအုပ်ကဏ္ဍခွဲများ စီမံခန့်ခွဲမှု (Book Category CRUD Management)](#လုပ်ဆောင်ချက်-၈---စာအုပ်ကဏ္ဍခွဲများ-စီမံခန့်ခွဲမှု-book-category-crud-management)
+  - [လုပ်ဆောင်ချက် ၉ - စာအုပ်ငှားရမ်း/အပ်နှံ ကောင်တာနှင့် VIP အခွင့်အရေး (Circulation Desk & VIP +7 Days Rule)](#လုပ်ဆောင်ချက်-၉---စာအုပ်ငှားရမ်းအပ်နှံ-ကောင်တာနှင့်-vip-အခွင့်အရေး-circulation-desk--vip-7-days-rule)
+  - [လုပ်ဆောင်ချက် ၁၀ - ဦးစားပေး ကြိုတင်မှာယူမှု စီမံခန့်ခွဲခြင်း (Priority Holds Queue Management)](#လုပ်ဆောင်ချက်-၁၀---ဦးစားပေး-ကြိုတင်မှာယူမှု-စီမံခန့်ခွဲခြင်း-priority-holds-queue-management)
+  - [လုပ်ဆောင်ချက် ၁၁ - အသင်းဝင်များ စာရင်းနှင့် မှတ်ပုံတင်စိစစ်ခြင်း (Patron Directory & Myanmar NRC KYC)](#လုပ်ဆောင်ချက်-၁၁---အသင်းဝင်များ-စာရင်းနှင့်-မှတ်ပုံတင်စိစစ်ခြင်း-patron-directory--myanmar-nrc-kyc)
+  - [လုပ်ဆောင်ချက် ၁၂ - တရားဝင် VIP အသင်းဝင်ကတ်ပြားနှင့် ပုံထုတ်ယူခြင်း (VIP Member Card Generation & PNG Export)](#လုပ်ဆောင်ချက်-၁၂---တရားဝင်-vip-အသင်းဝင်ကတ်ပြားနှင့်-ပုံထုတ်ယူခြင်း-vip-member-card-generation--png-export)
+  - [လုပ်ဆောင်ချက် ၁၃ - ဒဏ်ကြေးစာရင်းနှင့် ငွေပေးချေမှု ကောက်ခံခြင်း (Fines Ledger & Payment Collection)](#လုပ်ဆောင်ချက်-၁၃---ဒဏ်ကြေးစာရင်းနှင့်-ငွေပေးချေမှု-ကောက်ခံခြင်း-fines-ledger--payment-collection)
+- [အပိုင်း (၃) - အဆင့်မြင့် အစီရင်ခံစာနှင့် စာရင်းဇယား စနစ် (Reporting & Analytics Suite)](#အပိုင်း-၃---အဆင့်မြင့်-အစီရင်ခံစာနှင့်-စာရင်းဇယား-စနစ်-reporting--analytics-suite)
+  - [လုပ်ဆောင်ချက် ၁၄ - စွမ်းဆောင်ရည် အနှစ်ချုပ်နှင့် Date Filter (Executive Summary & Date Filter)](#လုပ်ဆောင်ချက်-၁၄---စွမ်းဆောင်ရည်-အနှစ်ချုပ်နှင့်-date-filter-executive-summary--date-filter)
+  - [လုပ်ဆောင်ချက် ၁၅ - ငှားရမ်းမှုမှတ်တမ်းနှင့် CSV ဒေါင်းလုဒ် (Circulation Loans Ledger & CSV Export)](#လုပ်ဆောင်ချက်-၁၅---ငှားရမ်းမှုမှတ်တမ်းနှင့်-csv-ဒေါင်းလုဒ်-circulation-loans-ledger--csv-export)
+  - [လုပ်ဆောင်ချက် ၁၆ - ဒဏ်ကြေးငွေစာရင်းနှင့် CSV ဒေါင်းလုဒ် (Fines & Financial Ledger & CSV Export)](#လုပ်ဆောင်ချက်-၁၆---ဒဏ်ကြေးငွေစာရင်းနှင့်-csv-ဒေါင်းလုဒ်-fines--financial-ledger--csv-export)
+  - [လုပ်ဆောင်ချက် ၁၇ - စာအုပ်လက်ကျန်စာရင်းနှင့် CSV ဒေါင်းလုဒ် (Catalog Inventory Status & CSV Export)](#လုပ်ဆောင်ချက်-၁၇---စာအုပ်လက်ကျန်စာရင်းနှင့်-csv-ဒေါင်းလုဒ်-catalog-inventory-status--csv-export)
+  - [လုပ်ဆောင်ချက် ၁၈ - အသင်းဝင်များနှင့် VIP စာရင်း CSV ဒေါင်းလုဒ် (Patron & VIP Directory & CSV Export)](#လုပ်ဆောင်ချက်-၁၈---အသင်းဝင်များနှင့်-vip-စာရင်း-csv-ဒေါင်းလုဒ်-patron--vip-directory--csv-export)
+  - [လုပ်ဆောင်ချက် ၁၉ - ရက်ကျော်လွန်စာအုပ်များ စာရင်းနှင့် CSV ဒေါင်းလုဒ် (Overdue Action List & CSV Export)](#လုပ်ဆောင်ချက်-၁၉---ရက်ကျော်လွန်စာအုပ်များ-စာရင်းနှင့်-csv-ဒေါင်းလုဒ်-overdue-action-list--csv-export)
+- [အပိုင်း (၄) - Koha အဆင့်မြင့် လုပ်ငန်းဆောင်ရွက်ချက်များ (Koha Enterprise Library Services)](#အပိုင်း-၄---koha-အဆင့်မြင့်-လုပ်ငန်းဆောင်ရွက်ချက်များ-koha-enterprise-library-services)
+  - [လုပ်ဆောင်ချက် ၂၀ - စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်း (Acquisitions & Purchase Orders)](#လုပ်ဆောင်ချက်-၂၀---စာအုပ်ဝယ်ယူမှု-စီမံခန့်ခွဲခြင်း-acquisitions--purchase-orders)
+  - [လုပ်ဆောင်ချက် ၂၁ - ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းမှု (Serials & Periodicals)](#လုပ်ဆောင်ချက်-၂၁---ဂျာနယ်နှင့်-မဂ္ဂဇင်း-စာရင်းသွင်းမှု-serials--periodicals)
+  - [လုပ်ဆောင်ချက် ၂၂ - စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းခြင်း (Interlibrary Loan - ILL)](#လုပ်ဆောင်ချက်-၂၂---စာကြည့်တိုက်အချင်းချင်း-ချိတ်ဆက်ငှားရမ်းခြင်း-interlibrary-loan---ill)
+  - [လုပ်ဆောင်ချက် ၂၃ - တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း စာအုပ်များ (Course Reserves)](#လုပ်ဆောင်ချက်-၂၃---တက္ကသိုလ်-သင်ရိုးညွှန်းတမ်း-စာအုပ်များ-course-reserves)
+- [အပိုင်း (၅) - စံသတ်မှတ် လုပ်ငန်းလမ်းညွှန် (SOP) နှင့် အမေးများသော မေးခွန်းများ (FAQ)](#အပိုင်း-၅---စံသတ်မှတ်-လုပ်ငန်းလမ်းညွှန်-sop-နှင့်-အမေးများသော-မေးခွန်းများ-faq)
 
 ---
 
-### Slide 2: Instant E-Book Reading in Browser (Full PDF Viewer)
-
-**Objective:** Demonstrate how readers can immediately open and read digital e-books in the browser without installing external software.
-
-#### Key Talking Points:
-1. **Zero-Friction Access:** Digital editions feature a bright "Read E-Book" (စာအုပ်ဖတ်မည်) button.
-2. **Integrated High-Performance PDF Reader:** Opens a distraction-free modal dialog with full pagination, zoom, responsive fit, and download controls.
-3. **50 Authentic E-Book Titles:** Pre-loaded with official digital editions spanning classical literature to modern technology guides.
-
-#### Step-by-Step User Instructions:
-1. In the Catalog, locate any title with the **E-Book (Digital Edition)** badge.
-2. Click the green **"Read E-Book" (စာအုပ်ဖတ်မည်)** button.
-3. Use the in-browser viewer controls to read, navigate through pages, zoom in on text, or download for offline reading.
-4. Click the "✕" button or press Escape to return to the catalog.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 02: In-Browser E-Book PDF Viewer Modal                 |
-| Recommended View: Modal active over http://206.189.47.42:3000/                    |
-| Caption: "In-browser E-Book reader modal displaying high-definition Burmese PDF    |
-| literature with header navigation, page counter, and zoom controls."              |
-+-----------------------------------------------------------------------------------+
-```
+# အပိုင်း (၁) - အများပြည်သူနှင့် စာဖတ်သူ အသင်းဝင်များဆိုင်ရာ စနစ် (Public Patron Portal)
 
 ---
 
-### Slide 3: Physical Book Hold & Reservation Request
+### လုပ်ဆောင်ချက် ၁ - အများပြည်သူသုံး စာအုပ်ရှာဖွေရေးစနစ် (OPAC Search & Category Filters)
 
-**Objective:** Explain how patrons can reserve physical hardcopy books when they plan to visit the branch or when a popular title is currently checked out.
+**ရည်ရွယ်ချက်:** ပြည်သူလူထုနှင့် စာကြည့်တိုက် အသင်းဝင်များအနေဖြင့် စာကြည့်တိုက်တွင် ရှိသော မြန်မာဂန္ထဝင်စာပေများ၊ သမိုင်းစာအုပ်များ၊ နည်းပညာနှင့် ရသစာပေများကို လျင်မြန်လွယ်ကူစွာ ရှာဖွေနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Hold Queue Placement:** Reserves a copy in the Koha-standard priority queue.
-2. **Real-time Status Validation:** Available books are marked for desk pickup; borrowed books place the patron next in line upon return.
-3. **Guest Protection:** Unauthenticated users are gracefully prompted to log in before confirming a reservation.
+#### အဓိက အချက်များ-
+1. **လျင်မြန်သော ရှာဖွေမှုစနစ် (Live Search):** စာအုပ်ခေါင်းစဉ်၊ စာရေးဆရာအမည်၊ ထုတ်ဝေသူ သို့မဟုတ် ISBN နံပါတ် ရိုက်ထည့်သည်နှင့် ချက်ချင်း ရှာဖွေဖော်ပြပေးပါသည်။
+2. **စာအုပ်ကဏ္ဍခွဲ ပိုင်းခြားမှု (Category Pills):** `လူကြိုက်များ/ရေပန်းစား (Trending)`၊ `အသစ်ထွက်ရှိမှုများ (Latest release)`၊ `မြန်မာဂန္ထဝင်စာပေ`၊ `နည်းပညာနှင့် IT` စသည့် ကဏ္ဍခွဲ ခလုတ်များဖြင့် တစ်ချက်နှိပ်ရုံဖြင့် စစ်ထုတ်ကြည့်ရှုနိုင်ပါသည်။
+3. **စာအုပ်လက်ကျန် အခြေအနေ ပြသမှု (Availability Status):** စင်ပေါ်တွင် ငှားရမ်းနိုင်သော စာအုပ်မိတ္တူ အရေအတွက် (Available) သို့မဟုတ် ငှားရမ်းထားဆဲ (Checked Out) အခြေအနေကို အစိမ်း/အပြာရောင် Badge ဖြင့် တိကျစွာ ပြသပေးပါသည်။
+4. **အမျိုးသားစာကြည့်တိုက် E-Book အရင်းအမြစ် ခလုတ်:** အမျိုးသားစာကြည့်တိုက်၏ ဒစ်ဂျစ်တယ် အရင်းအမြစ်များဆီသို့ တိုက်ရိုက်သွားရောက်နိုင်သော လင့်ခ်ခလုတ် ပါဝင်ပါသည်။
 
-#### Step-by-Step User Instructions:
-1. For any physical title, click the **"Hold / Reserve" (ကြိုတင်မှာယူရန်)** button.
-2. If already logged in, the reservation confirms instantly with queue position assignment.
-3. If not logged in, click "Login as Member" from the notification to authenticate.
+#### အသုံးပြုနည်း အဆင့်ဆင့်-
+1. ပင်မစာမျက်နှာ [http://206.189.47.42:3000/](http://206.189.47.42:3000/) သို့ ဝင်ရောက်ပါ။
+2. ရှာဖွေရေးဘားတွင် မိမိရှာဖွေလိုသော စာအုပ်အမည် သို့မဟုတ် စာရေးဆရာ (ဥပမာ- "ဆရာကြီး ရွှေဥဒေါင်း" သို့မဟုတ် "ချစ်ဦးညို") ကို ရိုက်ထည့်ပါ။
+3. မိမိစိတ်ဝင်စားရာ ကဏ္ဍခွဲခလုတ် (ဥပမာ- "🔥 လူကြိုက်များ/ရေပန်းစား") ကို နှိပ်၍ သီးသန့်ရွေးထုတ်ပါ။
+4. စာအုပ်ကတ်ပြားပေါ်ရှိ အသေးစိတ် အချက်အလက်များ၊ ISBN နှင့် လက်ကျန်မိတ္တူ အရေအတွက်ကို ကြည့်ရှုပါ။
 
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 03: Physical Book Reservation & Hold Queue Feedback    |
-| Recommended View: Book card with active Hold interaction on http://206.189.47.42:3000/ |
-| Caption: "Hold/Reservation prompt illustrating instant queue feedback for physical |
-| book copies with queue rank confirmation."                                         |
-+-----------------------------------------------------------------------------------+
-```
+![အများပြည်သူသုံး စာအုပ်ရှာဖွေရေးစနစ် (OPAC Homepage)](screenshots/01_opac_homepage.png)
+*ပုံ ၁ - OPAC ပင်မစာမျက်နှာတွင် စာအုပ်ရှာဖွေရေးဘား၊ အမျိုးအစား Filter များနှင့် ကဏ္ဍခွဲခလုတ်များ ဖော်ပြထားပုံ*
 
 ---
 
-### Slide 4: Member Authentication & Secure Login
+### လုပ်ဆောင်ချက် ၂ - ဝဘ်ဘရောင်ဇာအတွင်း တိုက်ရိုက်ဖတ်ရှုနိုင်သော E-Book PDF ဖတ်စနစ် (In-Browser E-Book PDF Viewer)
 
-**Objective:** Guide users through accessing personal library member accounts and switching between Patron and Administrative roles.
+**ရည်ရွယ်ချက်:** ပြင်ပဆော့ဖ်ဝဲလ်များ သီးခြားဒေါင်းလုဒ်ဆွဲစရာမလိုဘဲ ကွန်ပျူတာ သို့မဟုတ် ဖုန်းဘရောင်ဇာပေါ်တွင် တိုက်ရိုက် E-Book PDF များကို ဖတ်ရှုနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Quick-Access Demo Credentials:** One-click demo buttons for quick training demonstration (`Staff Librarian` vs. `Patron Member`).
-2. **Barcode or Email Identification:** Patrons can log in using their registered Email or unique Member Barcode (e.g., `PAT-90022`).
-3. **Session Persistence:** Remembers user role across tabs and enables access to the customized Member Portal.
+#### အဓိက အချက်များ-
+1. **ကလစ်တစ်ချက်ဖြင့် ဖတ်ရှုနိုင်မှု (Instant Reading):** E-Book ရရှိနိုင်သော စာအုပ်များတွင် စိမ်းပြာရောင် **"PDF ဖတ်ရန်"** ခလုတ် ပေါ်နေမည် ဖြစ်ပါသည်။
+2. **ပြည့်စုံသော Reader Controls:** စာမျက်နှာ အကူးအပြောင်း၊ Zoom In / Zoom Out ချဲ့ခြင်း/ချုံ့ခြင်း၊ မျက်နှာပြင်ပြည့် (Fit Width) ကြည့်ရှုခြင်းနှင့် ဒေါင်းလုဒ်ရယူခြင်းများကို စုံလင်စွာ ဆောင်ရွက်နိုင်ပါသည်။
+3. **တရားဝင် E-Book စာအုပ် ၅၀ ကျော်:** ခေတ်ပေါ်နည်းပညာမှသည် မြန်မာ့သမိုင်းနှင့် ရသစာပေအထိ စာအုပ်ပေါင်း ၅၀ ကျော်ကို အပြည့်အစုံ ထည့်သွင်းပေးထားပါသည်။
 
-#### Step-by-Step User Instructions:
-1. Click the **"Login" (အကောင့်ဝင်ရန်)** link in the top navigation bar.
-2. Choose **"Login as Member / Patron"** or enter `dr.chen@university.edu`.
-3. Enter password and click **"Sign In"**.
-4. The navigation bar immediately reflects your membership status and unlocks the **"Member Portal" (အသင်းဝင် ပေါ်တယ်)** tab.
+#### အသုံးပြုနည်း အဆင့်ဆင့်-
+1. စာအုပ်စာရင်းတွင် `FREE E-BOOK` အမှတ်အသားပါသော စာအုပ်ကို ရှာပါ။
+2. စိမ်းပြာရောင် **"PDF ဖတ်ရန်"** ခလုတ်ကို နှိပ်ပါ။
+3. မျက်နှာပြင်ပေါ်တွင် ပွင့်လာသော Reader Modal ဖြင့် စာအုပ်ကို စတင်ဖတ်ရှုပါ။
+4. စာဖတ်ပြီးပါက ညာဘက်အပေါ်ထောင့်ရှိ "✕" (Close) ခလုတ်ကို နှိပ်၍ ပိတ်နိုင်ပါသည်။
 
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 04: Login Screen with Role Switcher                     |
-| Recommended View: http://206.189.47.42:3000/login                                |
-| Caption: "Authentication portal with quick demo login buttons for Librarian staff  |
-| and Patron members, highlighting secure session entry."                           |
-+-----------------------------------------------------------------------------------+
-```
+![ဝဘ်ဘရောင်ဇာအတွင်း E-Book PDF ဖတ်ရှုခြင်း](screenshots/02_ebook_pdf_reader.png)
+*ပုံ ၂ - ဝဘ်ဘရောင်ဇာအတွင်း တိုက်ရိုက်ဖတ်ရှုနိုင်သော မြန်မာ E-Book Reader Modal မျက်နှာပြင်*
 
 ---
 
-### Slide 5: Member Self-Service Portal – Active Loans & Self-Renewal
+### လုပ်ဆောင်ချက် ၃ - စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း (Member & Staff Authentication)
 
-**Objective:** Train patrons on tracking borrowed books, watching return due dates, and self-renewing loans online before fines accrue.
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက် အသင်းဝင်များနှင့် ဝန်ထမ်းများ မိမိတို့၏ သက်ဆိုင်ရာ အခန်းကဏ္ဍ (Role) အလိုက် လုံခြုံစွာ အကောင့်ဝင်ရောက်နိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Live Checkouts Ribbon:** Displays all books currently in the patron's possession with checkout dates and strict due dates.
-2. **Overdue Warning Alerts:** Highlights loans nearing due date in yellow and overdue items in red with accumulated fine totals.
-3. **One-Click Self-Renewal:** Extends due date by standard policy loan period directly from the portal, provided no other patron has placed a hold.
+#### အဓိက အချက်များ-
+1. **အခန်းကဏ္ဍခွဲခြားမှု (Role-Based Access):** `Patron (စာဖတ်သူအသင်းဝင်)` နှင့် `Staff/Officer (စာကြည့်တိုက်မှူးနှင့် ဝန်ထမ်း)` ဟူ၍ နှစ်မျိုး ခွဲခြားထားပါသည်။
+2. **လွယ်ကူသော Demo Login ခလုတ်များ:** စမ်းသပ်လေ့ကျင့်သူများ အဆင်ပြေစေရန် စာကြည့်တိုက်မှူးအကောင့် နှင့် အသင်းဝင်အကောင့်များအတွက် Quick Preset ခလုတ်များ ထည့်သွင်းထားပါသည်။
+3. **ဘားကုဒ် သို့မဟုတ် အီးမေးလ်ဖြင့် ဝင်ရောက်နိုင်မှု:** မိမိ၏ အီးမေးလ် သို့မဟုတ် ကတ်ပြားပေါ်ရှိ ဘားကုဒ်နံပါတ် (ဥပမာ- `PAT-90022`) ဖြင့် အလွယ်တကူ Login ဝင်နိုင်ပါသည်။
 
-#### Step-by-Step User Instructions:
-1. Click **"Member Portal" (အသင်းဝင် ပေါ်တယ်)** in the top navigation.
-2. View the **"Current Checkouts" (လက်ရှိငှားရမ်းထားသော စာအုပ်များ)** section.
-3. Inspect the return due date for each book.
-4. Click **"Renew Loan" (သက်တမ်းတိုးရန်)** next to eligible titles to immediately extend borrowing time.
+#### အသုံးပြုနည်း အဆင့်ဆင့်-
+1. အပေါ် Navigation Bar ရှိ **"အကောင့်ဝင်ရန် (Login)"** ကို နှိပ်ပါ။
+2. မိမိဝင်ရောက်လိုသည့် အကောင့်အမျိုးအစား (Patron သို့မဟုတ် Staff) ကို ရွေးချယ်ပါ။
+3. အီးမေးလ်နှင့် စကားဝှက် ရိုက်ထည့်ပြီး **"Sign In"** နှိပ်ပါ။
 
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 05: Member Portal – Active Loans & Self-Renewals        |
-| Recommended View: http://206.189.47.42:3000/patron                               |
-| Caption: "Member Self-Service Dashboard displaying active borrowed items, return   |
-| due date countdown, and one-click loan renewal button."                           |
-+-----------------------------------------------------------------------------------+
-```
+![စနစ်သို့ အကောင့်ဝင်ရောက်ခြင်း မျက်နှာပြင်](screenshots/03_login_screen.png)
+*ပုံ ၃ - အသင်းဝင်နှင့် ဝန်ထမ်းများ လုံခြုံစွာ အကောင့်ဝင်ရောက်နိုင်သော Login Portal*
 
 ---
 
-### Slide 6: Hold Tracking, Reading History & Saved Virtual Lists
+### လုပ်ဆောင်ချက် ၄ - စာဖတ်သူ အသင်းဝင် ပေါ်တယ်နှင့် သက်တမ်းတိုးခြင်း (Patron Portal & Self-Renewal)
 
-**Objective:** Demonstrate patron self-service features for tracking reserved items and maintaining personal reading bibliographies.
+**ရည်ရွယ်ချက်:** စာဖတ်သူများ မိမိငှားရမ်းထားသော စာအုပ်စာရင်းများ၊ ပြန်အပ်ရမည့် ရက်စွဲများကို အချိန်နှင့်တစ်ပြေးညီ စစ်ဆေးနိုင်ပြီး အွန်လိုင်းမှတစ်ဆင့် စာအုပ်သက်တမ်းတိုးနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Active Holds Status:** Shows whether a reserved book is `Waiting in Queue` or `Ready for Desk Pickup`.
-2. **Borrowing History Log:** Complete archival record of previously borrowed and returned books.
-3. **Personal Saved Lists:** Curate virtual reading lists (e.g., "Myanmar Historical Novels", "Research References").
+#### အဓိက အချက်များ-
+1. **လက်ရှိငှားရမ်းထားမှု အနှစ်ချုပ် (Current Checkouts):** ငှားရမ်းထားသည့် စာအုပ်အမည်၊ ငှားသည့်ရက်၊ ပြန်အပ်ရမည့်ရက်နှင့် ရက်လွန်ရန် ကျန်ရှိသည့် ရက်အရေအတွက်ကို ဖော်ပြပေးပါသည်။
+2. **အွန်လိုင်းမှ စာအုပ်သက်တမ်းတိုးခြင်း (One-Click Self-Renewal):** စာကြည့်တိုက်သို့ လူကိုယ်တိုင် လာရောက်စရာမလိုဘဲ စာအုပ်ဘေးရှိ **"သက်တမ်းတိုးရန် (Renew Loan)"** ခလုတ်ကို နှိပ်၍ သတ်မှတ်ရက်အတိုင်း သက်တမ်းတိုးနိုင်ပါသည်။
+3. **ကြိုတင်မှာယူမှု အခြေအနေ (Hold Tracking):** မိမိ ကြိုတင်မှာယူထားသော စာအုပ်များ၏ Queue အဆင့်နှင့် စာကြည့်တိုက်တွင် လာရောက်ထုတ်ယူနိုင်သည့် အခြေအနေကို စစ်ဆေးနိုင်ပါသည်။
 
-#### Step-by-Step User Instructions:
-1. In the Member Portal, scroll to **"My Reservations / Holds" (ကြိုတင်မှာယူမှုများ)** to verify your pickup readiness.
-2. Switch tabs to **"Reading History" (ငှားရမ်းမှု မှတ်တမ်း)** to review past reading accomplishments.
-3. Use **"Saved Lists"** to organize future reading goals.
+#### အသုံးပြုနည်း အဆင့်ဆင့်-
+1. အသင်းဝင်အကောင့်ဖြင့် Login ဝင်ပြီးနောက် **"အသင်းဝင် ပေါ်တယ် (Member Portal)"** သို့ သွားပါ။
+2. "လက်ရှိငှားရမ်းထားသော စာအုပ်များ" စာရင်းတွင် ပြန်အပ်ရမည့်ရက်ကို ကြည့်ရှုပါ။
+3. သက်တမ်းတိုးလိုပါက စိမ်းပြာရောင် **"သက်တမ်းတိုးရန်"** ခလုတ်ကို နှိပ်ပါ။
 
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 06: Member Portal – Holds Queue & History Tabs          |
-| Recommended View: http://206.189.47.42:3000/patron (Scrolled to Holds & Lists)   |
-| Caption: "Member Portal showing active hold queue priority ranking, reading       |
-| history timeline, and personal book lists."                                       |
-+-----------------------------------------------------------------------------------+
-```
+![စာဖတ်သူ အသင်းဝင် ပေါ်တယ်](screenshots/04_patron_self_service.png)
+*ပုံ ၄ - စာဖတ်သူ အသင်းဝင် ပေါ်တယ်တွင် လက်ရှိငှားထားသော စာအုပ်များနှင့် သက်တမ်းတိုး ခလုတ်များ ဖော်ပြထားပုံ*
 
 ---
 
-### Slide 7: Dual-Language Toggle (English / မြန်မာဘာသာ)
-
-**Objective:** Showcase seamless internationalization allowing any user to toggle between English and authentic Myanmar Unicode translations instantly.
-
-#### Key Talking Points:
-1. **Instant Language Switching:** Toggle button directly accessible in the top navigation header at all times.
-2. **Contextual Burmese Terminology:** Authentic library science terminology used across all buttons, status badges, forms, and alerts (e.g., "Circulation Desk" ➔ "စာအုပ် ငှား/ပြန် ကောင်တာ").
-3. **Persistent Language State:** The user's preference is remembered across all pages and sessions.
-
-#### Step-by-Step User Instructions:
-1. Click the **"MY"** button in the top right corner of the navigation bar.
-2. Observe all navigation menus, catalog badges, table headers, and modal text instantly switch to Myanmar script.
-3. Click **"EN"** to toggle back to English at any point.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 07: Dual Language Navigation Switcher                   |
-| Recommended View: Top Navbar on http://206.189.47.42:3000/ (Focused on EN/MY toggle)|
-| Caption: "Top navigation bar highlighting the dual-language switcher toggle with   |
-| translated Burmese library navigation terms."                                     |
-+-----------------------------------------------------------------------------------+
-```
+# အပိုင်း (၂) - စာကြည့်တိုက်မှူးနှင့် ဝန်ထမ်းများဆိုင်ရာ စီမံခန့်ခွဲမှုစနစ် (Staff Control Panel)
 
 ---
 
-# PART 2: Staff & Administration Control Panel Showcase
+### လုပ်ဆောင်ချက် ၅ - စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ် (Staff Admin Command Center)
+
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက်မှူးများအတွက် စာကြည့်တိုက်တစ်ခုလုံး၏ လည်ပတ်မှုအခြေအနေ (စုစုပေါင်းစာအုပ်၊ ငှားရမ်းဆဲစာအုပ်၊ အသင်းဝင်ဦးရေ၊ ရရန်ကျန်ဒဏ်ကြေး) ကို မျက်ခြည်မပြတ် စောင့်ကြည့်ထိန်းချုပ်နိုင်စေရန် ဖြစ်ပါသည်။
+
+#### အဓိက အချက်များ-
+1. **အချိန်နှင့်တစ်ပြေးညီ KPI ကတ်ပြားများ:** စုစုပေါင်း စာအုပ်ခေါင်းစဉ်၊ လက်ရှိငှားထားသော စာအုပ်များ၊ မှတ်ပုံတင်ထားသော အသင်းဝင်ဦးရေနှင့် ကြိုတင်မှာယူမှု စာရင်းများ။
+2. **အမြန်လုပ်ငန်းခလုတ်များ (Quick Shortcuts):** စာအုပ်ကတ်တလောက်သွင်းခြင်း၊ ငှား/ပြန်ကောင်တာ၊ အသင်းဝင်စာရင်း၊ ဒဏ်ကြေးစာရင်းနှင့် အစီရင်ခံစာများဆီသို့ တိုက်ရိုက်သွားရောက်နိုင်သော ခလုတ်များ။
+3. **လတ်တလော လှုပ်ရှားမှု မှတ်တမ်း (Recent Activity Feed):** ယနေ့ စာအုပ်ငှားရမ်းမှု၊ ပြန်အပ်မှုနှင့် ဒဏ်ကြေးပေးသွင်းမှုများကို အချိန်မှတ်တမ်းနှင့်တကွ ပြသပေးပါသည်။
+
+![စာကြည့်တိုက် ကွပ်ကဲမှု ဒက်ရှ်ဘုတ်](screenshots/05_admin_dashboard.png)
+*ပုံ ၅ - စာကြည့်တိုက်မှူးများအတွက် အဓိက လုပ်ငန်းကွပ်ကဲမှု စင်တာ (Admin Dashboard)*
 
 ---
 
-### Slide 8: Staff Command Center & Dashboard Overview
+### လုပ်ဆောင်ချက် ၆ - စာအုပ်စာရင်းနှင့် ကတ်တလောက် စီမံခန့်ခွဲမှု (Catalog Management & Inventory)
 
-**Objective:** Introduce library officers to the central administrative hub, displaying real-time circulation metrics and direct shortcuts to daily workflow modules.
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက်ရှိ စာအုပ်အသစ်များ ထည့်သွင်းခြင်း၊ ပြင်ဆင်ခြင်း၊ စာအုပ်မိတ္တူ (Physical Copies) များနှင့် စင်နံပါတ် (Shelf Location) များကို စနစ်တကျ စီမံခန့်ခွဲနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Real-Time Live KPI Cards:** Total Catalog Titles, Active Loans, Registered Members, Pending Holds, and Today's Circulation Count.
-2. **Modular 5-Column Grid:** Clean access to Cataloging, Circulation Desk, Member Registry, Fines Ledger, and Reports.
-3. **Recent Activity Stream:** Live chronological feed of checkouts, returns, and hold requests.
+#### အဓိက အချက်များ-
+1. **ပြည့်စုံသော စာအုပ်ဇယား (Bibliographic Table):** စာအုပ်မျက်နှာဖုံး၊ ခေါင်းစဉ်၊ စာရေးဆရာ၊ ISBN၊ အမျိုးအစား၊ ကဏ္ဍခွဲ၊ မိတ္တူအရေအတွက်နှင့် ငှားရမ်းမှုကာလများကို တစ်နေရာတည်းတွင် ကြည့်ရှုနိုင်ပါသည်။
+2. **စာအုပ်ကဏ္ဍ Filter များ (Category Tabs):** စာအုပ်များကို Trending၊ Latest Release စသည့် သတ်မှတ်ကဏ္ဍများအလိုက် စစ်ထုတ်ကြည့်ရှုနိုင်ပါသည်။
+3. **မိတ္တူစီမံခန့်ခွဲမှု (Manage Copies):** စာအုပ်တစ်အုပ်ချင်းစီအတွက် ဘားကုဒ်နံပါတ်၊ ထားရှိရာ စင်နေရာ (ဥပမာ- Shelf B-12) နှင့် စာအုပ်အခြေအနေ (Available, On Loan, Maintenance, Lost) တို့ကို သီးခြားစီမံနိုင်ပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. Log in with an Admin/Staff account (`admin@library.gov.mm`).
-2. Click **"Dashboard" (ဒက်ရှ်ဘုတ်)** in the top navigation.
-3. Review KPI cards for immediate situational awareness of branch operations.
-4. Click any module card to begin daily operations.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 08: Staff Administrative Command Center                 |
-| Recommended View: http://206.189.47.42:3000/admin                                |
-| Caption: "Administrative Dashboard overview showing real-time circulation KPIs,   |
-| operational shortcut cards, and system status feed."                             |
-+-----------------------------------------------------------------------------------+
-```
+![စာအုပ်စာရင်းနှင့် ကတ်တလောက် စီမံခန့်ခွဲမှု](screenshots/06_catalog_management.png)
+*ပုံ ၆ - စာအုပ်ကတ်တလောက် စာရင်းဇယားနှင့် ရှာဖွေစစ်ထုတ်မှု မျက်နှာပြင်*
 
 ---
 
-### Slide 9: Cataloging Module – Adding Books & Custom Overdue Fine Rates (MMK/Day)
+### လုပ်ဆောင်ချက် ၇ - စာအုပ်အသစ်ထည့်သွင်းခြင်းနှင့် ဒဏ်ကြေးနှုန်း သတ်မှတ်ခြင်း (Add Book & Daily Fine Rate)
 
-**Objective:** Train catalogers on registering new titles, attaching e-book PDFs, and setting individual overdue fine rates in MMK/day under the Book Type section.
+**ရည်ရွယ်ချက်:** စာအုပ်အသစ်တစ်အုပ် စနစ်ထဲသို့ ထည့်သွင်းရာတွင် သက်ဆိုင်ရာ ကဏ္ဍခွဲ (Category)၊ အများဆုံးငှားရမ်းနိုင်သော ရက်အရေအတွက်နှင့် ရက်လွန်ဒဏ်ကြေးနှုန်း (MMK/Day) တို့ကို စိတ်ကြိုက် သတ်မှတ်နိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Bibliographic Metadata Entry:** Title, Author, ISBN, Publisher, Year, Subject, and Category/Genre.
-2. **Category / Genre Assignment & Inline Creation:**
-   - Select an existing category from the dropdown list.
-   - Or click **"+ New Category"** right inside the form to quickly create and assign a new category on the spot.
-   - Access full Category CRUD (Add, Rename, Delete, Book Counts) at `/admin/categories` or via **"Manage Categories"**.
-3. **Book Type Selection (Physical vs. E-Book):**
-   - Choosing **E-Book** displays digital PDF upload / link fields.
-   - Choosing **Physical Hardcopy** reveals the dedicated **Overdue Fine Amount in MMK** and **Original Book Price (MMK)** fields.
-4. **Flexible Per-Book Fine Rates:** Standard books can be set to 500 MMK/day, rare collections to 2,000 MMK/day, and reference materials to 5,000 MMK/day.
+#### အဓိက အချက်များ-
+1. **စာအုပ်ကဏ္ဍခွဲ ရွေးချယ်မှု (Book Category Selection):** စာအုပ်ထည့်သွင်းချိန်တွင် သက်ဆိုင်ရာ Category (ဥပမာ- Trending, Latest release, Computer Science) ကို Dropdown မှ အလွယ်တကူ ရွေးချယ်နိုင်ပါသည်။
+2. **အများဆုံးငှားရမ်းခွင့် ကာလ (Max Rent Days):** စံသတ်မှတ်ချက် ၇ ရက်အပြင် စာအုပ်အမျိုးအစားအလိုက် ၁၄ ရက်၊ ၂၁ ရက် စသဖြင့် ပြင်ဆင်သတ်မှတ်နိုင်ပါသည်။
+3. **စာအုပ်အလိုက် သီးခြား ဒဏ်ကြေးနှုန်း (Daily Overdue Fine Rate in MMK):** တစ်ရက်လျှင် ကျသင့်မည့် ဒဏ်ကြေးငွေ (ဥပမာ- ၅၀၀ ကျပ်၊ ၁,၀၀၀ ကျပ်) ကို စာအုပ်တန်ဖိုးအလိုက် စိတ်ကြိုက်သတ်မှတ်နိုင်ပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. Navigate to **"Cataloging" (စာရင်းသွင်းခြင်း)** at `/admin/catalog`.
-2. Click **"+ Add Record" (+ စာအုပ်အသစ်ထည့်မည်)**.
-3. Fill in Title, Author, ISBN, Publisher, Publication Year, and Subject.
-4. Select the **"Book Category / Genre"** from the dropdown (or click `+ New Category` to define one).
-5. Under **"Type of Book Format"**, select **"Physical Book"** or **"E-Book (Digital)"**.
-6. Set shelf location, number of initial copies, original book price (MMK), and daily overdue fine rate (e.g., `500` MMK / day).
-7. Click **"Save Bibliographic Record" (စာအုပ်သိမ်းဆည်းမည်)**.
+#### အသုံးပြုနည်း အဆင့်ဆင့်-
+1. စာအုပ်စာရင်း စာမျက်နှာတွင် အစိမ်းရောင် **"+ စာအုပ်အသစ်ထည့်ရန်"** ခလုတ်ကို နှိပ်ပါ။
+2. စာအုပ်ခေါင်းစဉ်၊ စာရေးဆရာ၊ ISBN၊ ထုတ်ဝေသူနှင့် အမျိုးအစားများကို ဖြည့်သွင်းပါ။
+3. **Book Category** Dropdown တွင် သင့်လျော်သော ကဏ္ဍခွဲကို ရွေးပါ။
+4. **အများဆုံး ငှားရမ်းနိုင်သည့်ရက် (Max Rent Days)** နှင့် **တစ်ရက် ဒဏ်ကြေးနှုန်း (Daily Fine Rate in MMK)** တို့ကို သတ်မှတ်ပါ။
+5. **"သိမ်းဆည်းမည် (Save Book)"** ကို နှိပ်ပါ။
 
-> 💡 **Category CRUD Management:** Librarians can manage all library categories at `/admin/categories` (accessible via the top navigation under **More > Book Categories** or by clicking **"Manage Categories"** on the Cataloging page). You can view book counts per category, rename categories (automatically updates all linked books), or delete obsolete categories.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 09: Cataloging Form with Category & Overdue Fine Field  |
-| Recommended View: http://206.189.47.42:3000/admin/catalog (Modal open)           |
-| Caption: "Book Cataloging form displaying Category/Genre selection, quick-add,   |
-| and custom daily overdue fine input styled in Myanmar Kyats (MMK / day)."         |
-+-----------------------------------------------------------------------------------+
-```
+![စာအုပ်အသစ် ထည့်သွင်းခြင်း Modal](screenshots/07_add_book_modal.png)
+*ပုံ ၇ - စာအုပ်အသစ် ထည့်သွင်းခြင်းနှင့် ကဏ္ဍခွဲ၊ ဒဏ်ကြေးနှုန်း သတ်မှတ်သည့် ပုံစံ*
 
 ---
 
-### Slide 10: Inventory Control – Barcodes, Physical Copies & Shelf Locations
+### လုပ်ဆောင်ချက် ၈ - စာအုပ်ကဏ္ဍခွဲများ စီမံခန့်ခွဲမှု (Book Category CRUD Management)
 
-**Objective:** Explain how physical copies are tracked with individual barcodes, call numbers, and shelf availability states.
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက်မှူးများအနေဖြင့် စာအုပ်ကဏ္ဍခွဲအသစ်များ (Categories) ကို လိုအပ်သလို အသစ်ထည့်သွင်းခြင်း၊ အမည်ပြင်ဆင်ခြင်းနှင့် ဖျက်ပစ်ခြင်းများကို လွတ်လပ်စွာ ဆောင်ရွက်နိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **One Title to Multiple Copies:** A single bibliographic entry can have 1 to 50+ distinct physical copies.
-2. **Unique Barcode Identity:** Each physical copy has a scannable barcode (e.g., `BC-10001-1`).
-3. **Real-time Inventory Status:** Tracks copies across states: `Available` (ရရှိနိုင်), `On Loan` (ငှားရမ်းထား), `In Maintenance` (ပြင်ဆင်ဆဲ), or `Lost` (ပျောက်ဆုံး).
+#### အဓိက အချက်များ-
+1. **လွတ်လပ်စွာ စီမံခန့်ခွဲနိုင်မှု (Full CRUD):** Create, Read, Update, Delete လုပ်ငန်းအားလုံးကို အလွယ်တကူ ဆောင်ရွက်နိုင်ပါသည်။
+2. **ကဏ္ဍကုဒ်နှင့် ဖော်ပြချက် (Code & Description):** ကဏ္ဍအမည်အပြင် အတိုကောက်ကုဒ် (ဥပမာ- `TRENDING`, `LATEST`, `CS`) များကိုပါ စနစ်တကျ ထည့်သွင်းနိုင်ပါသည်။
+3. **အလိုအလျောက် ချိတ်ဆက်မှု (Auto Integration):** ဤနေရာတွင် ထည့်သွင်းလိုက်သော Category များသည် ပင်မ OPAC ရှာဖွေရေးစာမျက်နှာနှင့် စာအုပ်ထည့်သွင်းသည့် Modal များတွင် ချက်ချင်း အလိုအလျောက် ပေါ်လာမည် ဖြစ်ပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. In the Cataloging table, click **"Manage Copies" (မိတ္တူများ စီမံရန်)** on any title.
-2. View existing copies, their barcodes, and current statuses.
-3. Click **"+ Add Copy"** to enter a new barcode and shelf call number.
-4. Update condition notes as physical wear occurs.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 10: Physical Copies & Barcode Inventory Drawer          |
-| Recommended View: http://206.189.47.42:3000/admin/catalog (Manage Copies view)   |
-| Caption: "Physical Copy Inventory drawer showing unique barcodes, shelf locations,|
-| and real-time copy circulation status badges."                                    |
-+-----------------------------------------------------------------------------------+
-```
+![စာအုပ်ကဏ္ဍခွဲများ စီမံခန့်ခွဲမှု မျက်နှာပြင်](screenshots/08_book_categories_crud.png)
+*ပုံ ၈ - စာအုပ်ကဏ္ဍခွဲများ အသစ်ထည့်သွင်းခြင်းနှင့် စီမံခန့်ခွဲသည့် မျက်နှာပြင်*
 
 ---
 
-### Slide 11: Circulation Desk – Fast Check-Out (Loan Issuance)
+### လုပ်ဆောင်ချက် ၉ - စာအုပ်ငှားရမ်း/အပ်နှံ ကောင်တာနှင့် VIP အခွင့်အရေး (Circulation Desk & VIP +7 Days Rule)
 
-**Objective:** Train circulation counter officers to issue loans in under 10 seconds using barcode scanning.
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက် ကောင်တာတွင် စာအုပ်ငှားရမ်းခြင်းနှင့် ပြန်လည်အပ်နှံခြင်းများကို ဘားကုဒ် စကင်နာဖြင့် လျင်မြန်စွာ ဆောင်ရွက်နိုင်စေရန်နှင့် VIP အသင်းဝင်များအတွက် အထူးရက်ပို ခံစားခွင့်များ အလိုအလျောက် တွက်ချက်ပေးရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Prominent Front Navigation:** "Circulation Desk" is placed prominently on the top bar for quick access during heavy desk queues.
-2. **Automated Borrower Verification:** Scanning Member ID verifies eligibility, checks max loan limits, and flags outstanding fines.
-3. **Due Date Calculation:** Automatically sets return deadline based on patron category loan rules (e.g., 14 days for General Members, 30 days for Faculty).
+#### အဓိက အချက်များ-
+1. **ဘားကုဒ်စကင်ဖတ်စနစ် (Barcode Scanner Ready):** အသင်းဝင်ကတ် ဘားကုဒ် (Patron Barcode) နှင့် စာအုပ်ဘားကုဒ် (Book Copy Barcode) တို့ကို စကင်ဖတ်ရုံဖြင့် စက္ကန့်ပိုင်းအတွင်း အချက်အလက်များ ကျရောက်လာပါသည်။
+2. **VIP အသင်းဝင် အထူးရက်ပို စည်းမျဉ်း (+7 Days Loan Rule):**
+   - စာဖတ်သူသည် **VIP အသင်းဝင်** ဖြစ်ပါက စာအုပ်ငှားရမ်းချိန်တွင် စံသတ်မှတ်ငှားရမ်းရက်ထက် **+7 ရက် ပိုမိုခံစားခွင့်** ရရှိမည် ဖြစ်ပါသည်။
+   - ဥပမာ - သာမန်အသင်းဝင်အတွက် ၇ ရက်ငှားရမ်းခွင့်ရှိသော စာအုပ်ကို VIP အသင်းဝင် ငှားပါက **၁၄ ရက်** အလိုအလျောက် သတ်မှတ်ပေးပါသည်။
+3. **အချိန်မှီ ဒဏ်ကြေးတွက်ချက်မှု (Real-Time Fine Calculation):** စာအုပ်ပြန်အပ်ချိန်တွင် သတ်မှတ်ရက် ကျော်လွန်နေပါက ရက်ကျော်လွန်သည့် ရက်အရေအတွက်နှင့် စာအုပ်၏ တစ်ရက်ဒဏ်ကြေးနှုန်းကို မြှောက်၍ ကျသင့်ဒဏ်ကြေးငွေ (MMK) ကို အလိုအလျောက် စာရင်းသွင်းပေးပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. Click **"Circulation Desk" (ငှား/ပြန် ကောင်တာ)** in the main navbar (`/admin/circulation`).
-2. In the **"Check-Out"** tab, scan or type the **Patron Barcode** (e.g., `PAT-90022`).
-3. Scan or enter the **Book Copy Barcode** (e.g., `BC-10001-1`).
-4. Click **"Issue Loan" (စာအုပ်ထုတ်ပေးရန်)**.
-5. A green confirmation banner displays the loan confirmation and exact due date.
+#### အသုံးပြုနည်း အဆင့်ဆင့်-
+1. **"စာအုပ် ငှား/ပြန် ကောင်တာ (Circulation Desk)"** သို့ သွားပါ။
+2. **အသင်းဝင် ဘားကုဒ် (Patron Barcode)** ရိုက်ထည့်ပါ (ဥပမာ- `PAT-VIP-001`)။ အသင်းဝင်၏ VIP အဆင့်နှင့် လက်ရှိငှားထားသော စာအုပ်များကို ပြသပေးပါမည်။
+3. **စာအုပ် မိတ္တူ ဘားကုဒ် (Copy Barcode)** ရိုက်ထည့်ပါ (ဥပမာ- `BK-001-C1`)။
+4. စနစ်မှ စာအုပ်ငှားရမ်းခွင့် ရက်စွဲ (VIP ဖြစ်ပါက +7 ရက် ပေါင်းပြီးသား Due Date) ကို အစမ်းဖော်ပြပေးမည် ဖြစ်ပါသည်။
+5. စိမ်းပြာရောင် **"စာအုပ်ငှားရမ်းမည် (Issue Loan)"** ခလုတ်ကို နှိပ်ပါ။
 
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 11: Circulation Desk – Fast Check-Out Screen            |
-| Recommended View: http://206.189.47.42:3000/admin/circulation                    |
-| Caption: "Circulation Desk check-out terminal showing Member Barcode scan, Book    |
-| Copy selection, and instant loan issuance workflow."                              |
-+-----------------------------------------------------------------------------------+
-```
+![စာအုပ်ငှားရမ်း/အပ်နှံ ကောင်တာ မျက်နှာပြင်](screenshots/09_circulation_checkout.png)
+*ပုံ ၉ - စာအုပ် ငှား/ပြန် ကောင်တာတွင် VIP အသင်းဝင် အချက်အလက်နှင့် +7 ရက် ပေါင်းစပ်တွက်ချက်မှု မျက်နှာပြင်*
 
 ---
 
-### Slide 12: Circulation Desk – Fast Check-In & Automated Dynamic Fine Calculation
+### လုပ်ဆောင်ချက် ၁၀ - ဦးစားပေး ကြိုတင်မှာယူမှု စီမံခန့်ခွဲခြင်း (Priority Holds Queue Management)
 
-**Objective:** Demonstrate book returns, immediate copy status restoration to "Available", and dynamic automated overdue fine calculations based on the specific book's MMK rate.
+**ရည်ရွယ်ချက်:** စာအုပ်လက်ကျန်မရှိချိန်တွင် စာဖတ်သူများ ကြိုတင်မှာယူထားသော စာရင်းများကို Koha စံနှုန်းအတိုင်း ဦးစားပေးအဆင့် (Queue Priority) ဖြင့် ထိန်းချုပ်စီမံနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Rapid Return Processing:** Scanning a returned book immediately marks the loan as completed and restores the copy to shelf-ready status.
-2. **Dynamic Overdue Formula:**
-   $$\text{Total Fine (MMK)} = \text{Days Overdue} \times \text{Book's Custom Fine Rate (MMK/Day)}$$
-3. **Instant Fine Billing:** If returned late, the fine record is generated automatically in the POS ledger and linked to the patron's balance.
+#### အဓိက အချက်များ-
+1. **ဦးစားပေး တန်းစီဇယား (Priority Ranking):** စောစီးစွာ မှာယူထားသူများကို ဦးစားပေးအဆင့် #1, #2 စသဖြင့် အစဉ်လိုက် သတ်မှတ်ပေးထားပါသည်။
+2. **စာအုပ်ပြန်ရောက်ချိန် အသိပေးမှု:** ငှားရမ်းထားသော စာအုပ် ပြန်လည်အပ်နှံလိုက်သည်နှင့် အဆိုပါ စာအုပ်ကို နောက်ထပ်မှာယူထားသူထံ အလိုအလျောက် သီးသန့်ဖယ်ထားပေး (Reserved) ပါသည်။
+3. **ထုတ်ပေးခြင်းနှင့် ပယ်ဖျက်ခြင်း (Fulfill & Cancel):** စာဖတ်သူ လာရောက်ထုတ်ယူပါက **"ထုတ်ပေးပြီး (Fulfill)"** နှိပ်နိုင်ပြီး လိုအပ်ပါက ပယ်ဖျက်နိုင်ပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. On the Circulation Desk page, click the **"Check-In / Return" (စာအုပ်ပြန်လက်ခံခြင်း)** tab.
-2. Scan the barcode of the physical book handed back by the patron.
-3. Click **"Process Return" (ပြန်လည်လက်ခံမည်)**.
-4. If on time: Copy status switches to `Available` with zero fee.
-5. If overdue: An amber alert displays the days overdue and calculated MMK fine amount, with a direct button to collect payment.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 12: Circulation Desk – Check-In with Overdue Fine Alert |
-| Recommended View: http://206.189.47.42:3000/admin/circulation (Check-in tab)     |
-| Caption: "Check-in terminal calculating overdue days and applying the book's      |
-| specific MMK daily rate to generate an instant penalty record."                   |
-+-----------------------------------------------------------------------------------+
-```
+![ဦးစားပေး ကြိုတင်မှာယူမှု စီမံခန့်ခွဲခြင်း](screenshots/10_priority_holds_queue.png)
+*ပုံ ၁၀ - ဦးစားပေး ကြိုတင်မှာယူမှု တန်းစီဇယား (Holds Queue)*
 
 ---
 
-### Slide 13: Priority Hold Queue Management – Approval & Fulfillment
+### လုပ်ဆောင်ချက် ၁၁ - အသင်းဝင်များ စာရင်းနှင့် မှတ်ပုံတင်စိစစ်ခြင်း (Patron Directory & Myanmar NRC KYC)
 
-**Objective:** Explain how staff manage patron reservations, prioritize fulfillment, and prepare books for pickup.
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက် အသင်းဝင်များ၏ အချက်အလက်များ၊ ဆက်သွယ်ရန်ဖုန်း၊ နိုင်ငံသားစိစစ်ရေးကတ်ပြား (NRC) နှင့် VIP အဆင့်အတန်းများကို စိစစ်အတည်ပြု စီမံခန့်ခွဲနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **FIFO/Priority Queue:** Manages holds based on reservation timestamp and membership priority.
-2. **Hold Lifecycle Workflow:** `PENDING` ➔ `APPROVED / WAITING PICKUP` ➔ `FULFILLED` or `CANCELLED`.
-3. **Pickup Notification & Shelf Hold:** Automatically reserves returned copies for waiting patrons before shelving.
+#### အဓိက အချက်များ-
+1. **မြန်မာနိုင်ငံသား မှတ်ပုံတင် စိစစ်မှု (Myanmar NRC Format):** ဥပမာ- `၁၂/လမန(နိုင်)၁၂၃၄၅၆` စသည့် မြန်မာနိုင်ငံသား မှတ်ပုံတင် ပုံစံဖြင့် စနစ်တကျ မှတ်တမ်းတင် စိစစ်နိုင်ပါသည်။
+2. **VIP အသင်းဝင် အဆင့် သတ်မှတ်ခြင်း (VIP Status Toggle):** အသင်းဝင်တစ်ဦးချင်းစီကို သာမန်အသင်းဝင် (Standard) သို့မဟုတ် **VIP အသင်းဝင်** အဖြစ် Switch ခလုတ်လေးဖြင့် ချက်ချင်း ပြောင်းလဲသတ်မှတ်နိုင်ပါသည်။
+3. **အကောင့်ပိတ်ပင်ခြင်း (Suspend/Block):** စာအုပ်ရက်လွန် ဒဏ်ကြေးများ ပေးဆောင်ရန် ပျက်ကွက်နေသူများကို အငှားရပ်ဆိုင်းထားနိုင်ပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. Click **"More (နောက်ထပ်) ▾"** in the navbar and select **"Holds & Reservations"** (`/admin/holds`).
-2. Review the pending reservation queue sorted by request date.
-3. When a copy is returned, click **"Fulfill / Ready for Pickup" (စာအုပ်ထုတ်ပေးရန် အဆင်သင့်ဖြစ်ပြီ)**.
-4. Hand the reserved book to the patron when they arrive at the circulation desk.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 13: Holds & Reservations Management Queue               |
-| Recommended View: http://206.189.47.42:3000/admin/holds                          |
-| Caption: "Koha-standard Holds Queue dashboard showing priority ranking, patron     |
-| reservation status, and fulfillment approval actions."                            |
-+-----------------------------------------------------------------------------------+
-```
+![အသင်းဝင်များ စာရင်းနှင့် မှတ်ပုံတင်စိစစ်ခြင်း](screenshots/11_patron_directory_kyc.png)
+*ပုံ ၁၁ - အသင်းဝင်များ စာရင်း၊ VIP Badge များနှင့် NRC မှတ်ပုံတင် စိစစ်မှု မျက်နှာပြင်*
 
 ---
 
-### Slide 14: Member Management & Myanmar KYC Verification (NRC)
+### လုပ်ဆောင်ချက် ၁၂ - တရားဝင် VIP အသင်းဝင်ကတ်ပြားနှင့် ပုံထုတ်ယူခြင်း (VIP Member Card Generation & PNG Export)
 
-**Objective:** Train staff on registering new library members, recording Myanmar National Registration Card (NRC) numbers, and managing borrower categories.
+**ရည်ရွယ်ချက်:** အသင်းဝင်များအတွက် တရားဝင် နိုင်ငံတော်အဆင့် အသင်းဝင်ကတ်ပြားကို HTML5 Canvas နည်းပညာဖြင့် ဖန်တီးပေးပြီး ပုံနှိပ်ထုတ်ဝေနိုင်ရန် အရည်အသွေးမြင့် PNG ဖိုင်အဖြစ် ဒေါင်းလုဒ်ရယူနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Myanmar KYC Compliance:** Dedicated fields for Full Name, Phone, Email, Physical Address, and Myanmar NRC Number (e.g., `12/KAMAYA(N)90022`).
-2. **Borrower Categories:** Classifies members into Student, General Public, Faculty, or Institutional categories with customized borrowing limits.
-3. **Member Search & Filter:** Instantly filter members by Name, Barcode, Phone, or NRC number.
+#### အဓိက အချက်များ-
+1. **နိုင်ငံတော်အဆင့် ဇိမ်ခံဒီဇိုင်း (Luxury MOCHT Official Pass):** အစိမ်းရင့်ရောင်နှင့် ရွှေရောင်ပေါင်းစပ်ထားသော ဒီဇိုင်း၊ နိုင်ငံတော်အမှတ်တံဆိပ်၊ အသင်းဝင်ဘားကုဒ်၊ NRC နံပါတ်နှင့် သက်တမ်းကုန်ဆုံးရက်တို့ ပါဝင်ပါသည်။
+2. **VIP သီးသန့် ရွှေရောင်ဘားနှင့် တံဆိပ် (VIP Gold Header & Crown):** VIP အသင်းဝင်များအတွက် ရွှေရောင်သရဖူတံဆိပ် (`👑 VIP MEMBER PASS`) နှင့် **"+7 Days Extended Loan Privilege"** ဟူသော စာတန်းကို အထူးထည့်သွင်းဖော်ပြပေးပါသည်။
+3. **အရည်အသွေးမြင့် PNG ပုံထုတ်ယူခြင်း (High-Res 1050x660 PNG Export):** ကွန်ပျူတာ သို့မဟုတ် ပရင်တာဖြင့် PVC Card ရိုက်နှိပ်နိုင်ရန် ကြည်လင်ပြတ်သားသော PNG ဓာတ်ပုံဖိုင်အဖြစ် ကလစ်တစ်ချက်ဖြင့် ဒေါင်းလုဒ်ဆွဲနိုင်ပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. Click **"Members" (အသင်းဝင်များ)** in the top navigation (`/admin/patrons`).
-2. Click **"+ Register New Member" (+ အသင်းဝင်အသစ် စာရင်းသွင်းမည်)**.
-3. Enter Full Name, NRC Number, Phone, Email, and Address.
-4. Select the **Membership Category** (e.g., General Adult, Student, Researcher).
-5. Click **"Save Member"**; a unique barcode is automatically generated.
+#### အသုံးပြုနည်း အဆင့်ဆင့်-
+1. အသင်းဝင်စာရင်း စာမျက်နှာတွင် မိမိကတ်ထုတ်ယူလိုသော အသင်းဝင်၏ ဘေးရှိ အစိမ်းရောင် **"ကတ်ကြည့်ရန် (View Card)"** ကို နှိပ်ပါ။
+2. မျက်နှာပြင်ပေါ်တွင် တရားဝင် MOCHT Member Pass Modal ပွင့်လာမည် ဖြစ်ပါသည်။
+3. အပြာရောင် **"PNG ပုံထုတ်ယူရန် (Export as Image)"** ခလုတ်ကို နှိပ်ပါ။
+4. ကွန်ပျူတာထဲသို့ `MemberCard_PAT-VIP-001_U_Thein_Win.png` ဟူသော ဖိုင်အမည်ဖြင့် ချက်ချင်း ဒေါင်းလုဒ်ကျရောက်လာမည် ဖြစ်ပါသည်။
 
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 14: Member Directory & KYC Registration Form            |
-| Recommended View: http://206.189.47.42:3000/admin/patrons (Registration open)     |
-| Caption: "Member Directory with KYC registration modal showing Myanmar NRC format, |
-| borrower categorization, and contact details."                                    |
-+-----------------------------------------------------------------------------------+
-```
+![တရားဝင် VIP အသင်းဝင်ကတ်ပြားနှင့် PNG ထုတ်ယူခြင်း](screenshots/12_vip_member_card.png)
+*ပုံ ၁၂ - တရားဝင် VIP အသင်းဝင်ကတ်ပြား Modal နှင့် PNG ပုံထုတ်ယူသည့် ခလုတ်*
 
 ---
 
-### Slide 15: Member ID Card Generation & High-Resolution PNG Image Export
+### လုပ်ဆောင်ချက် ၁၃ - ဒဏ်ကြေးစာရင်းနှင့် ငွေပေးချေမှု ကောက်ခံခြင်း (Fines Ledger & Payment Collection)
 
-**Objective:** Showcase the built-in digital Member Card generator, including scannable barcode rendering and one-click high-resolution PNG image download for printing.
+**ရည်ရွယ်ချက်:** စာအုပ်ရက်လွန်ဒဏ်ကြေးများ၊ စာအုပ်ပျောက်ဆုံး/ပျက်စီး ဒဏ်ကြေးများကို စာရင်းဇယားဖြင့် တိကျစွာ မှတ်တမ်းတင်ပြီး ကောင်တာတွင် ငွေကောက်ခံရှင်းလင်းနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Interactive Member Pass Modal:** Click **"View Card" (ကတ်ကြည့်ရန်)** on any member row to open the official MOCHT National Library pass.
-2. **Official Government Aesthetic:** Designed with deep emerald tones, gold seal insignia, member barcode, NRC number, and issue date.
-3. **VIP User Type & Special Loan Privileges (+7 Days):**
-   - Members with **VIP User Type** receive a distinctive luxury gold card header (`👑 VIP MEMBER PASS`), gold border accent, and a "+7 Days Loan Privilege" badge.
-   - When borrowing books at the Circulation Desk, the loan period for VIP members is automatically extended by **+7 Days** over the standard book rent duration (e.g., standard 7 days ➔ 14 days).
-4. **HTML5 Canvas 2D Engine:** Renders a crisp $1050 \times 660$ pixel image with crisp typography, code-128 barcode simulation, and VIP badge ribbon.
-5. **"Export as Image" (PNG ပုံထုတ်ယူရန်):** Downloads an immediate PNG file ready for physical PVC card printing or digital distribution.
+#### အဓိက အချက်များ-
+1. **ဒဏ်ကြေးငွေ စာရင်းဇယား (Ledger Breakdown):** အသင်းဝင်အမည်၊ ဘားကုဒ်၊ သက်ဆိုင်ရာ စာအုပ်ခေါင်းစဉ်၊ ကျသင့်ငွေ (Amount in MMK)၊ ပေးပြီးငွေ (Paid)၊ ရရန်ကျန်ငွေ (Balance) နှင့် ဒဏ်ကြေးအခြေအနေ (UNPAID, PAID, WAIVED) တို့ကို ပြသပေးပါသည်။
+2. **ငွေပေးချေမှု ကောက်ခံခြင်း (Collect Payment):** အပြည့်အဝ ပေးချေခြင်း သို့မဟုတ် အပိုင်းလိုက် ခွဲပေးခြင်း (Partial Payment) များကို လက်ခံဆောင်ရွက်နိုင်ပါသည်။
+3. **ဒဏ်ကြေး ကင်းလွတ်ခွင့်ပြုခြင်း (Waive Fine):** အထူးကိစ္စရပ်များ သို့မဟုတ် ခိုင်လုံသောအကြောင်းပြချက်များအတွက် စာကြည့်တိုက်မှူး ခွင့်ပြုချက်ဖြင့် ဒဏ်ကြေးငွေ ကင်းလွတ်ခွင့် ပေးနိုင်ပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. In the Member table (`/admin/patrons`), find the desired member row.
-2. Click the green **"View Card" (ကတ်ကြည့်ရန်)** button.
-3. The official MOCHT Member Pass modal opens, showing the front card preview with VIP status badge if applicable.
-4. Click **"Export as Image (PNG ပုံထုတ်ယူရန်)"**.
-5. The high-resolution PNG file (`MemberCard_PAT-xxxxx_Name.png`) downloads immediately to your computer.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 15: Member ID Card Preview & PNG Image Export           |
-| Recommended View: http://206.189.47.42:3000/admin/patrons (Member Card modal open)|
-| Caption: "Official MOCHT Library Member Card modal displaying VIP crown badge,    |
-| +7 days extended loan privilege tag, barcode, NRC details, and PNG export button." |
-+-----------------------------------------------------------------------------------+
-```
+![ဒဏ်ကြေးစာရင်းနှင့် ငွေပေးချေမှု ကောက်ခံခြင်း](screenshots/13_fines_ledger.png)
+*ပုံ ၁၃ - ဒဏ်ကြေးစာရင်းဇယားနှင့် ငွေကောက်ခံခြင်း မျက်နှာပြင်*
 
 ---
 
-### Slide 16: Fine Ledger & POS Cashier Payment Collection
-
-**Objective:** Instruct library accountants and desk officers on reviewing outstanding fines, recording cash/Kpay collections, and generating itemized payment receipts.
-
-#### Key Talking Points:
-1. **Consolidated Fine Ledger:** Itemized list of all penalties categorized by reason (`Overdue Return`, `Damaged Book`, `Lost Item`).
-2. **Partial or Full Payment:** Officers can collect exact amounts or full outstanding balances in MMK.
-3. **Fee Waiving Privileges:** Authorized supervisors can waive fines with recorded administrative notes.
-
-#### Step-by-Step Officer Instructions:
-1. Click **"More (နောက်ထပ်) ▾"** and navigate to **"Fines & POS"** (`/admin/fines`).
-2. Search for the patron by Barcode or Name.
-3. Review the itemized fine breakdown and total balance due in MMK.
-4. Click **"Collect Payment" (ငွေလက်ခံမည်)**.
-5. Select payment method (Cash, Kpay, CB Pay) and enter the collected amount.
-6. Click **"Submit Receipt"**; the balance updates to `PAID` with audit timestamp.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 16: Fines & POS Cashier Payment Terminal               |
-| Recommended View: http://206.189.47.42:3000/admin/fines                           |
-| Caption: "Fines & POS Ledger displaying overdue penalty breakdown in MMK,         |
-| payment collection modal, and settlement receipts."                               |
-+-----------------------------------------------------------------------------------+
-```
+# အပိုင်း (၃) - အဆင့်မြင့် အစီရင်ခံစာနှင့် စာရင်းဇယား စနစ် (Reporting & Analytics Suite)
 
 ---
 
-### Slide 17: Reports & Analytics – Loan Velocity, Utilization Gauges & Overdue Alert Table
+### လုပ်ဆောင်ချက် ၁၄ - စွမ်းဆောင်ရည် အနှစ်ချုပ်နှင့် Date Filter (Executive Summary & Date Filter)
 
-**Objective:** Train library directors and senior staff on analyzing library performance metrics, collection utilization, and high-risk overdue loans.
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက်၏ လုပ်ငန်းစွမ်းဆောင်ရည် အခြေအနေများကို ရက်စွဲကာလအလိုက် စစ်ထုတ်ကြည့်ရှုနိုင်ပြီး အနှစ်ချုပ် စာရင်းဇယားများကို လေ့လာဆန်းစစ်နိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Pure SVG Radial Performance Rings:**
-   - **Collection Utilization Rate (%)**
-   - **Return Rate (%)**
-   - **Fine Collection Efficiency (%)**
-   - **Overdue Risk Rate (%)**
-2. **14-Day Loan Activity Trend:** Interactive SVG bar chart showing daily circulation velocity.
-3. **Overdue Radar Table:** Color-coded severity tiers:
-   - 🟡 Yellow (< 7 days overdue)
-   - 🟠 Amber (7–14 days overdue)
-   - 🔴 Red (> 14 days overdue with calculated penalty)
-4. **JSON Snapshot Export:** Export complete live analytical data for executive ministry briefings.
+#### အဓိက အချက်များ-
+1. **ရက်စွဲ စစ်ထုတ်သည့် ကိရိယာ (Date Filter Presets & Custom Range):**
+   - အမြန်ရွေးချယ်မှုများ: `၁၄ ရက်`၊ `၇ ရက်`၊ `၃၀ ရက်`၊ `ဒီလ`၊ `၃ လ`၊ `ယနေ့`၊ `မှတ်တမ်းအားလုံး`။
+   - စိတ်ကြိုက်ရက်စွဲ: **"ရက်စွဲရွေးမည် (Custom)"** တွင် စတင်မည့်ရက် (From) နှင့် ပြီးဆုံးမည့်ရက် (To) ကို Date Picker ဖြင့် ရွေးချယ်ပြီး **Apply Range** နှိပ်နိုင်ပါသည်။
+2. **အဓိက KPI ကတ်ပြား ၆ ခု (Fixed KPIs):** Total Titles, E-Resources, Active Members (VIP အပါအဝင်), Period Loans, Pending Holds, Outstanding Fines (NaN ပြဿနာ ကင်းစင်ပြီး တိကျသော MMK ဖော်ပြချက်)။
+3. **ငှားရမ်းမှု ပြောင်းလဲချက်ဇယား (Dynamic Loan Trend Chart):** ရွေးချယ်ထားသော ရက်စွဲကာလအတွင်း တစ်ရက်ချင်းစီအလိုက် စာအုပ်ငှားရမ်းမှု အရေအတွက်ကို Bar Chart ဖြင့် ပုံဖော်ပေးပါသည်။
+4. **စွမ်းဆောင်ရည် နှုန်းထားများ (Performance Rings):** စာအုပ်အသုံးချမှုနှုန်း (Utilization Rate)၊ ပြန်အပ်မှုနှုန်း (Return Rate)၊ ဒဏ်ကြေးကောက်ခံနှုန်း (Collection Rate) နှင့် ရက်ကျော်မှုနှုန်း (Overdue Rate)။
 
-#### Step-by-Step Officer Instructions:
-1. Click **"More (နောက်ထပ်) ▾"** and select **"Reports & Analytics"** (`/admin/reports`).
-2. Inspect the 4 radial gauges for an instant high-level diagnostic of library health.
-3. Analyze the 14-day circulation bar chart to evaluate peak loan periods.
-4. Scroll to the **"Overdue Loan Radar"** table to identify patrons requiring phone or SMS contact.
-5. Click **"Export JSON"** to download the analytical snapshot.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 17: Reports & Analytics Dashboard                       |
-| Recommended View: http://206.189.47.42:3000/admin/reports                         |
-| Caption: "Executive Reporting dashboard featuring SVG radial utilization gauges,   |
-| 14-day loan velocity bar chart, and color-coded overdue radar table."             |
-+-----------------------------------------------------------------------------------+
-```
+![စွမ်းဆောင်ရည် အနှစ်ချုပ်နှင့် Date Filter](screenshots/14_reports_executive_overview.png)
+*ပုံ ၁၄ - Reporting & Analytics ပင်မစာမျက်နှာ၊ Date Filter Bar နှင့် CSV ဒေါင်းလုဒ် Dropdown Menu*
 
 ---
 
-### Slide 18: Koha Enterprise Services – Acquisitions, Serials & Interlibrary Loan (ILL)
+### လုပ်ဆောင်ချက် ၁၅ - ငှားရမ်းမှုမှတ်တမ်းနှင့် CSV ဒေါင်းလုဒ် (Circulation Loans Ledger & CSV Export)
 
-**Objective:** Familiarize staff with advanced enterprise library operations, supplier procurement, and inter-institutional resource sharing.
+**ရည်ရွယ်ချက်:** ရွေးချယ်ထားသော ရက်စွဲကာလအတွင်း ငှားရမ်းခဲ့သော မှတ်တမ်းအသေးစိတ်များကို ဇယားဖြင့် ကြည့်ရှုစစ်ဆေးနိုင်ပြီး Excel စာရင်းဇယားအဖြစ် ဒေါင်းလုဒ်ဆွဲနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Key Talking Points:
-1. **Acquisitions & Bookseller Directory (`/admin/acquisitions`):** Manage vendors, purchase order baskets, and digital licensing.
-2. **Serials & Periodical Subscriptions (`/admin/library-services`):** Track recurring journal, magazine, and newspaper deliveries with ISSN codes.
-3. **Interlibrary Loans (ILL):** Manage partner institutional borrowing requests between national universities and municipal libraries.
+#### အဓိက အချက်များ-
+1. **အသေးစိတ် စာရင်းဇယား:** အသင်းဝင်အမည်၊ VIP အဆင့်၊ ဘားကုဒ်၊ စာအုပ်ခေါင်းစဉ်၊ စာရေးဆရာ၊ မိတ္တူဘားကုဒ်၊ ငှားသည့်ရက်၊ ပြန်အပ်ရမည့်ရက်၊ အပ်နှံသည့်ရက်၊ အခြေအနေနှင့် သက်တမ်းတိုးကြိမ်ရေ။
+2. **ရှာဖွေစစ်ထုတ်မှုစနစ်:** စာအုပ်အမည်၊ အသင်းဝင်အမည်ဖြင့် ရှာဖွေနိုင်ပြီး အခြေအနေအလိုက် (ISSUED, OVERDUE, RETURNED) စစ်ထုတ်နိုင်ပါသည်။
+3. **တိုက်ရိုက် CSV ဒေါင်းလုဒ်:** ဇယားအပေါ်ရှိ **"ငှားရမ်းမှုမှတ်တမ်း CSV ဒေါင်းလုဒ်"** ခလုတ်ကို နှိပ်လိုက်သည်နှင့် UTF-8 BOM ပါဝင်သော CSV ဖိုင်အဖြစ် ချက်ချင်း ရရှိပါသည်။
 
-#### Step-by-Step Officer Instructions:
-1. Open **"More (နောက်ထပ်) ▾"** and click **"Library Services"** (`/admin/library-services`).
-2. Switch between **"Serials"**, **"Interlibrary Loans (ILL)"**, and **"Course Reserves"** tabs.
-3. Record new journal issues or monitor inter-campus transfer transit states (`In-Transit` ➔ `Received`).
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 18: Koha Enterprise Services (Serials & ILL)            |
-| Recommended View: http://206.189.47.42:3000/admin/library-services               |
-| Caption: "Koha Library Services console managing periodical subscriptions,         |
-| interlibrary loan transfers, and university course reserve collections."          |
-+-----------------------------------------------------------------------------------+
-```
+![ငှားရမ်းမှုမှတ်တမ်း Tab နှင့် CSV ဒေါင်းလုဒ်](screenshots/15_reports_circulation_tab.png)
+*ပုံ ၁၅ - စာအုပ်ငှားရမ်းမှု မှတ်တမ်းဇယားနှင့် သီးသန့် CSV ဒေါင်းလုဒ် ခလုတ်*
 
 ---
 
-### Slide 19: Comprehensive Standard Operating Procedures (SOP) & FAQ
+### လုပ်ဆောင်ချက် ၁၆ - ဒဏ်ကြေးငွေစာရင်းနှင့် CSV ဒေါင်းလုဒ် (Fines & Financial Ledger & CSV Export)
 
-**Objective:** Reference sheet for common questions and routine troubleshooting during operational deployment.
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက်မှ ကောက်ခံရရှိသော ငွေကြေးများနှင့် ရရန်ကျန် ဒဏ်ကြေးစာရင်းများကို ဘဏ္ဍာရေး အစီရင်ခံစာအဖြစ် စိစစ်ထုတ်ယူနိုင်စေရန် ဖြစ်ပါသည်။
 
-#### Frequently Asked Questions (FAQ):
+#### အဓိက အချက်များ-
+1. **ဘဏ္ဍာရေး အနှစ်ချုပ် ကတ်ပြားများ:** ကျသင့်ဒဏ်ကြေးစုစုပေါင်း (Total Incurred)၊ ကောက်ခံရရှိငွေ (Total Collected)၊ ရရန်ကျန်ဒဏ်ကြေး (Outstanding Balance)။
+2. **ဒဏ်ကြေးစာရင်း အသေးစိတ်ဇယား:** အသင်းဝင်အချက်အလက်၊ စာအုပ်အမည်၊ ဒဏ်ကြေးဖြစ်ရသည့် အကြောင်းရင်း (Overdue, Lost Book, Damage)၊ ကျသင့်ငွေ၊ ပေးပြီးငွေ၊ ကျန်ငွေနှင့် ရက်စွဲ။
+3. **တိုက်ရိုက် CSV ဒေါင်းလုဒ်:** **"ဒဏ်ကြေးစာရင်း CSV ဒေါင်းလုဒ်"** ခလုတ်ဖြင့် စာရင်းအင်းဌာနသို့ တင်ပြနိုင်သည့် Excel CSV ဖိုင်ကို ဒေါင်းလုဒ်ဆွဲနိုင်ပါသည်။
 
-**Q1: How does the system calculate overdue fines if different books have different values?**  
-> *Answer:* Each physical book record stores its own configured `overdueFineRate` in MMK/day (set during cataloging). When a book is returned past its due date, the system multiplies the elapsed overdue days by that exact book's rate. Rare or expensive books can have a higher daily rate than standard paperbacks.
-
-**Q2: Can patrons read E-Books without an active library membership?**  
-> *Answer:* Yes. Open-access digital editions can be viewed directly in the browser by any visitor from the public catalog. However, reserving physical copies, renewing loans, and viewing loan history requires logging into an active member account.
-
-**Q3: How do librarians print Member ID cards?**  
-> *Answer:* Navigate to `/admin/patrons`, find the member, click **"View Card" (ကတ်ကြည့်ရန်)**, and click **"Export as Image (PNG ပုံထုတ်ယူရန်)"**. The exported PNG image is formatted at 300 DPI equivalent ($1050 \times 660$) and can be printed directly using standard PVC ID card printers or paper laminates.
-
-**Q4: How does the Circulation Desk handle books with holds?**  
-> *Answer:* When an item with active holds is checked in, the system alerts the librarian that the item is reserved and updates the hold status to `Waiting for Pickup`, preventing it from being accidentally returned to regular shelves.
-
-**Q5: Is the system accessible on mobile devices and tablets?**  
-> *Answer:* Yes. The entire interface is fully responsive, featuring collapsible mobile navigation drawers, touch-friendly barcode inputs, and responsive card layouts optimized for library tablets and smartphones.
-
-```
-+-----------------------------------------------------------------------------------+
-| 📷 SCREENSHOT PLACEHOLDER 19: Mobile Responsive Library Portal                     |
-| Recommended View: Mobile viewport (390px) on http://206.189.47.42:3000/           |
-| Caption: "Mobile-optimized responsive view of the MOCHT Library Portal displaying |
-| streamlined catalog browsing and mobile drawer menu."                             |
-+-----------------------------------------------------------------------------------+
-```
+![ဒဏ်ကြေးငွေစာရင်း Tab နှင့် CSV ဒေါင်းလုဒ်](screenshots/16_reports_fines_tab.png)
+*ပုံ ၁၆ - ဒဏ်ကြေးနှင့် ဘဏ္ဍာရေး စာရင်းဇယား Tab*
 
 ---
 
-## 🎯 Summary Checklist for Presenters & Trainers
+### လုပ်ဆောင်ချက် ၁၇ - စာအုပ်လက်ကျန်စာရင်းနှင့် CSV ဒေါင်းလုဒ် (Catalog Inventory Status & CSV Export)
 
-When conducting user training using this guide with NotebookLM:
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက်ရှိ စာအုပ်ခေါင်းစဉ်များ၊ ရုပ်ပိုင်းဆိုင်ရာ မိတ္တူများ၊ စင်ပေါ်ရှိ/ငှားထားဆဲ အခြေအနေများကို စာရင်းစစ်ဆေးနိုင်ရန် ဖြစ်ပါသည်။
 
-1. **Audio Overview Generation:** Upload this document into NotebookLM and request an **Audio Overview (Deep Dive Conversation)** for a natural, engaging podcast-style explanation of the system.
-2. **Slide Deck Generation:** Use NotebookLM's **Briefing Doc** or **Study Guide** prompt to extract concise speaking bullets.
-3. **Screenshot Insertion:** Replace each of the 19 framed `📷 SCREENSHOT PLACEHOLDER` boxes with the actual exported PNG screenshots captured from the live production server at `http://206.189.47.42:3000`.
+#### အဓိက အချက်များ-
+1. **စာအုပ်လက်ကျန် အချက်အလက်များ:** စာအုပ်ခေါင်းစဉ်၊ စာရေးဆရာ၊ ISBN၊ အမျိုးအစား၊ စုစုပေါင်းမိတ္တူ (Total Copies)၊ စင်ပေါ်ရှိမိတ္တူ (Available)၊ ငှားထားဆဲမိတ္တူ (On Loan)၊ ငှားရမ်းခွင့်ရက်နှင့် တစ်ရက်ဒဏ်ကြေးနှုန်း။
+2. **တိုက်ရိုက် CSV ဒေါင်းလုဒ်:** **"စာအုပ်စာရင်း CSV ဒေါင်းလုဒ်"** ခလုတ်ဖြင့် စာကြည့်တိုက် စာရင်းစစ် (Audit) အတွက် အသင့်သုံးနိုင်ပါသည်။
+
+![စာအုပ်လက်ကျန်စာရင်း Tab](screenshots/17_reports_inventory_tab.png)
+*ပုံ ၁၇ - စာအုပ်လက်ကျန်စာရင်း အခြေအနေနှင့် CSV ဒေါင်းလုဒ်*
 
 ---
-*Created for the Ministry of Culture, Hotels and Tourism (MOCHT) National Digital Library Project.*  
-*Production Server: `206.189.47.42:3000` | Repository: `PhyoeKo/Library-Management-System`*
+
+### လုပ်ဆောင်ချက် ၁၈ - အသင်းဝင်များနှင့် VIP စာရင်း CSV ဒေါင်းလုဒ် (Patron & VIP Directory & CSV Export)
+
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက်တွင် မှတ်ပုံတင်ထားသော အသင်းဝင်အားလုံး၏ စာရင်း၊ VIP အဆင့်အတန်း၊ ဆက်သွယ်ရန်ဖုန်း၊ လက်ရှိငှားထားသော စာအုပ်များနှင့် ဒဏ်ကြေးကျန်ငွေများကို တစ်စုတစ်စည်းတည်း စစ်ဆေးနိုင်စေရန် ဖြစ်ပါသည်။
+
+#### အဓိက အချက်များ-
+1. **အသင်းဝင် အချက်အလက်ဇယား:** အသင်းဝင်အမည်၊ ဘားကုဒ်၊ အဆင့် (Standard သို့မဟုတ် VIP +7d)၊ အီးမေးလ်/ဖုန်း၊ စုစုပေါင်းငှားဖူးသည့် အကြိမ်ရေ၊ လက်ရှိငှားထားသော စာအုပ်အရေအတွက်၊ ရက်ကျော်စာအုပ်အရေအတွက်နှင့် အကောင့်အခြေအနေ (Active / Suspended)။
+2. **တိုက်ရိုက် CSV ဒေါင်းလုဒ်:** **"အသင်းဝင်များ CSV ဒေါင်းလုဒ်"** ခလုတ်ဖြင့် အသင်းဝင်မှတ်ပုံတင် စာရင်းဇယားကို Excel သို့ ထုတ်ယူနိုင်ပါသည်။
+
+![အသင်းဝင်များနှင့် VIP စာရင်း Tab](screenshots/18_reports_patrons_tab.png)
+*ပုံ ၁၈ - အသင်းဝင်များနှင့် VIP စာရင်းဇယား Tab*
+
+---
+
+### လုပ်ဆောင်ချက် ၁၉ - ရက်ကျော်လွန်စာအုပ်များ စာရင်းနှင့် CSV ဒေါင်းလုဒ် (Overdue Action List & CSV Export)
+
+**ရည်ရွယ်ချက်:** သတ်မှတ်ရက် ကျော်လွန်နေသော စာအုပ်များကို ချက်ချင်းဖော်ထုတ်ပြီး စာဖတ်သူထံ ဖုန်းဆက်၍ အမြန်ဆုံး ပြန်လည်အပ်နှံစေရန် ဆက်သွယ်ဆောင်ရွက်နိုင်စေရန် ဖြစ်ပါသည်။
+
+#### အဓိက အချက်များ-
+1. **လုပ်ဆောင်ရန် လိုအပ်သော ရက်လွန်စာရင်း (Action List):** အသင်းဝင်အမည်၊ ဘားကုဒ်၊ စာအုပ်ခေါင်းစဉ်၊ မိတ္တူဘားကုဒ်၊ ပြန်အပ်ရမည့်ရက်၊ ရက်လွန်နေသော ရက်အရေအတွက် (`7d`, `14d`+ အရောင်ကုဒ်များ)၊ ကျသင့်ဒဏ်ကြေးငွေနှင့် **ဆက်သွယ်ရန် ဖုန်းနံပါတ်**။
+2. **တိုက်ရိုက် CSV ဒေါင်းလုဒ်:** **"ရက်ကျော်စာရင်း CSV ဒေါင်းလုဒ်"** ခလုတ်ဖြင့် စာအုပ်ပြန်လည်တောင်းခံရေး အဖွဲ့သားများ အသုံးပြုရန် Print ထုတ်ယူနိုင်ပါသည်။
+
+![ရက်ကျော်လွန်စာအုပ်များ စာရင်း Tab](screenshots/19_reports_overdue_tab.png)
+*ပုံ ၁၉ - ရက်ကျော်လွန်စာအုပ်များနှင့် ဆက်သွယ်ရန်ဖုန်းနံပါတ်ပါဝင်သော Overdue Action List*
+
+---
+
+# အပိုင်း (၄) - Koha အဆင့်မြင့် လုပ်ငန်းဆောင်ရွက်ချက်များ (Koha Enterprise Library Services)
+
+---
+
+### လုပ်ဆောင်ချက် ၂၀ - စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်း (Acquisitions & Purchase Orders)
+
+**ရည်ရွယ်ချက်:** စာကြည့်တိုက်အတွက် စာအုပ်အသစ်များ ဝယ်ယူရန် ဘတ်ဂျက်လျာထားခြင်း၊ ကုန်သည်များထံ အမှာစာ (Purchase Orders) တင်သွင်းခြင်းနှင့် စာအုပ်လက်ခံရရှိမှုများကို စနစ်တကျ မှတ်တမ်းတင်ရန် ဖြစ်ပါသည်။
+
+#### အဓိက အချက်များ-
+1. **ဘတ်ဂျက်ခြေရာခံမှု (Budget Tracking):** စုစုပေါင်းခွင့်ပြုဘတ်ဂျက်၊ သုံးစွဲပြီးငွေနှင့် လက်ကျန်ငွေများကို တိကျစွာ ပြသပေးပါသည်။
+2. **အမှာစာ စီမံခန့်ခွဲမှု (PO Management):** အမှာစာတင်ခြင်း (Order Placed)၊ စာအုပ်လက်ခံရရှိခြင်း (Received) နှင့် ငွေပေးချေပြီးစီးခြင်း (Invoiced) အခြေအနေများကို အဆင့်လိုက် ထိန်းချုပ်နိုင်ပါသည်။
+
+![စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်း](screenshots/20_koha_acquisitions.png)
+*ပုံ ၂၀ - စာအုပ်ဝယ်ယူမှု စီမံခန့်ခွဲခြင်းနှင့် ဘတ်ဂျက်ဇယား (Acquisitions)*
+
+---
+
+### လုပ်ဆောင်ချက် ၂၁ - ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းမှု (Serials & Periodicals)
+
+**ရည်ရွယ်ချက်:** နေ့စဉ်ထုတ် သတင်းစာများ၊ အပတ်စဉ်ဂျာနယ်များနှင့် လစဉ်ထုတ် မဂ္ဂဇင်းများကို စာရင်းသွင်း စီမံခန့်ခွဲနိုင်စေရန် ဖြစ်ပါသည်။
+
+#### အဓိက အချက်များ-
+1. **ထုတ်ဝေမှု အကြိမ်ရေ သတ်မှတ်ခြင်း (Frequency):** နေ့စဉ် (Daily)၊ အပတ်စဉ် (Weekly)၊ လစဉ် (Monthly)၊ နှစ်စဉ် (Annually) စသဖြင့် သတ်မှတ်နိုင်ပါသည်။
+2. **ISSN နံပါတ် မှတ်တမ်းတင်ခြင်း:** အပြည်ပြည်ဆိုင်ရာ ဂျာနယ်စံသတ်မှတ်ကုဒ် (ISSN) ဖြင့် တိကျစွာ ရှာဖွေနိုင်ပါသည်။
+
+![ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းမှု](screenshots/21_koha_serials.png)
+*ပုံ ၂၁ - ဂျာနယ်နှင့် မဂ္ဂဇင်း စာရင်းသွင်းခြင်း မျက်နှာပြင် (Serials)*
+
+---
+
+### လုပ်ဆောင်ချက် ၂၂ - စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းခြင်း (Interlibrary Loan - ILL)
+
+**ရည်ရွယ်ချက်:** မိမိစာကြည့်တိုက်တွင် မရှိသော ရှားပါးစာအုပ်များကို အခြားမိတ်ဖက် တက္ကသိုလ်များနှင့် နိုင်ငံတော်စာကြည့်တိုက်များထံမှ တောင်းခံငှားရမ်းနိုင်စေရန် ဖြစ်ပါသည်။
+
+#### အဓိက အချက်များ-
+1. **မိတ်ဖက်စာကြည့်တိုက် ကွန်ရက် (Partner Libraries):** ရန်ကုန်တက္ကသိုလ်၊ မန္တလေးတက္ကသိုလ်၊ အမျိုးသားစာကြည့်တိုက် စသည့် မိတ်ဖက်အဖွဲ့အစည်းများနှင့် ချိတ်ဆက်တောင်းခံနိုင်ပါသည်။
+2. **တောင်းခံမှု အခြေအနေ (Request Lifecycle):** တောင်းခံထားဆဲ (PENDING)၊ ပို့ဆောင်ဆဲ (IN_TRANSIT)၊ ရောက်ရှိလက်ခံရရှိ (RECEIVED) စသည့် အဆင့်များဖြင့် စောင့်ကြည့်နိုင်ပါသည်။
+
+![စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းခြင်း](screenshots/22_koha_ill.png)
+*ပုံ ၂၂ - စာကြည့်တိုက်အချင်းချင်း ချိတ်ဆက်ငှားရမ်းမှု စီမံခန့်ခွဲခြင်း (ILL)*
+
+---
+
+### လုပ်ဆောင်ချက် ၂၃ - တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း စာအုပ်များ (Course Reserves)
+
+**ရည်ရွယ်ချက်:** တက္ကသိုလ်နှင့် ကောလိပ် သင်တန်းများအတွက် သက်ဆိုင်ရာ ကထိက/ပါမောက္ခများ ညွှန်းဆိုထားသော မဖြစ်မနေဖတ်ရှုရမည့် စာအုပ်များကို သီးသန့်ဖယ်ထားပေးနိုင်စေရန် ဖြစ်ပါသည်။
+
+#### အဓိက အချက်များ-
+1. **ဘာသာရပ်ကုဒ်နှင့် ဆရာအမည် (Course Code & Instructor):** ဥပမာ- `CS-301: Advanced Algorithms (Dr. Win Maw)` စသဖြင့် ဘာသာရပ်အလိုက် စာရင်းသွင်းနိုင်ပါသည်။
+2. **ကျောင်းသားများ ဦးစားပေး ဖတ်ရှုခွင့်:** သာမန်စာဖတ်သူများ ငှားရမ်းခွင့်ကို ကန့်သတ်ထားပြီး သက်ဆိုင်ရာ ဘာသာရပ်သင် ကျောင်းသားများသာ အဓိက ဖတ်ရှုနိုင်စေရန် ထိန်းချုပ်ထားနိုင်ပါသည်။
+
+![တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း စာအုပ်များ](screenshots/23_koha_course_reserves.png)
+*ပုံ ၂၃ - တက္ကသိုလ် သင်ရိုးညွှန်းတမ်း သီးသန့်စာအုပ်များ စီမံခန့်ခွဲခြင်း (Course Reserves)*
+
+---
+
+# အပိုင်း (၅) - စံသတ်မှတ် လုပ်ငန်းလမ်းညွှန် (SOP) နှင့် အမေးများသော မေးခွန်းများ (FAQ)
+
+---
+
+### စာကြည့်တိုက်မှူးများအတွက် နေ့စဉ် လုပ်ငန်းလမ်းညွှန် (Daily SOP)
+
+1. **နံနက်ခင်း လုပ်ငန်းစတင်ချိန် (Morning Opening Routine):**
+   - စနစ်သို့ Staff အကောင့်ဖြင့် Login ဝင်ပါ။
+   - Dashboard ပေါ်ရှိ **Pending Holds (စောင့်ဆိုင်းစာရင်း)** ကို စစ်ဆေးပြီး စင်ပေါ်မှ စာအုပ်များကို ထုတ်ယူကာ Reserved Shelf တွင် ထားရှိပါ။
+   - **Reports ➔ ရက်ကျော်စာရင်း (Overdue Tab)** သို့ သွားရောက်၍ ၁၄ ရက်ထက်ကျော်လွန်နေသော အသင်းဝင်များထံ ဖုန်းဖြင့် ဆက်သွယ်အသိပေးပါ။
+2. **နေ့လယ်ပိုင်း ကောင်တာလုပ်ငန်းများ (Circulation Desk Operations):**
+   - စာအုပ်လာငှားသူတိုင်း၏ အသင်းဝင်ကတ် ဘားကုဒ်ကို အရင်စကင်ဖတ်ပါ။
+   - VIP အသင်းဝင်ဖြစ်ပါက +7 ရက် ပိုမိုရရှိမည့် ရက်စွဲကို အသင်းဝင်အား ပြောကြားပေးပါ။
+   - စာအုပ်ပြန်အပ်သူများထံမှ ရက်လွန်ဒဏ်ကြေးငွေ (ရှိပါက) ကောက်ခံပြီး ပြေစာမှတ်တမ်း ရယူပါ။
+3. **ညနေခင်း လုပ်ငန်းသိမ်းချိန် (Evening Closing Routine):**
+   - **Reports & Analytics** သို့ သွားပါ။
+   - ရက်စွဲတွင် **"ယနေ့ (Today)"** ကို ရွေးချယ်ပါ။
+   - **"Executive Summary (CSV)"** နှင့် **"Fines & Revenue Ledger (CSV)"** ကို ဒေါင်းလုဒ်ရယူ၍ နေ့စဉ်ငွေစာရင်းနှင့် ငှားရမ်းမှုစာရင်းကို စာရင်းကိုင်ဌာနသို့ တင်ပြပါ။
+
+---
+
+### အမေးများသော မေးခွန်းများ (Frequently Asked Questions - FAQ)
+
+**မေး။ VIP အသင်းဝင်တစ်ဦးသည် စာအုပ်ငှားရမ်းပါက မည်မျှ ရက်ပိုရရှိပါသနည်း။**  
+ဖြေ။ သာမန်အသင်းဝင်များထက် **+7 ရက်** ပိုမိုရရှိပါသည်။ ဥပမာ သာမန်စာအုပ်တစ်အုပ်၏ စံငှားရမ်းခွင့်သည် ၇ ရက်ဖြစ်ပါက VIP အသင်းဝင်အတွက် စနစ်မှ အလိုအလျောက် **၁၄ ရက်** ဟု သတ်မှတ်ပေးပါသည်။
+
+**မေး။ ရက်လွန်ဒဏ်ကြေးငွေကို မည်သို့ တွက်ချက်ပါသနည်း။**  
+ဖြေ။ စာအုပ်ပြန်အပ်ရမည့်ရက် (Due Date) ကျော်လွန်သွားသော ရက်အရေအတွက်နှင့် စာအုပ်ထည့်သွင်းစဉ်က သတ်မှတ်ထားသော တစ်ရက်ဒဏ်ကြေးနှုန်း (ဥပမာ- ၅၀၀ ကျပ်) ကို မြှောက်၍ အလိုအလျောက် တိကျစွာ တွက်ချက်ပေးပါသည်။ (စုစုပေါင်းဒဏ်ကြေး = ရက်လွန်ရက် × တစ်ရက်ဒဏ်ကြေးနှုန်း)။
+
+**မေး။ CSV ဒေါင်းလုဒ်ဆွဲရာတွင် မြန်မာစာများ မှန်ကန်စွာ ပေါ်ပါသလား။**  
+ဖြေ။ မှန်ကန်စွာ ပေါ်ပါသည်။ CSV ထုတ်ယူသည့် စနစ်တွင် **UTF-8 BOM (Byte Order Mark)** ပါဝင်အောင် တည်ဆောက်ထားသောကြောင့် Microsoft Excel, Google Sheets နှင့် LibreOffice တို့တွင် မြန်မာစာများ မပျက်မစီးဘဲ ရှင်းလင်းစွာ မြင်တွေ့နိုင်ပါသည်။
+
+**မေး။ အသင်းဝင်ကတ်ပြားကို ပလတ်စတစ်ကတ် (PVC Card) ဖြင့် ပုံနှိပ်လိုပါက မည်သို့လုပ်ဆောင်ရမည်နည်း။**  
+ဖြေ။ အသင်းဝင်စာရင်း (`/admin/patrons`) တွင် သက်ဆိုင်ရာ အသင်းဝင်၏ **"ကတ်ကြည့်ရန် (View Card)"** ကို နှိပ်ပြီး **"PNG ပုံထုတ်ယူရန် (Export as Image)"** ခလုတ်ကို နှိပ်ပါ။ စနစ်မှ $1050 \times 660$ pixel ရှိသော ကြည်လင်ပြတ်သားသည့် ဓာတ်ပုံဖိုင်ကို ထုတ်ပေးမည်ဖြစ်ပြီး မည်သည့် PVC Card Printer ဖြင့်မဆို တိုက်ရိုက် ပုံနှိပ်အသုံးပြုနိုင်ပါသည်။
+
+---
+*ဤလမ်းညွှန်စာအုပ်ကို ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန၊ အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ်အတွက် အပြည့်အစုံ ရေးသားပြုစုထားပါသည်။*
