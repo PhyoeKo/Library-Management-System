@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding Koha LMS database with MMK currency unit...');
+  console.log('Seeding MOCHT LMS database with MMK currency unit...');
 
   // 1. Patron Categories (fineRatePerDay in MMK)
   const studentCategory = await prisma.patronCategory.upsert({
@@ -296,7 +296,7 @@ async function main() {
     },
   });
 
-  console.log('Seed with complete Koha modules completed!');
+  console.log('Seed with complete Enterprise LMS modules completed!');
 }
 
 main()
