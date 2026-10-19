@@ -340,7 +340,7 @@ export default function AcquisitionsPage() {
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                  Koha Acquisitions & Enterprise ERM
+                  Acquisitions & Enterprise ERM
                 </h1>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Vendor management, purchase order baskets, fund allocation, and electronic resource licenses.

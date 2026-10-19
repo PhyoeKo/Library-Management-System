@@ -383,7 +383,7 @@ async function generatePdf() {
       </div>
       <div class="cover-meta-row">
         <span class="cover-meta-label">အပြည်ပြည်ဆိုင်ရာ စံနှုန်း:</span>
-        <span class="cover-meta-val">Koha Compatible / MARC21 Standards</span>
+        <span class="cover-meta-val">International Library / MARC21 Standards</span>
       </div>
       <div class="cover-meta-row">
         <span class="cover-meta-label">ဘာသာစကား (Languages):</span>

@@ -356,7 +356,7 @@ export default function LibraryServicesPage() {
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                  Koha Enterprise & Academic Services
+                  Enterprise & Academic Library Services
                 </h1>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Serials and periodical subscriptions, Interlibrary Loans (ILL), and University Course Reserves.

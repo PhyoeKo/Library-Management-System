@@ -121,7 +121,7 @@ function buildNetlifySite() {
       ],
     },
     {
-      group: 'အပိုင်း (၄) - Koha အဆင့်မြင့် လုပ်ငန်းများ (Koha)',
+      group: 'အပိုင်း (၄) - အဆင့်မြင့် စာကြည့်တိုက် ဝန်ဆောင်မှုများ (Enterprise)',
       items: [
         { id: 'feature-20', label: '၂၀။ စာအုပ်ဝယ်ယူမှု (Acquisitions)' },
         { id: 'feature-21', label: '၂၁။ ဂျာနယ်နှင့် မဂ္ဂဇင်း (Serials)' },
@@ -985,12 +985,12 @@ function buildNetlifySite() {
         <div class="hero-ministry">ဟိုတယ်နှင့်ခရီးသွားလာရေးဝန်ကြီးဌာန</div>
         <h1 class="hero-title">အမျိုးသား ဒစ်ဂျစ်တယ် စာကြည့်တိုက် စီမံခန့်ခွဲမှုစနစ် (LMS)</h1>
         <p class="hero-desc">
-          အသုံးပြုသူ လေ့ကျင့်ရေးနှင့် စနစ်အသုံးပြုနည်း ပြည့်စုံသော လက်စွဲလမ်းညွှန်စာအုပ် — အများပြည်သူသုံး OPAC မှသည် စာကြည့်တိုက်မှူးများအတွက် အဆင့်မြင့် Koha စနစ်များနှင့် စာရင်းဇယားများအထိ အပြည့်အစုံ။
+          အသုံးပြုသူ လေ့ကျင့်ရေးနှင့် စနစ်အသုံးပြုနည်း ပြည့်စုံသော လက်စွဲလမ်းညွှန်စာအုပ် — အများပြည်သူသုံး OPAC မှသည် စာကြည့်တိုက်မှူးများအတွက် အဆင့်မြင့် စာကြည့်တိုက် ဝန်ဆောင်မှုများနှင့် စာရင်းဇယားများအထိ အပြည့်အစုံ။
         </p>
 
         <div class="hero-chips">
           <span class="chip highlight">Version 2.4 Enterprise</span>
-          <span class="chip">Koha Standards</span>
+          <span class="chip">International Standards</span>
           <span class="chip">မြန်မာဘာသာ (Unicode)</span>
           <span class="chip">Live Production Ready</span>
           <span class="chip">31-Page PDF Included</span>
@@ -1152,6 +1152,40 @@ function buildNetlifySite() {
 
   fs.writeFileSync(OUTPUT_HTML, fullHtml, 'utf-8');
   console.log(`✅ Netlify site built successfully at: ${OUTPUT_HTML}`);
+
+  // Sync screenshots to netlify-site/images
+  const SCREENSHOTS_DIR = path.join(DOCS_DIR, 'screenshots');
+  const IMAGES_DIR = path.join(NETLIFY_DIR, 'images');
+  if (fs.existsSync(SCREENSHOTS_DIR)) {
+    const files = fs.readdirSync(SCREENSHOTS_DIR);
+    for (const f of files) {
+      if (f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.jpeg')) {
+        fs.copyFileSync(path.join(SCREENSHOTS_DIR, f), path.join(IMAGES_DIR, f));
+      }
+    }
+  }
+
+  // Remove obsolete koha screenshots from netlify-site/images
+  const obsoleteKohaFiles = [
+    '20_koha_acquisitions.png',
+    '21_koha_serials.png',
+    '22_koha_ill.png',
+    '23_koha_course_reserves.png'
+  ];
+  for (const obsolete of obsoleteKohaFiles) {
+    const p = path.join(IMAGES_DIR, obsolete);
+    if (fs.existsSync(p)) {
+      fs.unlinkSync(p);
+    }
+  }
+
+  // Copy fresh PDF to netlify-site
+  const PDF_SOURCE = path.join(DOCS_DIR, 'MOCHT_LMS_User_Training_Guide.pdf');
+  const PDF_DEST = path.join(NETLIFY_DIR, 'MOCHT_LMS_User_Training_Guide.pdf');
+  if (fs.existsSync(PDF_SOURCE)) {
+    fs.copyFileSync(PDF_SOURCE, PDF_DEST);
+    console.log(`✅ Copied latest PDF to Netlify site: ${PDF_DEST}`);
+  }
 }
 
 buildNetlifySite();

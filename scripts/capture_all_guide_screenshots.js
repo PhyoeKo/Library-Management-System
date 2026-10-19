@@ -220,29 +220,37 @@ async function run() {
   await new Promise(r => setTimeout(r, 800));
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '19_reports_overdue_tab.png') });
 
-  // 20. Koha Acquisitions
-  console.log('Capturing 20_koha_acquisitions.png...');
+  // 20. Enterprise Acquisitions
+  console.log('Capturing 20_enterprise_acquisitions.png...');
   await page.goto('http://localhost:3000/admin/acquisitions', { waitUntil: 'networkidle2' });
-  await new Promise(r => setTimeout(r, 800));
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '20_koha_acquisitions.png') });
+  await new Promise(r => setTimeout(r, 1200));
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '20_enterprise_acquisitions.png') });
 
-  // 21. Koha Serials
-  console.log('Capturing 21_koha_serials.png...');
-  await page.goto('http://localhost:3000/admin/serials', { waitUntil: 'networkidle2' });
-  await new Promise(r => setTimeout(r, 800));
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '21_koha_serials.png') });
+  // 21. Serials & Periodicals
+  console.log('Capturing 21_serials_periodicals.png...');
+  await page.goto('http://localhost:3000/admin/library-services', { waitUntil: 'networkidle2' });
+  await new Promise(r => setTimeout(r, 1200));
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '21_serials_periodicals.png') });
 
-  // 22. Koha ILL
-  console.log('Capturing 22_koha_ill.png...');
-  await page.goto('http://localhost:3000/admin/ill', { waitUntil: 'networkidle2' });
-  await new Promise(r => setTimeout(r, 800));
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '22_koha_ill.png') });
+  // 22. Interlibrary Loans (ILL)
+  console.log('Capturing 22_interlibrary_loans.png...');
+  await page.evaluate(() => {
+    const btns = Array.from(document.querySelectorAll('button'));
+    const illBtn = btns.find(b => b.textContent.includes('Interlibrary Loans'));
+    if (illBtn) illBtn.click();
+  });
+  await new Promise(r => setTimeout(r, 1000));
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '22_interlibrary_loans.png') });
 
-  // 23. Koha Course Reserves
-  console.log('Capturing 23_koha_course_reserves.png...');
-  await page.goto('http://localhost:3000/admin/course-reserves', { waitUntil: 'networkidle2' });
-  await new Promise(r => setTimeout(r, 800));
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '23_koha_course_reserves.png') });
+  // 23. Course Reserves
+  console.log('Capturing 23_course_reserves.png...');
+  await page.evaluate(() => {
+    const btns = Array.from(document.querySelectorAll('button'));
+    const crBtn = btns.find(b => b.textContent.includes('Course Reserves'));
+    if (crBtn) crBtn.click();
+  });
+  await new Promise(r => setTimeout(r, 1000));
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '23_course_reserves.png') });
 
   console.log('All screenshots captured successfully!');
   await browser.close();
