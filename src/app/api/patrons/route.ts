@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: name.trim(),
         email: email.trim(),
-        passwordHash: password || 'pbkdf2_hash_placeholder',
+        passwordHash: (password && password.trim()) ? password.trim() : '123456',
         role: role || 'PATRON',
         categoryId: categoryId || null,
         barcode: finalBarcode,

@@ -18,6 +18,8 @@ import {
   IdCard,
   Image as ImageIcon,
   Eye,
+  EyeOff,
+  Lock,
   Phone,
   BookOpen,
   DollarSign,
@@ -90,6 +92,8 @@ export default function MemberManagementPage() {
   const [isVipInput, setIsVipInput] = useState(false);
   const [statusInput, setStatusInput] = useState<'ACTIVE' | 'SUSPENDED'>('ACTIVE');
   const [blockReasonInput, setBlockReasonInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // KYC Fields
   const [nrcNumberInput, setNrcNumberInput] = useState('');
@@ -471,6 +475,8 @@ export default function MemberManagementPage() {
     setCurrentLocationInput('');
     setNrcFrontUrlInput('');
     setNrcBackUrlInput('');
+    setPasswordInput('');
+    setShowPassword(false);
     setIsModalOpen(true);
   };
 
@@ -489,6 +495,8 @@ export default function MemberManagementPage() {
     setCurrentLocationInput(member.address || '');
     setNrcFrontUrlInput(member.nrcFrontUrl || '');
     setNrcBackUrlInput(member.nrcBackUrl || '');
+    setPasswordInput('');
+    setShowPassword(false);
     setIsModalOpen(true);
   };
 
@@ -512,6 +520,7 @@ export default function MemberManagementPage() {
         nrcBackUrl: nrcBackUrlInput,
         isBlocked,
         blockReason: isBlocked ? (blockReasonInput || 'Suspended by staff') : null,
+        ...(passwordInput.trim() ? { password: passwordInput.trim() } : {}),
       };
 
       const url = editingMember ? `/api/patrons/${editingMember.id}` : '/api/patrons';
@@ -983,6 +992,46 @@ export default function MemberManagementPage() {
                         <option value="ADMIN">ADMIN (System Administrator)</option>
                       </select>
                     </div>
+                  </div>
+
+                  {/* Password / Login Credentials */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="font-semibold text-slate-800 flex items-center gap-1.5 text-xs">
+                        <Lock className="w-3.5 h-3.5 text-blue-600" />
+                        <span>{editingMember ? 'Account Password (leave blank to keep current)' : 'Account Password (for member login)'}</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setPasswordInput('123456')}
+                        className="text-[10px] font-bold text-blue-700 hover:text-blue-900 bg-blue-100/70 hover:bg-blue-200 border border-blue-300 px-2 py-0.5 rounded transition"
+                      >
+                        Auto-fill "123456"
+                      </button>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder={editingMember ? '•••••••• (leave blank to keep unchanged)' : 'Enter login password (default: 123456)'}
+                        value={passwordInput}
+                        onChange={(e) => setPasswordInput(e.target.value)}
+                        className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg pl-3 pr-10 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                        title={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      {editingMember
+                        ? "Enter a new password if you want to reset this member's credentials, or leave blank to keep their existing password."
+                        : 'The member will use this password alongside their Barcode, Email, or Phone to log into the Patron Portal. If left blank, it defaults to 123456.'}
+                    </p>
                   </div>
 
                   {/* Membership Tier & VIP Privilege */}

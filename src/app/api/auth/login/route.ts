@@ -40,6 +40,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Password verification check
+    if (user.passwordHash && user.passwordHash !== 'pbkdf2_hash_placeholder') {
+      if (!password || password.trim() !== user.passwordHash) {
+        return NextResponse.json(
+          { success: false, error: 'Incorrect password. Please verify your login credentials.' },
+          { status: 401 }
+        );
+      }
+    }
+
     // Role validation check
     if (targetRole === 'STAFF' && user.role === 'PATRON') {
       return NextResponse.json(
